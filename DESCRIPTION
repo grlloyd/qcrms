@@ -7,7 +7,7 @@ Maintainer: Andris Jankevics <a.jankevics@bham.ac.uk>
 Description: Creates report in pdf fortma to asses RT and m/z drifts, variation of QC and samples and perform signal/batch correction.
 License: GPL
 biocViews:
-Imports: captioner, ggplot2, gridExtra, mzR, openxlsx, pmp, rmarkdown, sbc, xcms, MSnbase, dplyr
+Imports: captioner, ggplot2, gridExtra, mzR, openxlsx, pmp, rmarkdown, sbcms, xcms, MSnbase, dplyr
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1

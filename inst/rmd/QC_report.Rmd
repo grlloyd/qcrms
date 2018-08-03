@@ -145,7 +145,6 @@ kable (QCreportObject$tables$RSDtable1, digits=1)
 \newpage
 ```{r rsd_values_3, echo=FALSE, message=TRUE, warning=FALSE, comment="", cache=FALSE, results='hide', fig.width=7, fig.height=6}
 print (QCreportObject$plots$RSDplot2)
-rm (batch, A, pcols, RSDQC, subt2)
 ```
 
 `r figs("S12")`

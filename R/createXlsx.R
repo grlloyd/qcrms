@@ -72,13 +72,6 @@ getPeaklistW4M <- function(xset, intval="into",convertRTMinute=F,numDigitsMZ=4,n
 
 createXlsx <- function (QCreportObject)
 {
-  ## OpenXLSX requires zip binary
-  if (.Platform$OS.type=="windows")
-  {
-    zippath <- paste(system.file(package = "qcrms"),"bin","zip.exe",sep="/")
-    Sys.setenv("R_ZIPCMD"=zippath)
-  }
-
   W4M <- getPeaklistW4M(xset=QCreportObject$xset)
 
   QCreportObject$data$dataMatrix <- W4M$dataMatrix

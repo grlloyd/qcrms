@@ -12,13 +12,6 @@ NULL
 
 SignalBatchCorrection <- function(QCreportObject)
 {
-  ## OpenXLSX requires zip binary
-  if (.Platform$OS.type=="windows")
-  {
-    zippath <- paste(system.file(package = "qcrms"),"bin","zip.exe",sep="/")
-    Sys.setenv("R_ZIPCMD"=zippath)
-  }
-
   wb <- loadWorkbook(xlsxFile = QCreportObject$xlsxout)
 
   # Samples are reordered so QC indexes have beens changed as well!

@@ -1,6 +1,6 @@
 #' Create initial qcrepotobject structure from input variable
 #'
-#' @param FILENAME_RDATA Rdata file containing XCMS output, object should be called xset
+#' @param data_file Rdata file containing XCMS output, object should be called xset
 #' @param projectdir Folder where Rdata file is located and where output should be directed
 #' @param author Character sring woth reports author name, optional
 #' @param metaData_file Files in xlsx format containing sample names and class labels
@@ -16,7 +16,15 @@
 #' @export
 
 
-createQCreportObject <- function(FILENAME_RDATA,
+file_type <- function(path){
+  f = file(path)
+  ext = summary(f)$class
+  close.connection(f)
+  ext
+}
+
+
+createQCreportObject <- function(data_file,
                                  projectdir,
                                  author="",
                                  metaData_file,
@@ -34,16 +42,31 @@ createQCreportObject <- function(FILENAME_RDATA,
 
   QCreportObject <- list()
 
-  QCreportObject$FILENAME_RDATA <- FILENAME_RDATA
+  QCreportObject$data_file <- data_file
+  QCreportObject$projectdir = projectdir
+  
+  # load data and create peakMatrix from Rdata or tab-separated file
+
+  setwd(QCreportObject$projectdir)
+  
+  if (file_type(QCreportObject$data_file) == "gzfile" || grepl(".rdata", tolower(tools::file_ext(QCreportObject$data_file))))
+  {
+    load (QCreportObject$data_file) # includes xset
+    QCreportObject$xset <- xset
+    QCreportObject$peakMatrix <- xcms::groupval(object=QCreportObject$xset, method="medret",value="into",intensity="into")
+  } else{
+    QCreportObject$peakMatrix = read.table(QCreportObject$data_file, header=TRUE, row.names=1, check.names=FALSE)
+  }
 
   projectInfo <- list ()
   projectInfo$author <- author
   projectInfo$InternalProjectRef <- InternalProjectRef
   projectInfo$Dataset <- Dataset
   projectInfo$Organisation <- Organisation
+  
   if (is.null(assay))
   {
-    projectInfo$assay <- sub(pattern = ".Rdata","",QCreportObject$FILENAME_RDATA)
+    projectInfo$assay <- sub(pattern = ".Rdata","",QCreportObject$data_file)
   } else
   {
     projectInfo$assay <- assay

@@ -12,8 +12,8 @@ missingValues <- function (QCreportObject)
   countna=function (x)
     return((sum(is.na(x))/length(x))*100)
 
-  across_samples <- data.frame(x=apply(QCreportObject$groupvals,2,countna))
-  across_features <- data.frame(x=apply(QCreportObject$groupvals,1,countna))
+  across_samples <- data.frame(x=apply(QCreportObject$peakMatrix,2,countna))
+  across_features <- data.frame(x=apply(QCreportObject$peakMatrix,1,countna))
 
   QCreportObject$plots$MVplot1 <- ggplot (data=across_samples, aes(x)) + geom_histogram()+
     xlab ("missing values, %")+ ggtitle("Missing values per sample")+
@@ -31,7 +31,7 @@ missingValues <- function (QCreportObject)
 
   for (slab in 1: length(cl))
   {
-    out_across_features[[slab]] <- apply(cbind(QCreportObject$groupvals[,QCreportObject$metaData$samp_lab==cl[slab]],NULL),1,
+    out_across_features[[slab]] <- apply(cbind(QCreportObject$peakMatrix[,QCreportObject$metaData$samp_lab==cl[slab]],NULL),1,
                                        countna)/length(which(QCreportObject$metaData$samp_lab==cl[slab]))*100
   }
 

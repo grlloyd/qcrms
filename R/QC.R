@@ -15,7 +15,7 @@ QC <- function(QCreportObject)
 
   sub_times <- QCreportObject$timestamps[hits]
 
-  vals <- QCreportObject$groupvals[,hits]
+  vals <- QCreportObject$peakMatrix[,hits]
 
   vals <- vals[,order(sub_times)]
 
@@ -32,7 +32,7 @@ QC <- function(QCreportObject)
     xlab("Injection order")+ylab("Signal intensity scaled to UV")+theme_Publication(base_size = 12)+
     theme(axis.text.x=element_text(angle=90, hjust=1))
 
-  vals <- t(QCreportObject$groupvals[,order(QCreportObject$timestamps)])
+  vals <- t(QCreportObject$peakMatrix[,order(QCreportObject$timestamps)])
   vals <- scale (vals, center=T, scale=T)
   vals <- stack(as.data.frame(t(vals)))
 

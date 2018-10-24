@@ -72,26 +72,33 @@ getPeaklistW4M <- function(xset, intval="into",convertRTMinute=F,numDigitsMZ=4,n
 
 createXlsx <- function (QCreportObject)
 {
-  W4M <- getPeaklistW4M(xset=QCreportObject$xset)
 
-  QCreportObject$data$dataMatrix <- W4M$dataMatrix
-  rownames(QCreportObject$data$dataMatrix) <- QCreportObject$data$dataMatrix[,1]
-  QCreportObject$data$dataMatrix <- QCreportObject$data$dataMatrix[,-c(1)]
-
+  if (!is.null(QCreportObject$xset))
+  {
+    W4M <- getPeaklistW4M(xset=QCreportObject$xset)
+    QCreportObject$data$dataMatrix <- W4M$dataMatrix
+    rownames(QCreportObject$data$dataMatrix) <- QCreportObject$data$dataMatrix[,1]
+    QCreportObject$data$dataMatrix <- QCreportObject$data$dataMatrix[,-c(1)]
+  } else
+    QCreportObject$data$dataMatrix = as.matrix(read.table(QCreportObject$data_file, header=TRUE, row.names=1, check.names=FALSE))
+    QCreportObject$data$dataMatrix[QCreportObject$data$dataMatrix == 0] <= NA
+  {
+    
+  }
   # Write out meta data
   # Columns sample_name, batch, class, injection order
 
-  #QCreportObject$metaData$metaData$batch <- as.numeric(xset@phenoData[,1])
-  QCreportObject$metaData$metaData$injection_order <- order(order(QCreportObject$timestamps))
+  #QCreportObject$metaData$table$batch <- as.numeric(xset@phenoData[,1])
 
+  QCreportObject$metaData$table$injection_order <- order(order(QCreportObject$timestamps))
   # Define which QC's are excluded
-  chit <- which(colnames(QCreportObject$metaData$metaData)==QCreportObject$metaData$classColumn)
+  chit <- which(colnames(QCreportObject$metaData$table)==QCreportObject$metaData$classColumn)
 
-  class <- QCreportObject$metaData$metaData[,chit]
+  class <- QCreportObject$metaData$table[,chit]
 
   QC_hits2 <- which(class==QCreportObject$QC_label)
 
-  QC_names <- QCreportObject$metaData$metaData[,1][QC_hits2]
+  QC_names <- QCreportObject$metaData$table[,1][QC_hits2]
 
   # Only numbers from QC_names
   QC_names <- as.numeric(gsub(".*?([0-9]+).*", "\\1", QC_names))
@@ -103,20 +110,20 @@ createXlsx <- function (QCreportObject)
    class[QC_hits2[Rem_QC]] <- "Removed"
   }
 
-  QCreportObject$metaData$metaData[,chit] <- class
+  QCreportObject$metaData$table[,chit] <- class
 
-  QCreportObject$data$dataMatrix <- QCreportObject$data$dataMatrix[,order(QCreportObject$metaData$metaData$injection_order)]
-  QCreportObject$metaData$metaData <- QCreportObject$metaData$metaData[order(QCreportObject$metaData$metaData$injection_order),]
+  QCreportObject$data$dataMatrix <- QCreportObject$data$dataMatrix[,order(QCreportObject$metaData$table$injection_order)]
+  QCreportObject$metaData$table <- QCreportObject$metaData$table[order(QCreportObject$metaData$table$injection_order),]
 
   # W4M for no good reason decided to check if file names contains "-" and similar symbols. Why?
   # If it xcms can handle original file names, and after al files have been processed.
   # Where is tracability to the original files if this has been done to outputs?
 
-  if (!all(colnames(QCreportObject$data$dataMatrix)==QCreportObject$metaData$metaData$Sample))
+  if (!all(colnames(QCreportObject$data$dataMatrix)==QCreportObject$metaData$table$Sample))
   {
-    if (all(colnames(QCreportObject$data$dataMatrix)==make.names(QCreportObject$metaData$metaData$Sample)))
+    if (all(colnames(QCreportObject$data$dataMatrix)==make.names(QCreportObject$metaData$table$Sample)))
     {
-      colnames(QCreportObject$data$dataMatrix) <- QCreportObject$metaData$metaData$Sample
+      colnames(QCreportObject$data$dataMatrix) <- QCreportObject$metaData$table$Sample
     } else
       {
         stop ("Sample names present in XCMS output doesn't match with meta data.")
@@ -128,11 +135,19 @@ createXlsx <- function (QCreportObject)
   writeData (wb,"dataMatrix", QCreportObject$data$dataMatrix, rowNames = T)
 
   addWorksheet (wb, "metaData")
-  writeData (wb, "metaData", QCreportObject$metaData$metaData, rowNames = F)
-
-  addWorksheet (wb, "variableMetaData")
-  writeData (wb, "variableMetaData", W4M$variableMetaData, rowNames = F)
-
+  writeData (wb, "metaData", QCreportObject$metaData$table, rowNames = F)
+  if (!is.null(QCreportObject$xset))
+  {
+    addWorksheet (wb, "variableMetaData")
+    writeData (wb, "variableMetaData", W4M$variableMetaData, rowNames = F)
+  } else
+  {
+    addWorksheet (wb, "variableMetaData")
+    variableMetaData = rowMeans(QCreportObject$data$dataMatrix, na.rm = TRUE, dims = 1)
+    print(data.frame(mz=names(variableMetaData), intensity=as.vector(variableMetaData)))
+    writeData (wb, "variableMetaData", data.frame(mz=names(variableMetaData), intensity=as.vector(variableMetaData)), rowNames = F)
+  }  
+  
   saveWorkbook (wb, QCreportObject$xlsxout, overwrite = T)
 
   QCreportObject

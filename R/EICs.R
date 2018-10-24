@@ -51,8 +51,11 @@ EICs <- function (QCreportObject)
 
   system.time (
     { for (num in 1:length(rawf))
-     {
-        rawf[[num]] <- MSnbase::readMSData(QCreportObject$xset@filepaths[num], mode="onDisk")
+      {
+        if (file.exists(QCreportObject$xset@filepaths[num]))
+        {
+          rawf[[num]] <- MSnbase::readMSData(QCreportObject$xset@filepaths[num], mode="onDisk")
+        }
       }
     })
 

@@ -49,13 +49,18 @@ createQCreportObject <- function(data_file,
 
   setwd(QCreportObject$projectdir)
   
-  if (file_type(QCreportObject$data_file) == "gzfile" || grepl(".rdata", tolower(tools::file_ext(QCreportObject$data_file))))
+  if (file_type(QCreportObject$data_file) == "gzfile" || grepl(".rdata", tolower(QCreportObject$data_file)) || tolower(tools::file_ext(QCreportObject$data_file)) == ".rdata")
   {
     load (QCreportObject$data_file) # includes xset
     QCreportObject$xset <- xset
     QCreportObject$peakMatrix <- xcms::groupval(object=QCreportObject$xset, method="medret",value="into",intensity="into")
+    if (exists ("listOFlistArguments"))
+    {
+      QCreportObject$listOFlistArguments <- listOFlistArguments
+    }
+    
   } else{
-    QCreportObject$peakMatrix = read.table(QCreportObject$data_file, header=TRUE, row.names=1, check.names=FALSE)
+    QCreportObject$peakMatrix = as.matrix(read.table(QCreportObject$data_file, header=TRUE, row.names=1, check.names=FALSE))
   }
 
   projectInfo <- list ()
@@ -88,8 +93,8 @@ createQCreportObject <- function(data_file,
   QCreportObject$QC_label <- QC_label
   QCreportObject$Blank_label <- Blank_label
 
-  QCreportObject$pdfout <- paste0(QCreportObject$projectdir,"/", QCreportObject$projectInfo$assay,"_EICs.pdf")
-  QCreportObject$xlsxout <- paste0(QCreportObject$projectdir,"/", QCreportObject$projectInfo$assay,".xlsx")
+  QCreportObject$pdfout <- file.path(QCreportObject$projectdir, paste(QCreportObject$projectInfo$assay, "_EICs.pdf", sep=""))
+  QCreportObject$xlsxout <- file.path(QCreportObject$projectdir, paste(QCreportObject$projectInfo$assay, ".xlsx", sep=""))
 
   QCreportObject$plots <- list()
   QCreportObject$tables <- list()
@@ -101,11 +106,14 @@ createQCreportObject <- function(data_file,
   QCreportObject <- qcrms::sampleSummary(QCreportObject = QCreportObject)
   QCreportObject <- qcrms::sampleSummaryPlots(QCreportObject = QCreportObject)
   QCreportObject <- qcrms::PCA(QCreportObject = QCreportObject)
-
-  QCreportObject <- qcrms::EICs(QCreportObject = QCreportObject)
-
+  
+  if (!is.null(QCreportObject$xset))
+  {
+    QCreportObject <- qcrms::EICs(QCreportObject = QCreportObject)
+  }
+  
   QCreportObject <- qcrms::missingValues(QCreportObject = QCreportObject)
-  QCreportObject <- qcrms::RSDstatistics(QCreportObject = QCreportObject)#
+  QCreportObject <- qcrms::RSDstatistics(QCreportObject = QCreportObject)
   if (!is.null(QCreportObject$QC_label)) QCreportObject <- qcrms::QC(QCreportObject = QCreportObject)
   QCreportObject <- qcrms::createXlsx(QCreportObject = QCreportObject)
   if (!is.null(QCreportObject$QC_label)) QCreportObject <- qcrms::SignalBatchCorrection(QCreportObject = QCreportObject)

@@ -11,10 +11,7 @@ NULL
 
 PCA <- function (QCreportObject)
 {
-
-  QCreportObject$peakMatrix <- xcms::groupval (object=QCreportObject$xset, method="medret",value="into",intensity="into")
-
-
+  
   PCAin <- pmp::prepareData(Data=QCreportObject$peakMatrix, classes=QCreportObject$metaData$samp_lab,
                      blank = QCreportObject$Blank_label, PQN=F, mv_impute = T, glogScaling = F,
                      qc_label = QCreportObject$QC_label, ignorelabel = "Removed")
@@ -28,7 +25,7 @@ PCA <- function (QCreportObject)
                          glogScaling = F, qc_label = NULL, ignorelabel = "Removed")
 
     # Remove leading QC's
-    QC_names <- rownames(QCreportObject$xset@phenoData)[QCreportObject$QC_hits]
+    QC_names <- colnames(QCreportObject$peakMatrix)[QCreportObject$QC_hits]
 
     # Only numbers from QC_names
     QC_names <- as.numeric(gsub(".*?([0-9]+).*", "\\1", QC_names))
@@ -73,28 +70,5 @@ PCA <- function (QCreportObject)
        labels="QC", qc_label = QCreportObject$QC_label,
        plotTitle = "PCA, all QC and biological samples, lead QCs removed)")
   }
-
-
-  QCreportObject$peakPickingParams <- c("Number of peak groups:", nrow(QCreportObject$peakMatrix))
-  QCreportObject$peakPickingParams <- rbind (QCreportObject$peakPickingParams, NULL)
-
-  if (!is.null(QCreportObject$listOFlistArguments))
-  {
-    col1 <- c("method","ppm","peakwidth","mzdif","snthresh","integrate","noise","prefilter")
-    col2 <- c(QCreportObject$listOFlistArguments[[1]]$method,
-              QCreportObject$listOFlistArguments[[1]]$ppm,
-    paste(QCreportObject$listOFlistArguments[[1]]$peakwidth, collapse = "-"),
-    QCreportObject$listOFlistArguments[[1]]$mzdiff,
-    QCreportObject$listOFlistArguments[[1]]$snthresh,
-    QCreportObject$listOFlistArguments[[1]]$integrate,
-    QCreportObject$listOFlistArguments[[1]]$noise,
-    paste(QCreportObject$listOFlistArguments[[1]]$prefilter,collapse=", "))
-
-    QCreportObject$peakPickingParams <- rbind(QCreportObject$peakPickingParams,cbind(col1, col2))
-
-  }
-
-  colnames(QCreportObject$peakPickingParams) <- c("","")
-
   QCreportObject
 }

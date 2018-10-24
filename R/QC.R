@@ -38,8 +38,9 @@ QC <- function(QCreportObject)
 
   Class <- rep(NA, nrow(vals))
 
-  xsetNames <- rownames(QCreportObject$xset@phenoData)
-
+  #xsetNames <- rownames(QCreportObject$xset@phenoData)
+  xsetNames <- colnames(QCreportObject$peakMatrix)
+  
   #I am quite sure there is fater and easier way how to do it
   for (i in 1:length(xsetNames))
       {

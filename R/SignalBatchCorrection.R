@@ -1,4 +1,4 @@
-#' @import sbc
+#' @import sbcms
 #' @import pmp
 #' @import openxlsx
 #'

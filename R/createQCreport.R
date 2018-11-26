@@ -1,7 +1,7 @@
 #' @import rmarkdown
 #' @import captioner
 #' @import pmp
-#' @import sbc
+#' @import sbcms
 #' @import gridExtra
 #'
 NULL

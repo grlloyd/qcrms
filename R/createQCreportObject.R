@@ -1,3 +1,15 @@
+#' Check if input is a text file or xlsx file
+#' 
+#' @param path path to the file
+#' @export
+
+file_type <- function(path){
+  f = file(path)
+  ext = summary(f)$class
+  close.connection(f)
+  ext
+}
+
 #' Create initial qcrepotobject structure from input variable
 #'
 #' @param data_file Rdata file containing XCMS output, object should be called xset
@@ -14,15 +26,6 @@
 #' @param excludeQC Which QC samples to exclude from RSD\% calculations, signal batch correction and PCA plots
 #' @param assay Names for analytical assay, if set to NULL name of the input Rdata file will be used
 #' @export
-
-
-file_type <- function(path){
-  f = file(path)
-  ext = summary(f)$class
-  close.connection(f)
-  ext
-}
-
 
 createQCreportObject <- function(data_file,
                                  projectdir,

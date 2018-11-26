@@ -4,13 +4,13 @@
 \alias{createQCreportObject}
 \title{Create initial qcrepotobject structure from input variable}
 \usage{
-createQCreportObject(FILENAME_RDATA, projectdir, author = "", metaData_file,
+createQCreportObject(data_file, projectdir, author = "", metaData_file,
   raw_path = NULL, InternalProjectRef = "", Dataset = "",
   Organisation = "", QC_label = "QC", Blank_label = "Blank",
   classLabel = "Class", excludeQC = c(1:5), assay = NULL)
 }
 \arguments{
-\item{FILENAME_RDATA}{Rdata file containing XCMS output, object should be called xset}
+\item{data_file}{Rdata file containing XCMS output, object should be called xset}
 
 \item{projectdir}{Folder where Rdata file is located and where output should be directed}
 

@@ -4,7 +4,8 @@
 \alias{formatIonIdentifiers}
 \title{This function format ions identifiers}
 \usage{
-formatIonIdentifiers(variableMetadata, numDigitsRT = 0, numDigitsMZ = 0)
+formatIonIdentifiers(variableMetadata, numDigitsRT = 0,
+  numDigitsMZ = 0)
 }
 \arguments{
 \item{variableMetadata}{vairable meta data object}

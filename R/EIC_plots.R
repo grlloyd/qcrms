@@ -3,7 +3,7 @@
 #'
 NULL
 
-#' Exctract and return ggplot2 object of EICs for specified xmcm features
+#' Exctract and return ggplot2 object of EICs for specified xcms features
 #'
 #' @param indexes vector of feautre indices to extract
 #' @param rawfiles List of MsnBase packages raw file objects

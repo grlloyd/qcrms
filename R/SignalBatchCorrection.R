@@ -1,4 +1,4 @@
-#' @import sbc
+#' @import sbcms
 #' @import pmp
 #' @import openxlsx
 #'
@@ -15,25 +15,23 @@ SignalBatchCorrection <- function(QCreportObject)
   wb <- loadWorkbook(xlsxFile = QCreportObject$xlsxout)
 
   # Samples are reordered so QC indexes have beens changed as well!
-  class <- QCreportObject$metaData$metaData[,which(colnames(QCreportObject$metaData$metaData)==QCreportObject$metaData$classColumn)]
+  class <- QCreportObject$metaData$table[,which(colnames(QCreportObject$metaData$table)==QCreportObject$metaData$classColumn)]
 
-  if (is.null(QCreportObject$metaData$metaData$batch))
-  {
-    QCreportObject$metaData$metaData$batch <- rep(1, length(class))
+  if (is.null(QCreportObject$metaData$table$batch)){
+    
+    QCreportObject$metaData$table$batch <- rep(1, length(class))
   }
 
 
   # Blank filter
-  blank_filtered <- filter_peaks_by_blank(t(QCreportObject$data$dataMatrix), 20, class,
+  blank_filtered <- filter_peaks_by_blank(QCreportObject$data$dataMatrix, 20, class,
                                         blank_label=QCreportObject$Blank_label,
-                                        qc_label = NULL, remove = NULL)[[1]]
+                                        qc_label = NULL, remove = FALSE)[[1]]
 
   # QC MV fraction filter
   # MV in QC samples
   MV_filtered <- filter_peaks_by_fraction(blank_filtered, min_frac = 0.8,
                                         classes=class, method = "QC", qc_label = QCreportObject$QC_label)[[1]]
-
-  MV_filtered <- t(MV_filtered)
 
   PCAinF2 <- prepareData(Data=MV_filtered, classes=class,
                        blank = QCreportObject$Blank_label, PQN=T, mv_impute = T,
@@ -64,10 +62,8 @@ SignalBatchCorrection <- function(QCreportObject)
   QCreportObject$plots$SBRSDbefore <- doRSDplot(RSD=PCAinF2$RSD, plotTitle = "RSD (%) per sample group, blank and QC MV filtered")
 
 
-
-
-  SBcorrected <- doQCRLSC(Data=MV_filtered, order=QCreportObject$metaData$metaData$injection_order,
-                        batch=QCreportObject$metaData$metaData$batch, classes=class,
+  SBcorrected <- doQCRLSC(Data=MV_filtered, order=QCreportObject$metaData$table$injection_order,
+                        batch=QCreportObject$metaData$table$batch, classes=class,
                         loessSpan=0, minQC = 5)
 
   PCAinSB <- prepareData(Data=SBcorrected, classes=class, blank = QCreportObject$Blank_label,

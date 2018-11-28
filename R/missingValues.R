@@ -11,30 +11,32 @@ missingValues <- function (QCreportObject)
 {
   countna=function (x)
     return((sum(is.na(x))/length(x))*100)
+  
+  across_samples <- data.frame(x=apply(QCreportObject$peakMatrix,2,countna))
+  across_features <- data.frame(x=apply(QCreportObject$peakMatrix,1,countna))
 
-  across_samples <- data.frame(x=apply(QCreportObject$groupvals,2,countna))
-  across_features <- data.frame(x=apply(QCreportObject$groupvals,1,countna))
+  QCreportObject$plots$MVplot1 <- ggplot (data=across_samples, aes(x)) + geom_histogram() +
+    xlab ("missing values, %") + ggtitle("Missing values per sample") +
+    xlim (0,100) + theme_Publication(base_size = 12)
 
-  QCreportObject$plots$MVplot1 <- ggplot (data=across_samples, aes(x)) + geom_histogram()+
-    xlab ("missing values, %")+ ggtitle("Missing values per sample")+
-    xlim (0,100)+
-    scale_colour_Publication()+ theme_Publication(base_size = 12)
-
-  QCreportObject$plots$MVplot2 <- ggplot (data=across_features, aes(x)) + geom_histogram()+
-    xlab ("missing values, %")+ ggtitle("Missing values per feature")+
-    xlim (0,100)+
-    scale_colour_Publication()+ theme_Publication(base_size = 12)
+  QCreportObject$plots$MVplot2 <- ggplot (data=across_features, aes(x)) + geom_histogram() +
+    xlab ("missing values, %") + ggtitle("Missing values per feature") +
+    xlim (0,100) + theme_Publication(base_size = 12)
 
   cl <- unique (QCreportObject$metaData$samp_lab)
   out_across_features <- vector("list",length(cl))
   names (out_across_features) <- cl
+  
+  QCreportObject$peakMatrix[QCreportObject$peakMatrix == 0] <- NA
+
+  #print(sum(is.na(QCreportObject$peakMatrix)))
+  #print(class(QCreportObject$peakMatrix))
 
   for (slab in 1: length(cl))
   {
-    out_across_features[[slab]] <- apply(cbind(QCreportObject$groupvals[,QCreportObject$metaData$samp_lab==cl[slab]],NULL),1,
+    out_across_features[[slab]] <- apply(cbind(QCreportObject$peakMatrix[,QCreportObject$metaData$samp_lab==cl[slab]],NULL),1,
                                        countna)/length(which(QCreportObject$metaData$samp_lab==cl[slab]))*100
   }
-
 
   across_features <- unlist(out_across_features)
 
@@ -49,7 +51,7 @@ missingValues <- function (QCreportObject)
   QCreportObject$plots$MVplotClassF <- createClassAndColors(class=across_features_lab)
 
   across_samples<- data.frame(x=QCreportObject$plots$MVplotClassS$class, class=across_samples$x)
-  across_features <- data.frame (x=QCreportObject$plots$MVplotClassF$class, class=across_features)
+  across_features <- data.frame(x=QCreportObject$plots$MVplotClassF$class, class=across_features)
 
   QCreportObject$plots$MVplot3 <- ggplot (data=across_samples, aes(x=x, y=class, color=x)) + geom_boxplot(show.legend = F)+
     ylab("missing values, %")+

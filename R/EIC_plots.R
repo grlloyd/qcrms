@@ -3,7 +3,7 @@
 #'
 NULL
 
-#' Exctract and return ggplot2 object of EICs for specified xmcm features
+#' Exctract and return ggplot2 object of EICs for specified xcms features
 #'
 #' @param indexes vector of feautre indices to extract
 #' @param rawfiles List of MsnBase packages raw file objects
@@ -62,15 +62,14 @@ XCMS_EIC_plot <- function (indexes, rawfiles, class, xset, Blank_label="Blank", 
         RTma <- xset@rt$raw[[chrn]][RTind[2]]
       }
 
-      if (!all(is.na(c(mzmi,mzma,RTmi,RTma))))
+      if (!all(is.na(c(mzmi,mzma,RTmi,RTma))) && (!is.null(rawfiles[[chrn]])))
       {
-        chroms[[chrn]] <- xcms::extractMsData (rawfiles[[chrn]], mz=c(mzmi, mzma), rt=c(RTmi,RTma) ,msLevel=1)[[1]]
+        chroms[[chrn]] <- xcms::extractMsData (rawfiles[[chrn]], mz=c(mzmi, mzma), rt=c(RTmi,RTma), msLevel=1)[[1]]
 
         # Replace raw RT with corrected if RT correction was applied
         if (nrow(chroms[[chrn]])!=0 && RTcorrected==T)
         {
           RThits <- which(xset@rt$raw[[chrn]] %in% chroms[[chrn]]$rt)
-
 
           # For some weird reason, extracMsData can return mor than one peak for the same RT
           if (length(RThits)!=nrow(chroms[[chrn]]))

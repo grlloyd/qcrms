@@ -15,7 +15,7 @@ EICs <- function (QCreportObject)
   QCreportObject$xset@filepaths <- QCreportObject$raw_paths
 
   # Exclude QC and Blank samples from max intensity calculation, as these can be very noisy signals
-  maxints <- apply(QCreportObject$groupvals[,-c(QCreportObject$QC_hits,QCreportObject$Blank_hits)],
+  maxints <- apply(QCreportObject$peakMatrix[,-c(QCreportObject$QC_hits,QCreportObject$Blank_hits)],
                  1, max, na.rm=T)
 
   # How many samples in total present per class
@@ -51,8 +51,11 @@ EICs <- function (QCreportObject)
 
   system.time (
     { for (num in 1:length(rawf))
-     {
-        rawf[[num]] <- MSnbase::readMSData(QCreportObject$xset@filepaths[num], mode="onDisk")
+      {
+        if (file.exists(QCreportObject$xset@filepaths[num]))
+        {
+          rawf[[num]] <- MSnbase::readMSData(QCreportObject$xset@filepaths[num], mode="onDisk")
+        }
       }
     })
 

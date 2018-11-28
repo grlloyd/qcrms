@@ -23,17 +23,17 @@ RSDstatistics <- function (QCreportObject)
     RSDQC <- QCreportObject$data$PCAinF$RSD[[QChit]]
   } else
   {
-    RSDQC <- rep(0, nrow(QCreportObject$groupvals))
+    RSDQC <- rep(0, nrow(QCreportObject$peakMatrix))
   }
 
   if (length(QCreportObject$QC_hits)>0)
   {
-    RSDSample <- unlist(doRSD(Data=QCreportObject$groupvals[,-c(QCreportObject$QC_hits)],
+    RSDSample <- unlist(doRSD(Data=QCreportObject$peakMatrix[,-c(QCreportObject$QC_hits)],
                             classes=rep("Sample",
                                         length(QCreportObject$metaData$samp_lab[-c(QCreportObject$QC_hits)]))))
   } else
   {
-    RSDSample <- unlist(doRSD(Data=QCreportObject$groupvals, classes=rep("Sample",
+    RSDSample <- unlist(doRSD(Data=QCreportObject$peakMatrix, classes=rep("Sample",
                                                                        length(QCreportObject$metaData$samp_lab))))
   }
 

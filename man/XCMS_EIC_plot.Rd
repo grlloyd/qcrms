@@ -2,7 +2,7 @@
 % Please edit documentation in R/EIC_plots.R
 \name{XCMS_EIC_plot}
 \alias{XCMS_EIC_plot}
-\title{Exctract and return ggplot2 object of EICs for specified xmcm features}
+\title{Exctract and return ggplot2 object of EICs for specified xcms features}
 \usage{
 XCMS_EIC_plot(indexes, rawfiles, class, xset, Blank_label = "Blank",
   QC_label = "QC")
@@ -21,5 +21,5 @@ XCMS_EIC_plot(indexes, rawfiles, class, xset, Blank_label = "Blank",
 \item{QC_label}{Label used for QC samples}
 }
 \description{
-Exctract and return ggplot2 object of EICs for specified xmcm features
+Exctract and return ggplot2 object of EICs for specified xcms features
 }

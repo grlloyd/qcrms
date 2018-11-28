@@ -11,11 +11,8 @@ NULL
 
 PCA <- function (QCreportObject)
 {
-
-  QCreportObject$groupvals <- xcms::groupval (object=QCreportObject$xset, method="medret",value="into",intensity="into")
-
-
-  PCAin <- pmp::prepareData(Data=QCreportObject$groupvals, classes=QCreportObject$metaData$samp_lab,
+  
+  PCAin <- pmp::prepareData(Data=QCreportObject$peakMatrix, classes=QCreportObject$metaData$samp_lab,
                      blank = QCreportObject$Blank_label, PQN=F, mv_impute = T, glogScaling = F,
                      qc_label = QCreportObject$QC_label, ignorelabel = "Removed")
 
@@ -23,12 +20,12 @@ PCA <- function (QCreportObject)
   {
     samp_lab2 <- as.character(QCreportObject$metaData$samp_lab)
     samp_lab2[-c(QCreportObject$QC_hits)] <- "Removed"
-    PCAinQC <- pmp::prepareData(Data=QCreportObject$groupvals, classes=samp_lab2,
+    PCAinQC <- pmp::prepareData(Data=QCreportObject$peakMatrix, classes=samp_lab2,
                          blank = QCreportObject$Blank_label, PQN=F, mv_impute = T,
                          glogScaling = F, qc_label = NULL, ignorelabel = "Removed")
 
     # Remove leading QC's
-    QC_names <- rownames(QCreportObject$xset@phenoData)[QCreportObject$QC_hits]
+    QC_names <- colnames(QCreportObject$peakMatrix)[QCreportObject$QC_hits]
 
     # Only numbers from QC_names
     QC_names <- as.numeric(gsub(".*?([0-9]+).*", "\\1", QC_names))
@@ -37,13 +34,13 @@ PCA <- function (QCreportObject)
 
     samp_lab3 <- as.character(QCreportObject$metaData$samp_lab)
     samp_lab3[Rem_QC] <- "Removed"
-    PCAinF <- pmp::prepareData(Data=QCreportObject$groupvals, classes=samp_lab3,
+    PCAinF <- pmp::prepareData(Data=QCreportObject$peakMatrix, classes=samp_lab3,
                         blank = QCreportObject$Blank_label, PQN=F, mv_impute = T,
                         glogScaling = F, qc_label = QCreportObject$QC_label, ignorelabel = "Removed")
 
     samp_lab4 <- samp_lab3
     samp_lab4[-c(QCreportObject$QC_hits)] <- "Removed"
-    PCAinQC2 <- prepareData(Data=QCreportObject$groupvals, classes=samp_lab4,
+    PCAinQC2 <- prepareData(Data=QCreportObject$peakMatrix, classes=samp_lab4,
                           blank = QCreportObject$Blank_label, PQN=F, mv_impute = T,
                           glogScaling = F, qc_label = NULL, ignorelabel = "Removed")
 
@@ -73,28 +70,5 @@ PCA <- function (QCreportObject)
        labels="QC", qc_label = QCreportObject$QC_label,
        plotTitle = "PCA, all QC and biological samples, lead QCs removed)")
   }
-
-
-  QCreportObject$peakPickingParams <- c("Number of peak groups:", nrow(QCreportObject$groupvals))
-  QCreportObject$peakPickingParams <- rbind (QCreportObject$peakPickingParams, NULL)
-
-  if (!is.null(QCreportObject$listOFlistArguments))
-  {
-    col1 <- c("method","ppm","peakwidth","mzdif","snthresh","integrate","noise","prefilter")
-    col2 <- c(QCreportObject$listOFlistArguments[[1]]$method,
-              QCreportObject$listOFlistArguments[[1]]$ppm,
-    paste(QCreportObject$listOFlistArguments[[1]]$peakwidth, collapse = "-"),
-    QCreportObject$listOFlistArguments[[1]]$mzdiff,
-    QCreportObject$listOFlistArguments[[1]]$snthresh,
-    QCreportObject$listOFlistArguments[[1]]$integrate,
-    QCreportObject$listOFlistArguments[[1]]$noise,
-    paste(QCreportObject$listOFlistArguments[[1]]$prefilter,collapse=", "))
-
-    QCreportObject$peakPickingParams <- rbind(QCreportObject$peakPickingParams,cbind(col1, col2))
-
-  }
-
-  colnames(QCreportObject$peakPickingParams) <- c("","")
-
   QCreportObject
 }

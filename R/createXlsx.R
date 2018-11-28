@@ -73,45 +73,45 @@ getPeaklistW4M <- function(xset, intval="into",convertRTMinute=F,numDigitsMZ=4,n
 createXlsx <- function (QCreportObject)
 {
 
-  if (!is.null(QCreportObject$xset))
-  {
+  if (!is.null(QCreportObject$xset)){
     W4M <- getPeaklistW4M(xset=QCreportObject$xset)
     QCreportObject$data$dataMatrix <- W4M$dataMatrix
     rownames(QCreportObject$data$dataMatrix) <- QCreportObject$data$dataMatrix[,1]
     QCreportObject$data$dataMatrix <- QCreportObject$data$dataMatrix[,-c(1)]
-  } else
+  } else {
     QCreportObject$data$dataMatrix = as.matrix(read.table(QCreportObject$data_file, header=TRUE, row.names=1, check.names=FALSE))
     QCreportObject$data$dataMatrix[QCreportObject$data$dataMatrix == 0] <= NA
-  {
-    
   }
+  
   # Write out meta data
-  # Columns sample_name, batch, class, injection order
-
-  #QCreportObject$metaData$table$batch <- as.numeric(xset@phenoData[,1])
+  # Columns sample_name, class, injection order
 
   QCreportObject$metaData$table$injection_order <- order(order(QCreportObject$timestamps))
+  
   # Define which QC's are excluded
-  chit <- which(colnames(QCreportObject$metaData$table)==QCreportObject$metaData$classColumn)
+  if (!is.null(QCreportObject$QC_label) & !is.null(QCreportObject$excludeQC)){
+    
+    chit <- which(colnames(QCreportObject$metaData$table)==QCreportObject$metaData$classColumn)
 
-  class <- QCreportObject$metaData$table[,chit]
+    class <- QCreportObject$metaData$table[,chit]
 
-  QC_hits2 <- which(class==QCreportObject$QC_label)
+    QC_hits2 <- which(class==QCreportObject$QC_label)
 
-  QC_names <- QCreportObject$metaData$table[,1][QC_hits2]
+    QC_names <- QCreportObject$metaData$table[,1][QC_hits2]
 
-  # Only numbers from QC_names
-  QC_names <- as.numeric(gsub(".*?([0-9]+).*", "\\1", QC_names))
+    # Only numbers from QC_names
+    QC_names <- as.numeric(gsub(".*?([0-9]+).*", "\\1", QC_names))
 
-  Rem_QC <- which(QC_names%in%QCreportObject$excludeQC)
+    Rem_QC <- which(QC_names%in%QCreportObject$excludeQC)
 
-  if (length(Rem_QC)>0)
-  {
-   class[QC_hits2[Rem_QC]] <- "Removed"
+    if (length(Rem_QC)>0){
+      class[QC_hits2[Rem_QC]] <- "Removed"
+    }
+
+    QCreportObject$metaData$table[,chit] <- class
+
   }
-
-  QCreportObject$metaData$table[,chit] <- class
-
+  
   QCreportObject$data$dataMatrix <- QCreportObject$data$dataMatrix[,order(QCreportObject$metaData$table$injection_order)]
   QCreportObject$metaData$table <- QCreportObject$metaData$table[order(QCreportObject$metaData$table$injection_order),]
 

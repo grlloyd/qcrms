@@ -17,13 +17,11 @@ missingValues <- function (QCreportObject)
 
   QCreportObject$plots$MVplot1 <- ggplot (data=across_samples, aes(x)) + geom_histogram() +
     xlab ("missing values, %") + ggtitle("Missing values per sample") +
-    xlim (0,100) +
-    scale_colour_Publication() + theme_Publication(base_size = 12)
+    xlim (0,100) + theme_Publication(base_size = 12)
 
   QCreportObject$plots$MVplot2 <- ggplot (data=across_features, aes(x)) + geom_histogram() +
     xlab ("missing values, %") + ggtitle("Missing values per feature") +
-    xlim (0,100) +
-    scale_colour_Publication() + theme_Publication(base_size = 12)
+    xlim (0,100) + theme_Publication(base_size = 12)
 
   cl <- unique (QCreportObject$metaData$samp_lab)
   out_across_features <- vector("list",length(cl))
@@ -31,8 +29,8 @@ missingValues <- function (QCreportObject)
   
   QCreportObject$peakMatrix[QCreportObject$peakMatrix == 0] <- NA
 
-  print(sum(is.na(QCreportObject$peakMatrix)))
-  print(class(QCreportObject$peakMatrix))
+  #print(sum(is.na(QCreportObject$peakMatrix)))
+  #print(class(QCreportObject$peakMatrix))
 
   for (slab in 1: length(cl))
   {

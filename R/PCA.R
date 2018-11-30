@@ -16,24 +16,40 @@ PCA <- function (QCreportObject)
                      blank = QCreportObject$Blank_label, PQN=F, mv_impute = T, glogScaling = F,
                      qc_label = QCreportObject$QC_label, ignorelabel = "Removed")
 
-  if (!is.null(QCreportObject$QC_label))
-  {
+  if (!is.null(QCreportObject$QC_label)){
+    
     samp_lab2 <- as.character(QCreportObject$metaData$samp_lab)
     samp_lab2[-c(QCreportObject$QC_hits)] <- "Removed"
     PCAinQC <- pmp::prepareData(Data=QCreportObject$peakMatrix, classes=samp_lab2,
                          blank = QCreportObject$Blank_label, PQN=F, mv_impute = T,
                          glogScaling = F, qc_label = NULL, ignorelabel = "Removed")
 
+    
     # Remove leading QC's
-    QC_names <- colnames(QCreportObject$peakMatrix)[QCreportObject$QC_hits]
+    
+    # If excludeQC is numeric vector, filter QC's to remove from sample name
+    if (is.numeric(QCreportObject$excludeQC)){
+      
+      # Only numbers from QC_names
+      QC_names <- colnames(QCreportObject$peakMatrix)[QCreportObject$QC_hits]
+      QC_names <- as.numeric(gsub(".*?([0-9]+).*", "\\1", QC_names))
 
-    # Only numbers from QC_names
-    QC_names <- as.numeric(gsub(".*?([0-9]+).*", "\\1", QC_names))
-
-    Rem_QC <- QCreportObject$QC_hits[which(QC_names%in%QCreportObject$excludeQC)]
-
+      Rem_QC <- QCreportObject$QC_hits[which(QC_names%in%QCreportObject$excludeQC)]
+    } else {Rem_QC <- NULL}
+    
+    if (is.null(QCreportObject$excludeQC)) Rem_QC <- NULL
+    
+    if (is.character(QCreportObject$excludeQC)){
+      column_present <- QCreportObject$excludeQC %in% colnames(QCreportObject$metaData$table)
+      if (!column_present) stop ("Sample column specified to identify leading QC samples
+                                 isn't present in meta data file.")
+      Rem_QC <- which(!is.na(QCreportObject$metaData$table[, QCreportObject$excludeQC]))
+    }
+    
     samp_lab3 <- as.character(QCreportObject$metaData$samp_lab)
+    
     samp_lab3[Rem_QC] <- "Removed"
+    
     PCAinF <- pmp::prepareData(Data=QCreportObject$peakMatrix, classes=samp_lab3,
                         blank = QCreportObject$Blank_label, PQN=F, mv_impute = T,
                         glogScaling = F, qc_label = QCreportObject$QC_label, ignorelabel = "Removed")
@@ -44,9 +60,9 @@ PCA <- function (QCreportObject)
                           blank = QCreportObject$Blank_label, PQN=F, mv_impute = T,
                           glogScaling = F, qc_label = NULL, ignorelabel = "Removed")
 
+    QCreportObject$metaData$samp_lab_lead_qc <- samp_lab3
 
-  } else
-  {
+  } else {
     PCAinF <- PCAin
   }
 
@@ -56,8 +72,8 @@ PCA <- function (QCreportObject)
        scale=T, labels="QC", qc_label = QCreportObject$QC_label,
        plotTitle = "PCA, all QC and biological samples)")
 
-  if (!is.null(QCreportObject$QC_label))
-  {
+  if (!is.null(QCreportObject$QC_label)){
+    
     QCreportObject$plots$PCAQCsamples <- doPCA (Data=PCAinQC$Data, classes=PCAinQC$classes, PQN=F, mv_impute = T, glogScaling = F,
        scale=T, labels="QC", qc_label = QCreportObject$QC_label,
        plotTitle = "PCA, QC samples")
@@ -70,5 +86,6 @@ PCA <- function (QCreportObject)
        labels="QC", qc_label = QCreportObject$QC_label,
        plotTitle = "PCA, all QC and biological samples, lead QCs removed)")
   }
+  
   QCreportObject
 }

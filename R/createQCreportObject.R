@@ -114,8 +114,8 @@ createQCreportObject <- function(data_file,
   
   QCreportObject <- qcrms::PCA(QCreportObject = QCreportObject)
   
-  if (!is.null(QCreportObject$xset) & plot_eic==TRUE)
-  {
+  if (!is.null(QCreportObject$xset) & plot_eic==TRUE){
+    
     QCreportObject <- qcrms::EICs(QCreportObject = QCreportObject)
   }
   

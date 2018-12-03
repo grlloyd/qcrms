@@ -60,7 +60,8 @@ PCA <- function (QCreportObject)
                           blank = QCreportObject$Blank_label, PQN=F, mv_impute = T,
                           glogScaling = F, qc_label = NULL, ignorelabel = "Removed")
 
-    QCreportObject$metaData$samp_lab_lead_qc <- samp_lab3
+    #QCreportObject$metaData$samp_lab_lead_qc <- samp_lab3
+    QCreportObject$metaData$samp_lab <- samp_lab3
 
   } else {
     PCAinF <- PCAin

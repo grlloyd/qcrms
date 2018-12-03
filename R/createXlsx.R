@@ -88,29 +88,8 @@ createXlsx <- function (QCreportObject)
 
   QCreportObject$metaData$table$injection_order <- order(order(QCreportObject$timestamps))
   
-  # Define which QC's are excluded
-  if (!is.null(QCreportObject$QC_label) & !is.null(QCreportObject$excludeQC)){
-    
-    chit <- which(colnames(QCreportObject$metaData$table)==QCreportObject$metaData$classColumn)
-
-    class <- QCreportObject$metaData$table[,chit]
-
-    QC_hits2 <- which(class==QCreportObject$QC_label)
-
-    QC_names <- QCreportObject$metaData$table[,1][QC_hits2]
-
-    # Only numbers from QC_names
-    QC_names <- as.numeric(gsub(".*?([0-9]+).*", "\\1", QC_names))
-
-    Rem_QC <- which(QC_names%in%QCreportObject$excludeQC)
-
-    if (length(Rem_QC)>0){
-      class[QC_hits2[Rem_QC]] <- "Removed"
-    }
-
-    QCreportObject$metaData$table[,chit] <- class
-
-  }
+  # Put label "Removed" for qc samples used as leading/outliers during processing in meta data column used for class label
+  QCreportObject$metaData$table[,QCreportObject$metaData$classColumn] <- QCreportObject$metaData$samp_lab
   
   QCreportObject$data$dataMatrix <- QCreportObject$data$dataMatrix[,order(QCreportObject$metaData$table$injection_order)]
   QCreportObject$metaData$table <- QCreportObject$metaData$table[order(QCreportObject$metaData$table$injection_order),]

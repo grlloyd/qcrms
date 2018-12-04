@@ -70,7 +70,7 @@ PCA <- function (QCreportObject)
   QCreportObject$data$PCAinF <- PCAinF
 
   QCreportObject$plots$PCAallSamples <- doPCA (Data=PCAin$Data, classes=PCAin$classes, PQN=F, mv_impute = T, glogScaling = F,
-       scale=T, labels="QC", qc_label = QCreportObject$QC_label,
+       scale=T, labels="none", qc_label = QCreportObject$QC_label,
        plotTitle = "PCA, all QC and biological samples)")
 
   if (!is.null(QCreportObject$QC_label)){
@@ -84,7 +84,7 @@ PCA <- function (QCreportObject)
        plotTitle = "PCA, QC samples (lead QCs removed)")
 
     QCreportObject$plots$PCAallQCleading <- doPCA (Data=PCAinF$Data, classes=PCAinF$classes, PQN=F, mv_impute = T, glogScaling = F, scale=T,
-       labels="QC", qc_label = QCreportObject$QC_label,
+       labels="none", qc_label = QCreportObject$QC_label,
        plotTitle = "PCA, all QC and biological samples, lead QCs removed)")
   }
   

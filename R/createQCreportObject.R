@@ -41,14 +41,14 @@ createQCreportObject <- function(data_file,
                                  classLabel="Class",
                                  excludeQC=c(1:5),
                                  assay=NULL,
-                                 plot_eic=TRUE
-)
-{
+                                 plot_eic=TRUE,
+                                 pca_scores_labels="all"){
 
   QCreportObject <- list()
 
+  QCreportObject$pca_scores_labels <- pca_scores_labels
   QCreportObject$data_file <- data_file
-  QCreportObject$projectdir = projectdir
+  QCreportObject$projectdir <- projectdir
   
   # load data and create peakMatrix from Rdata or tab-separated file
 

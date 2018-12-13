@@ -28,6 +28,8 @@ PCA <- function (QCreportObject)
     # Remove leading QC's
     
     # If excludeQC is numeric vector, filter QC's to remove from sample name
+    Rem_QC <- NULL
+    
     if (is.numeric(QCreportObject$excludeQC)){
       
       # Only numbers from QC_names
@@ -35,11 +37,9 @@ PCA <- function (QCreportObject)
       QC_names <- as.numeric(gsub(".*?([0-9]+).*", "\\1", QC_names))
 
       Rem_QC <- QCreportObject$QC_hits[which(QC_names%in%QCreportObject$excludeQC)]
-    } else {Rem_QC <- NULL}
-    
-    if (is.null(QCreportObject$excludeQC)) Rem_QC <- NULL
-    
-    if (is.character(QCreportObject$excludeQC)){
+      
+    } else if (is.character(QCreportObject$excludeQC)){
+      
       column_present <- QCreportObject$excludeQC %in% colnames(QCreportObject$metaData$table)
       if (!column_present) stop ("Sample column specified to identify leading QC samples
                                  isn't present in meta data file.")

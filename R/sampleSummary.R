@@ -36,7 +36,7 @@ sampleSummary <- function (QCreportObject)
     }
     
     QCreportObject$metaData$table$Sample = rownames(QCreportObject$metaData$table)
-    QCreportObject$metaData$table <- left_join(QCreportObject$metaData$table, metaDataTable, by="Sample")
+    QCreportObject$metaData$table <- dplyr::left_join(QCreportObject$metaData$table, metaDataTable, by="Sample")
     
   } else {
     colnames(QCreportObject$metaData$table) <- QCreportObject$metaData$classColumn
@@ -85,14 +85,9 @@ sampleSummary <- function (QCreportObject)
     }
   }
 
-  chit <- which(colnames(QCreportObject$metaData$table)==QCreportObject$metaData$classColumn)
+  #chit <- which(colnames(QCreportObject$metaData$table)==QCreportObject$metaData$classColumn)
 
-  # Quick and dirty sample classes from file names
-  QCreportObject$QC_hits <- which(QCreportObject$metaData$table[,chit]==QCreportObject$QC_label)
-  QCreportObject$Blank_hits <- which(QCreportObject$metaData$table[,chit]==QCreportObject$Blank_label)
-
-  QCreportObject$metaData$samp_lab <- QCreportObject$metaData$table[,chit]
-
+  # TIC data
   QCreportObject$TICs <- rep(NA, nrow(QCreportObject$metaData$table))
   QCreportObject$TICraw <- rep(NA, nrow(QCreportObject$metaData$table))
   QCreportObject$TICdata <- vector("list", nrow(QCreportObject$metaData$table))
@@ -107,7 +102,7 @@ sampleSummary <- function (QCreportObject)
     QCreportObject$TICs <- tapply (peakt[,"into"], peakt[, "sample"], FUN=sum)
   
     # TIC's for raw files
-    # mzR is anout 10 times faster to read Raw data files than MSnbase implementation. So for tic needs I am using it.
+    # mzR is anout 10 times faster to read Raw data files than MSnbase implementation, So for tic needs I am using it.
     for (sn in 1:length(QCreportObject$TICraw)){
       
       if (file.exists(QCreportObject$raw_paths[i])){
@@ -127,7 +122,7 @@ sampleSummary <- function (QCreportObject)
     QCreportObject$TICdata = vector("list", ncol(QCreportObject$peakMatrix))
   }
   
-  QCreportObject$metaData$samp_lab <- as.factor (QCreportObject$metaData$samp_lab)
+  QCreportObject$metaData$samp_lab <- as.factor (QCreportObject$metaData$table[,QCreportObject$metaData$classColumn])
 
   QCreportObject$samp.sum <- data.frame(sample=QCreportObject$metaData$table$Sample, 
                                         meas.time=QCreportObject$timestamps,
@@ -137,13 +132,25 @@ sampleSummary <- function (QCreportObject)
   colnames (QCreportObject$samp.sum) <- c("Sample","Measurement time","Class","Number of peaks")
 
   QCreportObject$samp.sum <- QCreportObject$samp.sum[order(QCreportObject$timestamps),]
+  
   row.names(QCreportObject$samp.sum) <- NULL
 
   rNames <- c("Number of samples:", "Sample classes:")
   cValues <-  c((nrow(QCreportObject$metaData$table)),
-              paste(unique(QCreportObject$metaData$table[,chit]), collapse=", "))
+              paste(unique(QCreportObject$metaData$table[, QCreportObject$metaData$classColumn]), collapse=", "))
 
   QCreportObject$projectHeader <- rbind(QCreportObject$projectHeader,c("",""),cbind (rNames, cValues))
 
+  # Reorder metaData and peak data according measurement order.
+  QCreportObject$metaData$table$injection_order <- order(order(QCreportObject$timestamps))
+  
+  QCreportObject$peakMatrix <- QCreportObject$peakMatrix[,order(QCreportObject$metaData$table$injection_order)]
+  QCreportObject$metaData$table <- QCreportObject$metaData$table[order(QCreportObject$metaData$table$injection_order),]
+  
+  QCreportObject$QC_hits <- which(QCreportObject$metaData$table[, QCreportObject$metaData$classColumn]==QCreportObject$QC_label)
+  QCreportObject$Blank_hits <- which(QCreportObject$metaData$table[, QCreportObject$metaData$classColumn]==QCreportObject$Blank_label)
+  
+  QCreportObject$metaData$samp_lab <- QCreportObject$metaData$table[, QCreportObject$metaData$classColumn]
+  
   QCreportObject
 }

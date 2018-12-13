@@ -24,7 +24,7 @@ SignalBatchCorrection <- function(QCreportObject)
 
 
   # Blank filter
-  blank_filtered <- filter_peaks_by_blank(QCreportObject$data$dataMatrix, 20, class,
+  blank_filtered <- filter_peaks_by_blank(QCreportObject$peakMatrix, 20, class,
                                         blank_label=QCreportObject$Blank_label,
                                         qc_label = NULL, remove = FALSE)[[1]]
 
@@ -72,7 +72,7 @@ SignalBatchCorrection <- function(QCreportObject)
     for (batch in 1:length(nbatches)){
       
       batch_hits <- which (QCreportObject$metaData$table$batch == nbatches[batch])
-      data_list[[batch]] <- QCreportObject$data$dataMatrix[ , batch_hits]
+      data_list[[batch]] <- QCreportObject$peakMatrix[ , batch_hits]
       classes_list[[batch]] <- class[batch_hits]
       title_list[[batch]] <- paste ("PCA, blank and QC MV filtered,", "Batch", nbatches[batch])
     }
@@ -90,6 +90,15 @@ SignalBatchCorrection <- function(QCreportObject)
     QCreportObject$plots$plots_per_batch_pca <- plots_per_batch[seq(1, length(nbatches)*2, 2)] 
     QCreportObject$plots$plots_per_batch_rsd <- plots_per_batch[seq(2, length(nbatches)*2, 2)]   
     
+    # Create summary RSD plot for QC samples per batch
+    qc_hits <- which(class==QCreportObject$QC_label)
+    qc_data <- QCreportObject$peakMatrix[, class==QCreportObject$QC_label]
+    qc_class <- class[qc_hits]
+    qc_batch <- QCreportObject$metaData$table$batch[qc_hits]
+    qc_class <- paste(qc_class,"B",qc_batch, sep="_")
+    
+    qc_batch_rsd <- doRSD(Data=qc_data, classes = qc_class)
+    QCreportObject$plots$plots_per_batch_qc_rsd <- doRSDplot(RSD=qc_batch_rsd, plotTitle = "RSD (%) of QC samples per batch, blank and QC MV filtered")
   }
   
   #S/B correction

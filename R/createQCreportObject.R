@@ -114,6 +114,9 @@ createQCreportObject <- function(data_file,
   
   QCreportObject <- qcrms::PCA(QCreportObject = QCreportObject)
   
+  # RT shifts
+  QCreportObject <- qcrms::RTstabilityAssement(QCreportObject=QCreportObject)
+  
   if (!is.null(QCreportObject$xset) & plot_eic==TRUE){
     
     QCreportObject <- qcrms::EICs(QCreportObject = QCreportObject)

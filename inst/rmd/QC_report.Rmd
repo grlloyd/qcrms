@@ -106,6 +106,32 @@ if (!is.null(QCreportObject$QC_label)){
 `r figs("S8")`
 
 \newpage
+```{r RT, echo=F, message=FALSE, warning=FALSE, cache=FALSE, comment="", strip.white=TRUE}
+#if (!is.null(QCreportObject$QC_label)){
+  print(kable (QCreportObject$tables$RT_rsd, digits=2))
+#}
+```
+
+```{r RT_2, echo=FALSE, message=FALSE, warning=FALSE, comment="", cache=FALSE, results='hide', fig.width=7, fig.height=6, prompt=FALSE}
+#if (!is.null(QCreportObject$QC_label)){
+  print (QCreportObject$plots$MAD_rt)
+#}
+```
+
+\newpage
+```{r RT_3, echo=F, message=FALSE, warning=FALSE, cache=FALSE, comment="", strip.white=TRUE}
+#if (!is.null(QCreportObject$QC_label)){
+  print(kable (QCreportObject$tables$peak_width, digits=2))
+#}
+```
+
+```{r RT_4, echo=FALSE, message=FALSE, warning=FALSE, comment="", cache=FALSE, results='hide', fig.width=7, fig.height=6, prompt=FALSE}
+#if (!is.null(QCreportObject$QC_label)){
+  print (QCreportObject$plots$peak_width_RSD)
+#}
+```
+
+\newpage
 ```{r EICs, echo=FALSE, message=TRUE, warning=FALSE, comment="", cache=FALSE, fig.width=7, fig.height=6}
 if (!is.null(QCreportObject$plots$EICs)){
   QCreportObject$plots$EICs[[2]] <- QCreportObject$plots$EICs[[2]] + theme(legend.position = "none")
@@ -115,6 +141,13 @@ if (!is.null(QCreportObject$plots$EICs)){
 ```
 
 `r figs("S9")`
+
+\newpage
+```{r mz, echo=FALSE, message=FALSE, warning=FALSE, comment="", cache=FALSE, results='hide', fig.width=7, fig.height=6, prompt=FALSE}
+#if (!is.null(QCreportObject$QC_label)){
+  gridExtra::grid.arrange(ncol=2, QCreportObject$plots$mz_1, QCreportObject$plots$mz_2, QCreportObject$plots$mz_3, QCreportObject$plots$mz_4)
+#}
+```
 
 \newpage
 ```{r missing_values, echo=FALSE, fig.height=6, fig.width=7, message=FALSE, warning=FALSE, cache=FALSE, comment="", results='hide'}

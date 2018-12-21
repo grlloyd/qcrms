@@ -5,7 +5,7 @@ NULL
 #' Prepare data for ggplot barplot
 #' 
 #' @param val Data frame to be processed
-#' @batch Vector with sample batch labels
+#' @param batch Vector with sample batch labels
 #' @export
 
 prepare_boxplot_multiple_batches <- function (vals, batch, class){

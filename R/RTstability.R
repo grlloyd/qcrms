@@ -22,30 +22,28 @@ RTstabilityAssement <- function (QCreportObject){
   rt <- rt[, order(QCreportObject$timestamps)]
   peak_width <- peak_width[, order(QCreportObject$timestamps)]
   
-  # Don't include leading/removed QC samples
-  QC_hits <- which (QCreportObject$metaData$samp_lab==QCreportObject$QC_label)
+  #RSD vs MAD
+  rt_rsd <- do_variability_list(peak_data = rt, classes = QCreportObject$metaData$samp_lab, method = "RSD")
+  rt_mad <- do_variability_list(peak_data = rt, classes = QCreportObject$metaData$samp_lab, method = "MAD")
+  
+  QCreportObject$tables$RT_rsd <- do_variability_table(rt_rsd, QC_label = QCreportObject$QC_label, Blank_label = QCreportObject$Blank_label)
+  QCreportObject$tables$RT_mad <-do_variability_table(rt_mad, QC_label = QCreportObject$QC_label, Blank_label = QCreportObject$Blank_label)
+  
+  QCreportObject$plots$MAD_rt <- do_variability_plot(rt_mad)
 
-  # Don't include blanks and removed samples
-  skip_samples <- which(QCreportObject$metaData$samp_lab==QCreportObject$Blank_label)
-  skip_samples <- c(skip_samples, which(QCreportObject$metaData$samp_lab=="Removed"), QC_hits)
+  # Peak width summary
+  # Create a list of peak widths for each sample group, so it can be used by do_variability_table and plot functions
+  pw_median <- do_variability_list(peak_data = peak_width,classes = QCreportObject$metaData$samp_lab, method = "median")
   
-  rt_rsd <- pmp::doRSD(Data=rt, classes = QCreportObject$metaData$samp_lab)
+  pw_matrix <- do_variability_list(peak_data = peak_width,classes = QCreportObject$metaData$samp_lab, method = "none")
   
-  QCreportObject$tables$RT_rsd <- pmp::doRSDtable(rt_rsd)
+  QCreportObject$tables$peak_width <- do_variability_table(pw_median, QC_label = QCreportObject$QC_label, Blank_label = QCreportObject$Blank_label)
+  QCreportObject$tables$peak_width_all <- do_variability_table(pw_matrix)
+  QCreportObject$plots$peak_width <- do_variability_plot(pw_median)
+  QCreportObject$plots$peak_width$labels$y <- "Median of peak width per feature, s"
   
-  madrtQC <- apply (rt[, QC_hits], 1, mad, constant=1, na.rm=T)
-  madrt <- apply (rt[,-c(skip_samples)], 1, mad, constant=1, na.rm=T)
-  
-  vals <- data.frame(MAD=madrtQC, Class="QC")
-  vals <- rbind(vals, data.frame(MAD=madrt, Class="Samples"))
-  
-  QCreportObject$plots$MAD_rt <- ggplot(data=vals, aes(x=Class, y=MAD)) + geom_violin() + theme_bw()
-  
-  peak_width_rsd <- doRSD(Data=peak_width, classes = QCreportObject$metaData$samp_lab)
-  
-  QCreportObject$plots$peak_width_RSD <- pmp::doRSDplot(peak_width_rsd)
-  QCreportObject$tables$peak_width <- pmp::doRSDtable(peak_width_rsd)
-  
+  QCreportObject$plots$peak_width_all <- do_variability_plot(pw_matrix)
+  QCreportObject$plots$peak_width$labels$y <- "Peak width, s"
   
   # mz precision
   mz = xcms::groupval(object=QCreportObject$xset, method = "medret", value = "mz", intensity = "into")
@@ -53,32 +51,18 @@ RTstabilityAssement <- function (QCreportObject){
   #sample class labels are reordered according measurement order, so these tables need to be reordered as well
   mz <- mz[, order(QCreportObject$timestamps)]
   
-  mz_mean <- apply (mz[,QC_hits], 1, mean, na.rm=T)
+  mz_mean <- apply (mz, 1, mean, na.rm=T)
 
-  mz_ppm <- abs((mz[,QC_hits] - mz_mean)/(mz_mean*10^-6))
+  mz_ppm <- abs((mz - mz_mean)/(mz_mean*10^-6))
   
-  vals <- reshape2::melt(mz_ppm, value.name="ppm")
+  mz_ppm_median_list <- do_variability_list(mz_ppm, classes = QCreportObject$metaData$samp_lab, method = "median")
+  mz_ppm_list <- do_variability_list(mz_ppm, classes = QCreportObject$metaData$samp_lab, method = "none")
   
-  QCreportObject$plots$mz_1 <- ggplot (data = vals, aes(x=ppm)) + geom_histogram() + ggtitle("QC, all features") + theme_bw()
+  QCreportObject$tables$mz_median <- do_variability_table(mz_ppm_median_list, QC_label = QCreportObject$QC_label, Blank_label = QCreportObject$Blank_label)
+  QCreportObject$tables$mz_all <- do_variability_table(mz_ppm_list, QC_label = QCreportObject$QC_label, Blank_label = QCreportObject$Blank_label)
   
-  vals <- data.frame(ppm=apply(mz_ppm, 1, median))
-  
-  QCreportObject$plots$mz_2 <- ggplot (data = vals, aes(x=ppm)) + geom_histogram() + ggtitle("QC, median ppm per feature") + theme_bw()
-  
-  # Analytical sample
-  mz_mean <- apply (mz[,-c(skip_samples)], 1, mean, na.rm=T)
-  
-  mz_ppm <- abs((mz[,-c(skip_samples)] - mz_mean)/(mz_mean*10^-6))
-  
-  vals <- reshape2::melt(mz_ppm, value.name="ppm")
-  
-  QCreportObject$plots$mz_3 <- ggplot (data = vals, aes(x=ppm)) + geom_histogram() + ggtitle("Samples, all features") + theme_bw()
-  
-  vals <- data.frame(ppm=apply(mz_ppm, 1, median))
-  
-  QCreportObject$plots$mz_4 <- ggplot (data = vals, aes(x=ppm)) + geom_histogram() + ggtitle("Samples, median ppm per feature") + theme_bw()
-  
-  #gridExtra::grid.arrange(ncol=2, QCreportObject$plots$mz_1, QCreportObject$plots$mz_2, QCreportObject$plots$mz_3, QCreportObject$plots$mz_4)
+  QCreportObject$plots$mz_median <- do_variability_plot(mz_ppm_median_list, ylim = 5)
+  QCreportObject$plots$mz_all <- do_variability_plot(mz_ppm_list, ylim = 5)
   
   QCreportObject
 }

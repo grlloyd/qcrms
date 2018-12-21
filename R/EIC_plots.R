@@ -105,7 +105,7 @@ XCMS_EIC_plot <- function (indexes, rawfiles, class, xset, Blank_label="Blank", 
     ptitle <- paste("EICs, m/z ",round(stats::median(min_mz[chromind,], na.rm=T),5),"-",round(stats::median(max_mz[chromind,], na.rm=T),5),sep="")
 
     # Reorder factor levels again, so that colors are consistent
-    plotCols <- pmp::createClassAndColors(class = A$Class, QC_label = QC_label, Blank_label = Blank_label)
+    plotCols <- createClassAndColors(class = A$Class, QC_label = QC_label, Blank_label = Blank_label)
 
     A$Class <- plotCols$class
 

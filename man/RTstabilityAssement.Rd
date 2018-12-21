@@ -4,7 +4,7 @@
 \alias{RTstabilityAssement}
 \title{Exctract and return ggplot2 object of EICs for specified xmcm features}
 \usage{
-RTstabilityAssement()
+RTstabilityAssement(QCreportObject)
 }
 \arguments{
 \item{indexes}{vector of feautre indices to extract}

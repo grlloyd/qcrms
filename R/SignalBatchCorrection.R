@@ -79,7 +79,7 @@ SignalBatchCorrection <- function(QCreportObject)
     
     title_list <- unlist (title_list)
     
-    plots_per_batch <- pmp::doSummaryPlot(Data = data_list, 
+    plots_per_batch <- doSummaryPlot(Data = data_list, 
                                           classes =classes_list, 
                                           plotTitle = title_list,
                                           PQN=T, 

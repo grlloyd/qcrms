@@ -12,7 +12,7 @@ NULL
 PCA <- function (QCreportObject)
 {
   
-  PCAin <- pmp::prepareData(Data=QCreportObject$peakMatrix, classes=QCreportObject$metaData$samp_lab,
+  PCAin <- prepareData(Data=QCreportObject$peakMatrix, classes=QCreportObject$metaData$samp_lab,
                      blank = QCreportObject$Blank_label, PQN=F, mv_impute = T, glogScaling = F,
                      qc_label = QCreportObject$QC_label, ignorelabel = "Removed")
 
@@ -20,7 +20,7 @@ PCA <- function (QCreportObject)
     
     samp_lab2 <- as.character(QCreportObject$metaData$samp_lab)
     samp_lab2[-c(QCreportObject$QC_hits)] <- "Removed"
-    PCAinQC <- pmp::prepareData(Data=QCreportObject$peakMatrix, classes=samp_lab2,
+    PCAinQC <- prepareData(Data=QCreportObject$peakMatrix, classes=samp_lab2,
                          blank = QCreportObject$Blank_label, PQN=F, mv_impute = T,
                          glogScaling = F, qc_label = NULL, ignorelabel = "Removed")
 
@@ -50,7 +50,7 @@ PCA <- function (QCreportObject)
     
     samp_lab3[Rem_QC] <- "Removed"
     
-    PCAinF <- pmp::prepareData(Data=QCreportObject$peakMatrix, classes=samp_lab3,
+    PCAinF <- prepareData(Data=QCreportObject$peakMatrix, classes=samp_lab3,
                         blank = QCreportObject$Blank_label, PQN=F, mv_impute = T,
                         glogScaling = F, qc_label = QCreportObject$QC_label, ignorelabel = "Removed")
 

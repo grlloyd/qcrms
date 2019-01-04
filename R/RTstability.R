@@ -39,11 +39,12 @@ RTstabilityAssement <- function (QCreportObject){
   
   QCreportObject$tables$peak_width <- do_variability_table(pw_median, QC_label = QCreportObject$QC_label, Blank_label = QCreportObject$Blank_label)
   QCreportObject$tables$peak_width_all <- do_variability_table(pw_matrix)
+  
   QCreportObject$plots$peak_width <- do_variability_plot(pw_median)
   QCreportObject$plots$peak_width$labels$y <- "Median of peak width per feature, s"
   
   QCreportObject$plots$peak_width_all <- do_variability_plot(pw_matrix)
-  QCreportObject$plots$peak_width$labels$y <- "Peak width, s"
+  QCreportObject$plots$peak_width_all$labels$y <- "Peak width, s"
   
   # mz precision
   mz = xcms::groupval(object=QCreportObject$xset, method = "medret", value = "mz", intensity = "into")
@@ -62,7 +63,10 @@ RTstabilityAssement <- function (QCreportObject){
   QCreportObject$tables$mz_all <- do_variability_table(mz_ppm_list, QC_label = QCreportObject$QC_label, Blank_label = QCreportObject$Blank_label)
   
   QCreportObject$plots$mz_median <- do_variability_plot(mz_ppm_median_list, ylim = 5)
+  QCreportObject$plots$mz_median$labels$y <- "median ppm of mz per feature"
+    
   QCreportObject$plots$mz_all <- do_variability_plot(mz_ppm_list, ylim = 5)
+  QCreportObject$plots$mz_all$labels$y <- "ppm of mz across all samples and features"
   
   QCreportObject
 }

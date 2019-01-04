@@ -59,7 +59,8 @@ SignalBatchCorrection <- function(QCreportObject)
                                            plotTitle = "PCA, blank and QC MV filtered")
 
 
-  QCreportObject$plots$SBRSDbefore <- doRSDplot(RSD=PCAinF2$RSD, plotTitle = "RSD (%) per sample group, blank and QC MV filtered")
+  QCreportObject$plots$SBRSDbefore <- do_variability_plot(list_object =PCAinF2$RSD, 
+    plotTitle = "RSD (%) per sample group, blank and QC MV filtered")
 
   
   # If multiple batches are present create PCA plots per batch before correction
@@ -97,8 +98,9 @@ SignalBatchCorrection <- function(QCreportObject)
     qc_batch <- QCreportObject$metaData$table$batch[qc_hits]
     qc_class <- paste(qc_class,"B",qc_batch, sep="_")
     
-    qc_batch_rsd <- doRSD(Data=qc_data, classes = qc_class)
-    QCreportObject$plots$plots_per_batch_qc_rsd <- doRSDplot(RSD=qc_batch_rsd, plotTitle = "RSD (%) of QC samples per batch, blank and QC MV filtered")
+    qc_batch_rsd <- do_variability_list(peak_data = qc_data, classes = qc_class, method = "RSD")
+    QCreportObject$plots$plots_per_batch_qc_rsd <- do_variability_plot (list_object = qc_batch_rsd, 
+      plotTitle = "RSD (%) of QC samples per batch, blank and QC MV filtered")
   }
   
   #S/B correction
@@ -146,14 +148,14 @@ SignalBatchCorrection <- function(QCreportObject)
                                   labels="QC", qc_label = QCreportObject$QC_label, plotTitle = "PCA, blank and QC MV filtered, S/B corrected")
 
 
-  QCreportObject$plots$SBRSDafter <- doRSDplot(RSD=PCAinSB$RSD,
+  QCreportObject$plots$SBRSDafter <- do_variability_plot (list_object = PCAinSB$RSD,
                           plotTitle = "RSD% per sample group, blank and QC MV filtered, S/B corrected")
 
-  QCreportObject$tables$SBtableBefore <- doRSDtable(RSD = PCAinF2$RSD,
+  QCreportObject$tables$SBtableBefore <- do_variability_table(list_object = PCAinF2$RSD,
                                                   QC_label = QCreportObject$QC_label,
                                                   Blank_label = QCreportObject$Blank_label)
 
-  QCreportObject$tables$SBtableAfter  <- doRSDtable(RSD = PCAinSB$RSD,
+  QCreportObject$tables$SBtableAfter  <- do_variability_table (list_object = PCAinSB$RSD,
                                                   QC_label = QCreportObject$QC_label,
                                                   Blank_label = QCreportObject$Blank_label)
 

@@ -106,28 +106,54 @@ if (!is.null(QCreportObject$QC_label)){
 `r figs("S8")`
 
 \newpage
-```{r RT, echo=F, message=FALSE, warning=FALSE, cache=FALSE, comment="", strip.white=TRUE}
+<!-- RT stability -->
+* RSD% of RT 
+```{r RT_RSD_table, echo=F, message=FALSE, warning=FALSE, cache=FALSE, comment=""}
 #if (!is.null(QCreportObject$QC_label)){
-  print(kable (QCreportObject$tables$RT_rsd, digits=2))
+  #pander::pandoc.table(QCreportObject$tables$RT_rsd, round=c(rep(2,6),0), style="rmarkdown")
+  #xtable::xtable(QCreportObject$tables$RT_rsd, digits=c(0,rep(2,6),0))
+  print(kable (QCreportObject$tables$RT_rsd, digits=c(rep(2,6),0)))
 #}
 ```
 
-```{r RT_2, echo=FALSE, message=FALSE, warning=FALSE, comment="", cache=FALSE, results='hide', fig.width=7, fig.height=6, prompt=FALSE}
+&nbsp;
+&nbsp;
+* MAD of RT
+
+```{r RT_MAD_table, echo=F, message=FALSE, warning=FALSE, cache=FALSE, comment=""}
+#if (!is.null(QCreportObject$QC_label)){
+  kable (QCreportObject$tables$RT_mad, digits=2)
+#}
+```
+
+```{r RT_MAD_plot, echo=FALSE, message=FALSE, warning=FALSE, comment="", cache=FALSE, results='hide', fig.width=7, fig.height=6, prompt=FALSE}
 #if (!is.null(QCreportObject$QC_label)){
   print (QCreportObject$plots$MAD_rt)
 #}
 ```
 
 \newpage
-```{r RT_3, echo=F, message=FALSE, warning=FALSE, cache=FALSE, comment="", strip.white=TRUE}
+
+* Summary of median peak width per feature (s)
+```{r RT_PW_median, echo=F, message=FALSE, warning=FALSE, cache=FALSE, comment="", strip.white=TRUE}
 #if (!is.null(QCreportObject$QC_label)){
   print(kable (QCreportObject$tables$peak_width, digits=2))
 #}
 ```
 
-```{r RT_4, echo=FALSE, message=FALSE, warning=FALSE, comment="", cache=FALSE, results='hide', fig.width=7, fig.height=6, prompt=FALSE}
+&nbsp;
+&nbsp;
+* Summary of all peak widths (s) per sample group 
+```{r RT_PW_all, echo=F, message=FALSE, warning=FALSE, cache=FALSE, comment="", strip.white=TRUE}
 #if (!is.null(QCreportObject$QC_label)){
-  print (QCreportObject$plots$peak_width_RSD)
+  print(kable (QCreportObject$tables$peak_width_all, digits=2))
+#}
+```
+
+\newpage
+```{r RT_PW_plot_median, echo=FALSE, message=FALSE, warning=FALSE, comment="", cache=FALSE, results='hide', fig.width=7, fig.height=9, prompt=FALSE}
+#if (!is.null(QCreportObject$QC_label)){
+  gridExtra::grid.arrange(ncol=1, QCreportObject$plots$peak_width_all, QCreportObject$plots$peak_width)
 #}
 ```
 
@@ -143,9 +169,26 @@ if (!is.null(QCreportObject$plots$EICs)){
 `r figs("S9")`
 
 \newpage
-```{r mz, echo=FALSE, message=FALSE, warning=FALSE, comment="", cache=FALSE, results='hide', fig.width=7, fig.height=6, prompt=FALSE}
+
+* Deviation of mz in ppm from mean mz of the feature, median per feature
+```{r mz_ppm, echo=F, message=FALSE, warning=FALSE, cache=FALSE, comment="", strip.white=TRUE}
 #if (!is.null(QCreportObject$QC_label)){
-  gridExtra::grid.arrange(ncol=2, QCreportObject$plots$mz_1, QCreportObject$plots$mz_2, QCreportObject$plots$mz_3, QCreportObject$plots$mz_4)
+  print(kable (QCreportObject$tables$mz_median, digits=2))
+#}
+```
+&nbsp;
+&nbsp;
+* Deviation of mz in ppm from mean mz of the feature, all ppm value per sample group
+```{r mz_ppm_all, echo=F, message=FALSE, warning=FALSE, cache=FALSE, comment="", strip.white=TRUE}
+#if (!is.null(QCreportObject$QC_label)){
+  print(kable (QCreportObject$tables$mz_all, digits=2))
+#}
+```
+
+\newpage
+```{r mz, echo=FALSE, message=FALSE, warning=FALSE, comment="", cache=FALSE, results='hide', fig.width=7, fig.height=9, prompt=FALSE}
+#if (!is.null(QCreportObject$QC_label)){
+  gridExtra::grid.arrange(ncol=1, QCreportObject$plots$mz_all, QCreportObject$plots$mz_median)
 #}
 ```
 

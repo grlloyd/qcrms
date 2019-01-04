@@ -10,9 +10,9 @@ NULL
 RSDstatistics <- function (QCreportObject)
 {
 
-  QCreportObject$plots$RSDplot1 <- doRSDplot(RSD=QCreportObject$data$PCAinF$RSD, plotTitle = "RSD % per sample group")
+  QCreportObject$plots$RSDplot1 <- do_variability_plot(list_object =QCreportObject$data$PCAinF$RSD, plotTitle = "RSD % per sample group")
 
-  QCreportObject$tables$RSDtable1 <- doRSDtable (RSD = QCreportObject$data$PCAinF$RSD,
+  QCreportObject$tables$RSDtable1 <- do_variability_table (list_object = QCreportObject$data$PCAinF$RSD,
                          QC_label = QCreportObject$QC_label,
                          Blank_label = QCreportObject$Blank_label)
 
@@ -25,12 +25,13 @@ RSDstatistics <- function (QCreportObject)
   }
 
   if (length(QCreportObject$QC_hits)>0) {
-    RSDSample <- unlist(doRSD(Data=QCreportObject$peakMatrix[,-c(QCreportObject$QC_hits)],
+    RSDSample <- do_variability_list(peak_data = QCreportObject$peakMatrix[,-c(QCreportObject$QC_hits)],
                             classes=rep("Sample",
-                                        length(QCreportObject$metaData$samp_lab[-c(QCreportObject$QC_hits)]))))
+                                        length(QCreportObject$metaData$samp_lab[-c(QCreportObject$QC_hits)])), 
+                            method = "RSD")
   } else {
-    RSDSample <- unlist(doRSD(Data=QCreportObject$peakMatrix, classes=rep("Sample",
-                                                                       length(QCreportObject$metaData$samp_lab))))
+    RSDSample <- do_variability_list(peak_data = QCreportObject$peakMatrix, classes=rep("Sample",
+                                                                       length(QCreportObject$metaData$samp_lab)), method = "RSD")
   }
 
   hits <- which(RSDQC<=30)
@@ -41,7 +42,7 @@ RSDstatistics <- function (QCreportObject)
   pcols <- factor(pcols, levels=c("Sample", "QC"), ordered=T)
 
 
-  A <- data.frame(x=c(1:clength), RSD=c(RSDSample[hits],RSDQC[hits]), class=pcols)
+  A <- data.frame(x=c(1:clength), RSD=c(RSDSample[[1]][hits],RSDQC[hits]), class=pcols)
 
   if (!is.null(QCreportObject$QC_label)) {
     subt2 <- paste0 ("RSD% for QC and biological samples, ", round(length(hits)/length(RSDQC)*100,0),"% (", length(hits),"/",length(RSDQC),") < 30%")

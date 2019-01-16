@@ -107,18 +107,19 @@ if (!is.null(QCreportObject$QC_label)){
 
 \newpage
 <!-- RT stability -->
-* RSD% of RT 
+`r tbls("RT_RSD")`
+
 ```{r RT_RSD_table, echo=F, message=FALSE, warning=FALSE, cache=FALSE, comment=""}
 #if (!is.null(QCreportObject$QC_label)){
   #pander::pandoc.table(QCreportObject$tables$RT_rsd, round=c(rep(2,6),0), style="rmarkdown")
   #xtable::xtable(QCreportObject$tables$RT_rsd, digits=c(0,rep(2,6),0))
-  print(kable (QCreportObject$tables$RT_rsd, digits=c(rep(2,6),0)))
+  kable (QCreportObject$tables$RT_rsd, digits=2)
 #}
 ```
 
 &nbsp;
 &nbsp;
-* MAD of RT
+`r tbls("RT_MAD")`
 
 ```{r RT_MAD_table, echo=F, message=FALSE, warning=FALSE, cache=FALSE, comment=""}
 #if (!is.null(QCreportObject$QC_label)){
@@ -132,30 +133,26 @@ if (!is.null(QCreportObject$QC_label)){
 #}
 ```
 
+`r figs("RT_MAD")`
+
 \newpage
 
-* Summary of median peak width per feature (s)
+`r tbls("peak_width")`
+
 ```{r RT_PW_median, echo=F, message=FALSE, warning=FALSE, cache=FALSE, comment="", strip.white=TRUE}
 #if (!is.null(QCreportObject$QC_label)){
-  print(kable (QCreportObject$tables$peak_width, digits=2))
+  kable (QCreportObject$tables$peak_width, digits=2)
 #}
 ```
 
-&nbsp;
-&nbsp;
-* Summary of all peak widths (s) per sample group 
-```{r RT_PW_all, echo=F, message=FALSE, warning=FALSE, cache=FALSE, comment="", strip.white=TRUE}
+```{r RT_PW_plot_median, echo=FALSE, message=FALSE, warning=FALSE, comment="", cache=FALSE, results='hide', fig.width=7, fig.height=6, prompt=FALSE}
 #if (!is.null(QCreportObject$QC_label)){
-  print(kable (QCreportObject$tables$peak_width_all, digits=2))
+  print(QCreportObject$plots$peak_width)
+  #gridExtra::grid.arrange(ncol=1, QCreportObject$plots$peak_width_all, QCreportObject$plots$peak_width)
 #}
 ```
 
-\newpage
-```{r RT_PW_plot_median, echo=FALSE, message=FALSE, warning=FALSE, comment="", cache=FALSE, results='hide', fig.width=7, fig.height=9, prompt=FALSE}
-#if (!is.null(QCreportObject$QC_label)){
-  gridExtra::grid.arrange(ncol=1, QCreportObject$plots$peak_width_all, QCreportObject$plots$peak_width)
-#}
-```
+`r figs("peak_width")`
 
 \newpage
 ```{r EICs, echo=FALSE, message=TRUE, warning=FALSE, comment="", cache=FALSE, fig.width=7, fig.height=6}
@@ -170,27 +167,22 @@ if (!is.null(QCreportObject$plots$EICs)){
 
 \newpage
 
-* Deviation of mz in ppm from mean mz of the feature, median per feature
+`r tbls("mz_precision")`
+
 ```{r mz_ppm, echo=F, message=FALSE, warning=FALSE, cache=FALSE, comment="", strip.white=TRUE}
 #if (!is.null(QCreportObject$QC_label)){
-  print(kable (QCreportObject$tables$mz_median, digits=2))
-#}
-```
-&nbsp;
-&nbsp;
-* Deviation of mz in ppm from mean mz of the feature, all ppm value per sample group
-```{r mz_ppm_all, echo=F, message=FALSE, warning=FALSE, cache=FALSE, comment="", strip.white=TRUE}
-#if (!is.null(QCreportObject$QC_label)){
-  print(kable (QCreportObject$tables$mz_all, digits=2))
+  kable (QCreportObject$tables$mz_median, digits=2)
 #}
 ```
 
-\newpage
-```{r mz, echo=FALSE, message=FALSE, warning=FALSE, comment="", cache=FALSE, results='hide', fig.width=7, fig.height=9, prompt=FALSE}
+```{r mz, echo=FALSE, message=FALSE, warning=FALSE, comment="", cache=FALSE, results='hide', fig.width=7, fig.height=6, prompt=FALSE}
 #if (!is.null(QCreportObject$QC_label)){
-  gridExtra::grid.arrange(ncol=1, QCreportObject$plots$mz_all, QCreportObject$plots$mz_median)
+  #gridExtra::grid.arrange(ncol=1, QCreportObject$plots$mz_all, QCreportObject$plots$mz_median)
+  print (QCreportObject$plots$mz_median)
 #}
 ```
+
+`r figs("mz_precision")`
 
 \newpage
 ```{r missing_values, echo=FALSE, fig.height=6, fig.width=7, message=FALSE, warning=FALSE, cache=FALSE, comment="", results='hide'}
@@ -233,7 +225,7 @@ if (!is.null(QCreportObject$QC_label)){
 `r figs("S13")`
 
 \newpage
-```{r S14, echo=FALSE, message=FALSE, warning=FALSE, comment="", cache=FALSE, results='hide', fig.width=7, fig.height=6}
+```{r S14, echo=FALSE, message=FALSE, warning=FALSE, comment="", cache=FALSE, results='hide', fig.width=7, fig.height=9}
 if (!is.null(QCreportObject$QC_label)){
   print (QCreportObject$plots$QCplot2)
 }

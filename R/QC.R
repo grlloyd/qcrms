@@ -119,7 +119,7 @@ QC <- function(QCreportObject)
     vals$Class <-  QCreportObject$plots$QCplotClass$class
   
     QCreportObject$plots$QCplot2 <- ggplot(vals)+geom_boxplot(aes(x=sample, y=value,
-      fill=class))+ ggtitle("All samples")+
+      fill=Class))+ ggtitle("All samples")+
       xlab("Injection order")+ylab("Signal intensity scaled to UV")+
       theme_Publication(base_size = 12)+
       scale_x_discrete(breaks=NULL)+ 

@@ -30,7 +30,7 @@ do_variability_list <- function(peak_data, classes, method="RSD"){
     if (method=="none"){
       out[[slab]] <- c(as.matrix(peak_data[,classes==names(out)[slab]]))
     } else {
-      out[[slab]] <- apply(peak_data[,classes==names(out)[slab]],1,FUN)
+      out[[slab]] <- apply(rbind(peak_data[,classes==names(out)[slab]], NULL),1,FUN)
     }
   }
   

@@ -12,15 +12,15 @@ do_variability_plot <- function (list_object, plotTitle=NULL, base_size = 12, su
 {
   variability_method <- list_object$variability_method
   if (variability_method=="RSD") variability_method <- "RSD %"
-  
+
   # Remove flag of which method was used before processing data
   list_object$variability_method <- NULL
-  
+
   list_objects <- unlist(list_object)
 
   list_objectsLab <- NULL
   for (rd in 1:length(list_object)){
-    
+
     list_objectsLab <- append(list_objectsLab, rep(names(list_object)[rd],length(list_object[[rd]])))
   }
 
@@ -28,12 +28,12 @@ do_variability_plot <- function (list_object, plotTitle=NULL, base_size = 12, su
 
   B <- data.frame (list_object=list_objects, class=plotClass$class)
 
-  if(is.null(ylim)) ylim <- max(list_objects, na.rm = T)
-  
+  if(is.null(ylim)) ylim <- c(min(list_objects, na.rm=T), max(list_objects, na.rm=T))
+
   out <- ggplot (B, aes(y=list_object, x=class, colour=class, fill=class))+
     geom_violin(alpha=0.1, na.rm=T, show.legend = F, draw_quantiles = c(0.25,0.5,0.75))+
     scale_colour_manual(values=plotClass$manual_colors)+ theme_Publication(base_size = base_size)+ xlab("")+
-    scale_y_continuous(limits=c(0,ylim))+
+    scale_y_continuous(limits=c(ylim[1], ylim[2]))+
     ggtitle(plotTitle,subtitle =  subtitle)+ ylab(variability_method)
    out
 }

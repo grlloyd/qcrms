@@ -62,8 +62,8 @@ figs (name="S15", "Scores plot of the first two principal components of PCA mode
       PQN normalisation and k-nearest (knn) method used (k=5) to fill in missing values.
       Glog transformation used to scale signal intensities.")
 
-figs (name="S16", "Scores plot of the first two principal components of PCA model for 
-QC (first 5 QCs removed) samples after Blank and QC fraction filter. K-nearest (knn) method used (k=5) to fill in 
+figs (name="S16", "Scores plot of the first two principal components of PCA model for
+QC (first 5 QCs removed) samples after Blank and QC fraction filter. K-nearest (knn) method used (k=5) to fill in
       missing values and signal intensities are scaled to unit variance.")
 
 figs (name="S17", "Scores plot of the first two principal components of PCA model for  biological and
@@ -89,13 +89,13 @@ figs (name="S20", "Violin plot of Relative Standard Deviation (RSD%) per sample 
 
 figs (name="RT_MAD", "Violin plots of MAD (meadian absolute deviation) of median RT per chromatographic feature.")
 
-figs (name="peak_width", "Violin plot of meadian peak with per chromatographic feature in s.")
+figs (name="peak_width", "Violin plot of meadian peak width per chromatographic feature in s.")
 
-figs (name="mz_precision", "Violin plot of meadian of mass precision per chromatographic feature in ppm. Values above 5 
-      ppm are excluded from a plot.")
+figs (name="mz_precision", "Violin plot of meadian of mass precision per chromatographic feature in ppm. Values below -5 and
+      above 5 ppm are excluded from a plot.")
 
 tbls (name="S1", "A summary of the Pearson's product-moment correlation coefficients for the data
-      shown in Figures S2-S4 (blank samples are excluded from calculations). High correlation should not beens observed 
+      shown in Figures S2-S4 (blank samples are excluded from calculations). High correlation should not beens observed
       between measurement order and total signal intensity.")
 
 tbls (name="S2", "A summary of RSD% for data shown in  Figure S11.")
@@ -111,6 +111,6 @@ tbls (name="RT_RSD", "A summary of RSD% of median RT per chromatographic feature
 
 tbls (name="RT_MAD", "A summary of MAD (meadian absolute deviation) of median RT per chromatographic feature.")
 
-tbls (name="peak_width", "A summary of meadian peak with per chromatographic feature in s.")
+tbls (name="peak_width", "A summary of meadian peak width per chromatographic feature in s.")
 
 tbls (name="mz_precision", "A summary of meadian of mass precision per chromatographic feature in ppm.")

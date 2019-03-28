@@ -42,11 +42,12 @@ XCMS_EIC_plot <- function (indexes, rawfiles, class, xset, Blank_label="Blank", 
 
   for (chromind in 1:length(indexes))
   {
-    #cat (chromind," ...")
+    cat ("EIC: ", chromind, " ... sample: ")
     chroms <- vector("list",length(rawfiles))
 
     for (chrn in 1:length(rawfiles))
     {
+      cat (chrn, " ")
       mzmi <- min_mz[chromind, chrn]
       mzma <- max_mz[chromind, chrn]
       RTmi <- min_rt[chromind, chrn]
@@ -105,7 +106,7 @@ XCMS_EIC_plot <- function (indexes, rawfiles, class, xset, Blank_label="Blank", 
     ptitle <- paste("EICs, m/z ",round(stats::median(min_mz[chromind,], na.rm=T),5),"-",round(stats::median(max_mz[chromind,], na.rm=T),5),sep="")
 
     # Reorder factor levels again, so that colors are consistent
-    plotCols <- pmp::createClassAndColors(class = A$Class, QC_label = QC_label, Blank_label = Blank_label)
+    plotCols <- createClassAndColors(class = A$Class, QC_label = QC_label, Blank_label = Blank_label)
 
     A$Class <- plotCols$class
 
@@ -116,6 +117,7 @@ XCMS_EIC_plot <- function (indexes, rawfiles, class, xset, Blank_label="Blank", 
       theme(legend.position = c(0.8, 0.8), legend.direction = "vertical")+
       theme(legend.title=element_blank())
 
+  cat ("\n")
   }
   chromPlots
 }

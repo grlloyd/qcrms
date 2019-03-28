@@ -49,9 +49,10 @@ figs (name="S12", "RSD% values of metabolic feature across QC samples in compari
       metabolic feature across biological samples. The plot visualises the difference between technical
       and biological variability of the spectral data.")
 
-figs (name="S13", "Box plot of the features of QC samples scaled to unit variance. Thick line in each bar
-      represents median value of the scaled features and is expected to be close to 0 and for QC samples
-      should stay within a range of +-2 (2 standard deviations).")
+figs (name="S13", "Box plot of the features of all QC samples (per analytical batch if more than one
+      is present) scaled to unit variance. Thick line in each bar represents median value of the
+      scaled features and is expected to be close to 0 and for QC samples should stay within a range
+      of +-2 (2 standard deviations).")
 
 figs (name="S14", "Box plot of the features of  all QC and biological samples scaled to unit variance.
       This figure is indicative for a stability of the whole analytical batch.")
@@ -75,12 +76,23 @@ figs (name="S18", "Scores plot of the first two principal components of PCA mode
       K-nearest (knn) method used (k=5) to fill in missing values and signal intensities are scaled to unit variance.")
 
 figs (name="S19", "Violin plot of Relative Standard Deviation (RSD%) per sample group after Blank and QC
-      fraction filter. Equilibration QC samples 1-5 were excluded from RSD% calculations. Horizontal
+      fraction filter. Equilibration QC samples were excluded from RSD% calculations. Horizontal
+      lines indicate 25%, 50% and 75% quantiles.")
+
+figs (name="S19a", "Violin plot of Relative Standard Deviation (RSD%) of QC samples per batch after Blank and QC
+      fraction filter. Equilibration QC samples were excluded from RSD% calculations. Horizontal
       lines indicate 25%, 50% and 75% quantiles.")
 
 figs (name="S20", "Violin plot of Relative Standard Deviation (RSD%) per sample group after Blank
       and QC fraction filter and signal/batch correction. Equilibration QC samples 1-5 were excluded
       from RSD% calculations. Horizontal lines indicate 25%, 50% and 75% quantiles.")
+
+figs (name="RT_MAD", "Violin plots of MAD (meadian absolute deviation) of median RT per chromatographic feature.")
+
+figs (name="peak_width", "Violin plot of meadian peak with per chromatographic feature in s.")
+
+figs (name="mz_precision", "Violin plot of meadian of mass precision per chromatographic feature in ppm. Values above 5 
+      ppm are excluded from a plot.")
 
 tbls (name="S1", "A summary of the Pearson's product-moment correlation coefficients for the data
       shown in Figures S2-S4 (blank samples are excluded from calculations). High correlation should not beens observed 
@@ -94,3 +106,11 @@ tbls (name="S4", "A summary of RSD% values for data shown in  Figure S18.")
 
 tbls (name="S5", "Summary of the sample metadata of the analytical batch; Sample names, group labels,
       sample measurement time and number of features detected by XCMS for each sample.")
+
+tbls (name="RT_RSD", "A summary of RSD% of median RT per chromatographic feature.")
+
+tbls (name="RT_MAD", "A summary of MAD (meadian absolute deviation) of median RT per chromatographic feature.")
+
+tbls (name="peak_width", "A summary of meadian peak with per chromatographic feature in s.")
+
+tbls (name="mz_precision", "A summary of meadian of mass precision per chromatographic feature in ppm.")

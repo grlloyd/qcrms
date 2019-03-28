@@ -2,6 +2,40 @@
 #'
 NULL
 
+#' Prepare data for ggplot barplot
+#' 
+#' @param val Data frame to be processed
+#' @param batch Vector with sample batch labels
+#' @export
+
+prepare_boxplot_multiple_batches <- function (vals, batch, class){
+  
+  vals <- as.data.frame(vals)
+  
+  vals$batch <- batch
+  
+  vals$class <- class
+  
+  # keep order of the samples using ordered factor
+  samp_order_batch <- rep(NA, nrow(vals))
+  
+  batch_name <- unique(batch)
+  for (bnum in batch_name){
+    
+    sub_hits <- which(vals$batch==bnum)
+    samp_order_batch[sub_hits] <- 1:length(sub_hits) 
+  }
+  
+  samp_order_batch <- factor(samp_order_batch, ordered = T, levels=unique(samp_order_batch))
+  
+  vals$sample <- factor(rownames(vals), ordered = T, levels = rownames(vals))
+  vals$sample_order <- samp_order_batch
+  
+  vals <- reshape2::melt (vals, id.vars=c("sample","batch","sample_order","class"))
+  
+  vals
+}
+
 #' Create QC quality plots
 #'
 #' @param QCreportObject Qcreport object
@@ -9,55 +43,89 @@ NULL
 
 QC <- function(QCreportObject)
 {
-  # Reorder by measurement order
-  batch =1
+  
+  batch = QCreportObject$metaData$table$batch
+  
+  if (is.null(batch)) {
+    QCreportObject$metaData$table$batch <- 1
+    batch <- QCreportObject$metaData$table$batch 
+  }
+  
   hits <- QCreportObject$QC_hits
 
   sub_times <- QCreportObject$timestamps[hits]
-
   vals <- QCreportObject$peakMatrix[,hits]
-
-  vals <- vals[,order(sub_times)]
-
-  vals <- t(vals)
-
-  #vals[is.na(vals)] <- 0
-  vals <- scale(vals, center=T, scale=T)
-
-  vals <- utils::stack(as.data.frame(t(vals)))
-
-  QCreportObject$plots$QCplot1 <- ggplot(vals)+geom_boxplot(aes(x=ind, y=values))+
-    #ggtitle(paste("QC samples from batch: ", batch,sep=""))+
-    ggtitle("QC samples")+
-    xlab("Injection order")+ylab("Signal intensity scaled to UV")+theme_Publication(base_size = 12)+
-    theme(axis.text.x=element_text(angle=90, hjust=1))
-
-  vals <- t(QCreportObject$peakMatrix[,order(QCreportObject$timestamps)])
-  vals <- scale (vals, center=T, scale=T)
-  vals <- stack(as.data.frame(t(vals)))
-
-  Class <- rep(NA, nrow(vals))
-
-  #xsetNames <- rownames(QCreportObject$xset@phenoData)
-  xsetNames <- colnames(QCreportObject$peakMatrix)
   
-  #I am quite sure there is fater and easier way how to do it
-  for (i in 1:length(xsetNames))
-      {
-          hits <- which(as.character(vals$ind)==xsetNames[i])
-          Class[hits] <- as.character(QCreportObject$metaData$samp_lab[i])
-      }
+  batch <- batch[hits]
+  class <- QCreportObject$metaData$table[hits, QCreportObject$metaData$classColumn]
+  
+  vals <- t(vals)
+  vals <- scale(vals, center=T, scale=T)
+  
+  if (length(unique(batch))>1){
+    
+    vals <- prepare_boxplot_multiple_batches(vals = vals, batch = batch, 
+      class=class)
+    
+    QCreportObject$plots$QCplot1 <- ggplot(vals)+
+      ggtitle("QC samples")+
+      geom_hline(yintercept = c(-2,2), color="red")+
+      geom_boxplot(aes(x=sample_order, y=value))+
+      xlab("Injection order")+ylab("Signal intensity scaled to UV")+theme_Publication(base_size = 12)+
+      theme(axis.text.x=element_text(angle=90, hjust=1)) + facet_wrap( ~ batch, ncol=1)
+      
+    
+  } else {
+    
+    vals <- utils::stack(as.data.frame(t(vals)))
+    
+    QCreportObject$plots$QCplot1 <- ggplot(vals)+geom_boxplot(aes(x=ind, y=values))+
+      #ggtitle(paste("QC samples from batch: ", batch,sep=""))+
+      ggtitle("QC samples")+
+      xlab("Injection order")+ylab("Signal intensity scaled to UV")+theme_Publication(base_size = 12)+
+      theme(axis.text.x=element_text(angle=90, hjust=1))
+  }
+  
+  
 
-  QCreportObject$plots$QCplotClass <- createClassAndColors(class=Class)
-  vals$Class <-  QCreportObject$plots$QCplotClass$class
-
-
-  QCreportObject$plots$QCplot2 <- ggplot(vals)+geom_boxplot(aes(x=ind, y=values,
-                                          fill=Class))+
-    #ggtitle(paste("All samples from batch: ",batch,sep=""))+
-    ggtitle("All samples from")+
-    xlab("Injection order")+ylab("Signal intensity scaled to UV")+theme_Publication(base_size = 12)+
-    scale_x_discrete(breaks=NULL)+ scale_fill_manual(values= QCreportObject$plots$QCplotClass$manual_colors)
-
+  # The same plot with all samples included
+  batch = QCreportObject$metaData$table$batch
+  class <- QCreportObject$metaData$table[, QCreportObject$metaData$classColumn]
+  
+  
+  vals <- t(QCreportObject$peakMatrix)
+  vals <- scale (vals, center=T, scale=T)
+  
+  
+  if (length(unique(batch))>1){
+    
+    vals <- prepare_boxplot_multiple_batches(vals = vals, batch = batch, 
+                                             class=class)
+    
+    QCreportObject$plots$QCplot2 <- ggplot(vals)+
+      ggtitle("QC samples")+
+      geom_hline(yintercept = c(-2,2), color="red")+
+      geom_boxplot(aes(x=sample_order, y=value, fill=class), outlier.shape = NA)+
+      xlab("Injection order")+ylab("Signal intensity scaled to UV")+theme_Publication(base_size = 12)+
+      theme(axis.text.x=element_text(angle=90, hjust=1)) + facet_wrap( ~ batch, ncol=1)
+    
+    
+  } else {
+    
+    vals <- prepare_boxplot_multiple_batches(vals = vals, batch = batch, 
+                                             class=class)
+        
+    QCreportObject$plots$QCplotClass <- createClassAndColors(class=class)
+    vals$Class <-  QCreportObject$plots$QCplotClass$class
+  
+    QCreportObject$plots$QCplot2 <- ggplot(vals)+geom_boxplot(aes(x=sample, y=value,
+      fill=Class))+ ggtitle("All samples")+
+      xlab("Injection order")+ylab("Signal intensity scaled to UV")+
+      theme_Publication(base_size = 12)+
+      scale_x_discrete(breaks=NULL)+ 
+      scale_fill_manual(values= QCreportObject$plots$QCplotClass$manual_colors)
+    
+  }
+  
   QCreportObject
 }

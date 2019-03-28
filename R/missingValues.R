@@ -7,13 +7,25 @@ NULL
 #' @param QCreportObject Qcreport object
 #' @export
 
-missingValues <- function (QCreportObject)
-{
+missingValues <- function (QCreportObject){
+  
   countna=function (x)
     return((sum(is.na(x))/length(x))*100)
   
-  across_samples <- data.frame(x=apply(QCreportObject$peakMatrix,2,countna))
-  across_features <- data.frame(x=apply(QCreportObject$peakMatrix,1,countna))
+  # Remove QC lead samples from peakMatrix
+  rem_hits <- which (QCreportObject$metaData$samp_lab=="Removed")
+  
+  if (length(rem_hits) > 0){
+  
+    peak_matrix <- QCreportObject$peakMatrix[, -c(rem_hits)]
+    samp_lab <- QCreportObject$metaData$samp_lab[-c(rem_hits)]
+  } else {
+    peak_matrix <- QCreportObject$peakMatrix
+    samp_lab <- QCreportObject$metaData$samp_lab
+  }
+    
+  across_samples <- data.frame(x=apply(peak_matrix, 2, countna))
+  across_features <- data.frame(x=apply(peak_matrix,1,countna))
 
   QCreportObject$plots$MVplot1 <- ggplot (data=across_samples, aes(x)) + geom_histogram() +
     xlab ("missing values, %") + ggtitle("Missing values per sample") +
@@ -23,31 +35,32 @@ missingValues <- function (QCreportObject)
     xlab ("missing values, %") + ggtitle("Missing values per feature") +
     xlim (0,100) + theme_Publication(base_size = 12)
 
-  cl <- unique (QCreportObject$metaData$samp_lab)
+  cl <- unique (samp_lab)
   out_across_features <- vector("list",length(cl))
   names (out_across_features) <- cl
   
+  # DIMS data have NA replaced with 0
   QCreportObject$peakMatrix[QCreportObject$peakMatrix == 0] <- NA
 
   #print(sum(is.na(QCreportObject$peakMatrix)))
   #print(class(QCreportObject$peakMatrix))
 
-  for (slab in 1: length(cl))
-  {
-    out_across_features[[slab]] <- apply(cbind(QCreportObject$peakMatrix[,QCreportObject$metaData$samp_lab==cl[slab]],NULL),1,
-                                       countna)/length(which(QCreportObject$metaData$samp_lab==cl[slab]))*100
+  for (slab in 1: length(cl)){
+    
+    out_across_features[[slab]] <- apply(cbind(QCreportObject$peakMatrix[ ,samp_lab==cl[slab]],NULL),1,
+                                       countna)/length(which(samp_lab==cl[slab]))*100
   }
 
   across_features <- unlist(out_across_features)
 
   across_features_lab <- NULL
-  for (rd in 1:length(out_across_features))
-  {
+  for (rd in 1:length(out_across_features)){
+    
     across_features_lab <- append(across_features_lab, rep(names(out_across_features)[rd],length(out_across_features[[rd]])))
   }
 
   # Keep QC always the first
-  QCreportObject$plots$MVplotClassS <- createClassAndColors(class=QCreportObject$metaData$samp_lab)
+  QCreportObject$plots$MVplotClassS <- createClassAndColors(class=samp_lab)
   QCreportObject$plots$MVplotClassF <- createClassAndColors(class=across_features_lab)
 
   across_samples<- data.frame(x=QCreportObject$plots$MVplotClassS$class, class=across_samples$x)

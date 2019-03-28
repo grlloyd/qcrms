@@ -45,22 +45,21 @@ RTSecondToMinute <- function(variableMetadata, convertRTMinute) {
 
 
 
-#@author G. Le Corguille
+#@Modified from W4M code by G. Le Corguille
 # value: intensity values to be used into, maxo or intb
 getPeaklistW4M <- function(xset, intval="into",convertRTMinute=F,numDigitsMZ=4,numDigitsRT=0) {
-  variableMetadata_dataMatrix = peakTable(xset, method="medret", value=intval)
+  variableMetadata_dataMatrix <- xcms::peakTable(xset, method="medret", value=intval)
   variableMetadata_dataMatrix = cbind(name=groupnames(xset),variableMetadata_dataMatrix)
-
-  dataMatrix = variableMetadata_dataMatrix[,(make.names(colnames(variableMetadata_dataMatrix)) %in% c("name", make.names(sampnames(xset))))]
+  
+  # dataMatrix is the same as peakMatrix in QCreport object
+  #dataMatrix = variableMetadata_dataMatrix[,(make.names(colnames(variableMetadata_dataMatrix)) %in% c("name", make.names(sampnames(xset))))]
 
   variableMetadata = variableMetadata_dataMatrix[,!(make.names(colnames(variableMetadata_dataMatrix)) %in% c(make.names(sampnames(xset))))]
   variableMetadata = RTSecondToMinute(variableMetadata, convertRTMinute)
   variableMetadata = formatIonIdentifiers(variableMetadata, numDigitsRT=numDigitsRT, numDigitsMZ=numDigitsMZ)
 
-  #write.table(variableMetadata, file=variableMetadataOutput,sep="\t",quote=F,row.names=F)
-  #write.table(dataMatrix, file=dataMatrixOutput,sep="\t",quote=F,row.names=F)
   out <- list()
-  out$dataMatrix <- dataMatrix
+  #out$dataMatrix <- dataMatrix
   out$variableMetaData <- variableMetadata
   out
 }
@@ -75,64 +74,37 @@ createXlsx <- function (QCreportObject)
 
   if (!is.null(QCreportObject$xset)){
     W4M <- getPeaklistW4M(xset=QCreportObject$xset)
-    QCreportObject$data$dataMatrix <- W4M$dataMatrix
-    rownames(QCreportObject$data$dataMatrix) <- QCreportObject$data$dataMatrix[,1]
-    QCreportObject$data$dataMatrix <- QCreportObject$data$dataMatrix[,-c(1)]
+    rownames(QCreportObject$peakMatrix) <- W4M$variableMetaData$name
+ 
   } else {
-    QCreportObject$data$dataMatrix = as.matrix(read.table(QCreportObject$data_file, header=TRUE, row.names=1, check.names=FALSE))
-    QCreportObject$data$dataMatrix[QCreportObject$data$dataMatrix == 0] <= NA
+    #QCreportObject$data$dataMatrix = as.matrix(read.table(QCreportObject$data_file, header=TRUE, row.names=1, check.names=FALSE))
+    QCreportObject$peakMatrix[QCreportObject$peakMatrix == 0] <= NA
   }
   
   # Write out meta data
   # Columns sample_name, class, injection order
 
-  QCreportObject$metaData$table$injection_order <- order(order(QCreportObject$timestamps))
+  #QCreportObject$metaData$table$injection_order <- order(order(QCreportObject$timestamps))
   
-  # Define which QC's are excluded
-  if (!is.null(QCreportObject$QC_label) & !is.null(QCreportObject$excludeQC)){
-    
-    chit <- which(colnames(QCreportObject$metaData$table)==QCreportObject$metaData$classColumn)
-
-    class <- QCreportObject$metaData$table[,chit]
-
-    QC_hits2 <- which(class==QCreportObject$QC_label)
-
-    QC_names <- QCreportObject$metaData$table[,1][QC_hits2]
-
-    # Only numbers from QC_names
-    QC_names <- as.numeric(gsub(".*?([0-9]+).*", "\\1", QC_names))
-
-    Rem_QC <- which(QC_names%in%QCreportObject$excludeQC)
-
-    if (length(Rem_QC)>0){
-      class[QC_hits2[Rem_QC]] <- "Removed"
-    }
-
-    QCreportObject$metaData$table[,chit] <- class
-
-  }
+  # Put label "Removed" for qc samples used as leading/outliers during processing in meta data column used for class label
+  QCreportObject$metaData$table[,QCreportObject$metaData$classColumn] <- QCreportObject$metaData$samp_lab
   
-  QCreportObject$data$dataMatrix <- QCreportObject$data$dataMatrix[,order(QCreportObject$metaData$table$injection_order)]
-  QCreportObject$metaData$table <- QCreportObject$metaData$table[order(QCreportObject$metaData$table$injection_order),]
-
   # W4M for no good reason decided to check if file names contains "-" and similar symbols. Why?
   # If it xcms can handle original file names, and after al files have been processed.
   # Where is tracability to the original files if this has been done to outputs?
 
-  if (!all(colnames(QCreportObject$data$dataMatrix)==QCreportObject$metaData$table$Sample))
-  {
-    if (all(colnames(QCreportObject$data$dataMatrix)==make.names(QCreportObject$metaData$table$Sample)))
-    {
+  if (!all(colnames(QCreportObject$data$dataMatrix) == QCreportObject$metaData$table$Sample)){
+    
+    if (all(colnames(QCreportObject$data$dataMatrix)==make.names(QCreportObject$metaData$table$Sample))){
       colnames(QCreportObject$data$dataMatrix) <- QCreportObject$metaData$table$Sample
-    } else
-      {
+    } else {
         stop ("Sample names present in XCMS output doesn't match with meta data.")
       }
   }
 
   wb <- createWorkbook()
   addWorksheet (wb,"dataMatrix")
-  writeData (wb,"dataMatrix", QCreportObject$data$dataMatrix, rowNames = T)
+  writeData (wb,"dataMatrix", QCreportObject$peakMatrix, rowNames = T)
 
   addWorksheet (wb, "metaData")
   writeData (wb, "metaData", QCreportObject$metaData$table, rowNames = F)

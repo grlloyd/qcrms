@@ -8,7 +8,7 @@ createQCreportObject(data_file, projectdir, author = "", metaData_file,
   raw_path = NULL, InternalProjectRef = "", Dataset = "",
   Organisation = "", QC_label = "QC", Blank_label = "Blank",
   classLabel = "Class", excludeQC = c(1:5), assay = NULL,
-  plot_eic = TRUE)
+  plot_eic = TRUE, pca_scores_labels = "all")
 }
 \arguments{
 \item{data_file}{Rdata file containing XCMS output, object should be called xset}

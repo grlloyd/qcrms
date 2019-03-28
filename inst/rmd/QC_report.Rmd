@@ -80,8 +80,7 @@ print (QCreportObject$plots$PCAallSamples)
 `r figs("S5")`
 
 ```{r S6, echo=FALSE, message=FALSE, warning=FALSE, comment="", cache=FALSE, results='hide', fig.width=7, fig.height=6, prompt=FALSE}
-if (!is.null(QCreportObject$QC_label))
-{
+if (!is.null(QCreportObject$QC_label)){
   print(QCreportObject$plots$PCAQCsamples)
 }
 ```
@@ -90,8 +89,7 @@ if (!is.null(QCreportObject$QC_label))
 
 \newpage
 ```{r S7, echo=FALSE, message=FALSE, warning=FALSE, comment="", cache=FALSE, results='hide', fig.width=7, fig.height=6, prompt=FALSE}
-if (!is.null(QCreportObject$QC_label))
-{
+if (!is.null(QCreportObject$QC_label)){
   print (QCreportObject$plots$PCAQCleading)
 }
 ```
@@ -100,8 +98,7 @@ if (!is.null(QCreportObject$QC_label))
 
 \newpage
 ```{r S8, echo=FALSE, message=FALSE, warning=FALSE, comment="", cache=FALSE, results='hide', fig.width=7, fig.height=6, prompt=FALSE}
-if (!is.null(QCreportObject$QC_label))
-{
+if (!is.null(QCreportObject$QC_label)){
   print (QCreportObject$plots$PCAallQCleading)
 }
 ```
@@ -109,9 +106,57 @@ if (!is.null(QCreportObject$QC_label))
 `r figs("S8")`
 
 \newpage
+<!-- RT stability -->
+`r tbls("RT_RSD")`
+
+```{r RT_RSD_table, echo=F, message=FALSE, warning=FALSE, cache=FALSE, comment=""}
+#if (!is.null(QCreportObject$QC_label)){
+  #pander::pandoc.table(QCreportObject$tables$RT_rsd, round=c(rep(2,6),0), style="rmarkdown")
+  #xtable::xtable(QCreportObject$tables$RT_rsd, digits=c(0,rep(2,6),0))
+  kable (QCreportObject$tables$RT_rsd, digits=2)
+#}
+```
+
+&nbsp;
+&nbsp;
+`r tbls("RT_MAD")`
+
+```{r RT_MAD_table, echo=F, message=FALSE, warning=FALSE, cache=FALSE, comment=""}
+#if (!is.null(QCreportObject$QC_label)){
+  kable (QCreportObject$tables$RT_mad, digits=2)
+#}
+```
+
+```{r RT_MAD_plot, echo=FALSE, message=FALSE, warning=FALSE, comment="", cache=FALSE, results='hide', fig.width=7, fig.height=6, prompt=FALSE}
+#if (!is.null(QCreportObject$QC_label)){
+  print (QCreportObject$plots$MAD_rt)
+#}
+```
+
+`r figs("RT_MAD")`
+
+\newpage
+
+`r tbls("peak_width")`
+
+```{r RT_PW_median, echo=F, message=FALSE, warning=FALSE, cache=FALSE, comment="", strip.white=TRUE}
+#if (!is.null(QCreportObject$QC_label)){
+  kable (QCreportObject$tables$peak_width, digits=2)
+#}
+```
+
+```{r RT_PW_plot_median, echo=FALSE, message=FALSE, warning=FALSE, comment="", cache=FALSE, results='hide', fig.width=7, fig.height=6, prompt=FALSE}
+#if (!is.null(QCreportObject$QC_label)){
+  print(QCreportObject$plots$peak_width)
+  #gridExtra::grid.arrange(ncol=1, QCreportObject$plots$peak_width_all, QCreportObject$plots$peak_width)
+#}
+```
+
+`r figs("peak_width")`
+
+\newpage
 ```{r EICs, echo=FALSE, message=TRUE, warning=FALSE, comment="", cache=FALSE, fig.width=7, fig.height=6}
-if (!is.null(QCreportObject$plots$EICs))
-{
+if (!is.null(QCreportObject$plots$EICs)){
   QCreportObject$plots$EICs[[2]] <- QCreportObject$plots$EICs[[2]] + theme(legend.position = "none")
   QCreportObject$plots$EICs[[3]] <- QCreportObject$plots$EICs[[3]] + theme(legend.position = "none")
   grid.arrange (grobs=QCreportObject$plots$EICs, layout_matrix=matrix(c(1,2,1,3), nrow=2, ncol=2))
@@ -121,8 +166,27 @@ if (!is.null(QCreportObject$plots$EICs))
 `r figs("S9")`
 
 \newpage
+
+`r tbls("mz_precision")`
+
+```{r mz_ppm, echo=F, message=FALSE, warning=FALSE, cache=FALSE, comment="", strip.white=TRUE}
+#if (!is.null(QCreportObject$QC_label)){
+  kable (QCreportObject$tables$mz_median, digits=2)
+#}
+```
+
+```{r mz, echo=FALSE, message=FALSE, warning=FALSE, comment="", cache=FALSE, results='hide', fig.width=7, fig.height=6, prompt=FALSE}
+#if (!is.null(QCreportObject$QC_label)){
+  #gridExtra::grid.arrange(ncol=1, QCreportObject$plots$mz_all, QCreportObject$plots$mz_median)
+  print (QCreportObject$plots$mz_median)
+#}
+```
+
+`r figs("mz_precision")`
+
+\newpage
 ```{r missing_values, echo=FALSE, fig.height=6, fig.width=7, message=FALSE, warning=FALSE, cache=FALSE, comment="", results='hide'}
-grid.arrange(QCreportObject$plots$MVplot1, QCreportObject$plots$MVplot2,                                          QCreportObject$plots$MVplot3, QCreportObject$plots$MVplot4, 
+grid.arrange(QCreportObject$plots$MVplot1, QCreportObject$plots$MVplot2,                                          QCreportObject$plots$MVplot3,   QCreportObject$plots$MVplot4, 
              ncol=2, nrow=2)
 ```
 
@@ -152,9 +216,8 @@ print (QCreportObject$plots$RSDplot2)
 `r figs("S12")`
 
 \newpage
-```{r S13, echo=FALSE, message=FALSE, warning=FALSE, comment="", cache=FALSE, results='hide', fig.width=7, fig.height=6}
-if (!is.null(QCreportObject$QC_label))
-{
+```{r S13, echo=FALSE, message=FALSE, warning=FALSE, comment="", cache=FALSE, results='hide', fig.width=7, fig.height=9}
+if (!is.null(QCreportObject$QC_label)){
   print (QCreportObject$plots$QCplot1)
 }
 ```
@@ -162,9 +225,8 @@ if (!is.null(QCreportObject$QC_label))
 `r figs("S13")`
 
 \newpage
-```{r S14, echo=FALSE, message=FALSE, warning=FALSE, comment="", cache=FALSE, results='hide', fig.width=7, fig.height=6}
-if (!is.null(QCreportObject$QC_label))
-{
+```{r S14, echo=FALSE, message=FALSE, warning=FALSE, comment="", cache=FALSE, results='hide', fig.width=7, fig.height=9}
+if (!is.null(QCreportObject$QC_label)){
   print (QCreportObject$plots$QCplot2)
 }
 ```
@@ -174,6 +236,9 @@ if (!is.null(QCreportObject$QC_label))
 \newpage
 ```{r SB_correction_2, echo=FALSE, fig.height=6, fig.width=7, message=TRUE, warning=FALSE, cache=FALSE, comment="", results='hide'}
 if (!is.null(QCreportObject$QC_label)) print(QCreportObject$plots$SBPCAbefore)
+if (!is.null(QCreportObject$plots$plots_per_batch_pca)){
+  print(QCreportObject$plots$plots_per_batch_pca)
+}
 ```
 
 `r figs("S15")`
@@ -187,9 +252,8 @@ if (!is.null(QCreportObject$QC_label)) print(QCreportObject$plots$SBPCAbeforeQC)
 
 \newpage
 ```{r SB_correction_3, echo=FALSE, fig.height=7, fig.width=7, message=TRUE, warning=FALSE, cache=FALSE, comment="", results='hide'}
-if (!is.null(QCreportObject$QC_label))
-{
-  print (QCreportObject$plots$SBPCAafter)
+if (!is.null(QCreportObject$QC_label)){
+  print (QCreportObject$plots$SBPCAfter)
 }
 ```
 
@@ -197,9 +261,8 @@ if (!is.null(QCreportObject$QC_label))
 
 \newpage
 ```{r SB_correction_3a, echo=FALSE, fig.height=7, fig.width=7, message=TRUE, warning=FALSE, cache=FALSE, comment="", results='hide'}
-if (!is.null(QCreportObject$QC_label))
-{
-  print (QCreportObject$plots$SBPCAafterQC)
+if (!is.null(QCreportObject$QC_label)){
+  print (QCreportObject$plots$SBPCAfterQC)
 }
 ```
 
@@ -207,9 +270,7 @@ if (!is.null(QCreportObject$QC_label))
 
 \newpage
 ```{r S19, echo=FALSE, fig.height=7, fig.width=7, message=TRUE, warning=FALSE, cache=FALSE, comment="", results='hide'}
-#Figure S17
-if (!is.null(QCreportObject$QC_label))
-{
+if (!is.null(QCreportObject$QC_label)){
   print (QCreportObject$plots$SBRSDbefore)
 }
 ```
@@ -217,9 +278,18 @@ if (!is.null(QCreportObject$QC_label))
 `r figs("S19")`
 
 \newpage
+```{r S19a, echo=FALSE, fig.height=7, fig.width=7, message=TRUE, warning=FALSE, cache=FALSE, comment="", results='hide'}
+if (!is.null(QCreportObject$plots$plots_per_batch_qc_rsd)){
+  print (QCreportObject$plots$plots_per_batch_qc_rsd)
+}
+```
+
+`r if (!is.null(QCreportObject$plots$plots_per_batch_qc_rsd)) figs ("S19a")`
+
+\newpage
 ```{r S20, echo=FALSE, fig.height=7, fig.width=7, message=TRUE, warning=FALSE, cache=FALSE, comment="", results='hide'}
-if (!is.null(QCreportObject$QC_label))
-{
+if (!is.null(QCreportObject$QC_label)){
+  
   print (QCreportObject$plots$SBRSDafter)
 }
 ```
@@ -230,8 +300,7 @@ if (!is.null(QCreportObject$QC_label))
 `r tbls("S3")`
 
 ```{r T3, echo=FALSE, fig.height=6, fig.width=7, message=TRUE, warning=FALSE, cache=FALSE, comment=""}
-if (!is.null(QCreportObject$QC_label))
-{
+if (!is.null(QCreportObject$QC_label)){
   kable (QCreportObject$tables$SBtableBefore, digits=1)
 }
 ```
@@ -242,8 +311,7 @@ if (!is.null(QCreportObject$QC_label))
 `r tbls("S4")`
 
 ```{r T4, echo=FALSE, fig.height=6, fig.width=7, message=TRUE, warning=FALSE, cache=FALSE, comment=""}
-if (!is.null(QCreportObject$QC_label))
-{
+if (!is.null(QCreportObject$QC_label)){
   kable (QCreportObject$tables$SBtableAfter, digits=1)
 }
 ```

@@ -41,26 +41,26 @@ createQCreportObject <- function(data_file,
                                  classLabel="Class",
                                  excludeQC=c(1:5),
                                  assay=NULL,
-                                 plot_eic=TRUE
-)
-{
+                                 plot_eic=TRUE,
+                                 pca_scores_labels="all"){
 
   QCreportObject <- list()
 
+  QCreportObject$pca_scores_labels <- pca_scores_labels
   QCreportObject$data_file <- data_file
-  QCreportObject$projectdir = projectdir
+  QCreportObject$projectdir <- projectdir
   
   # load data and create peakMatrix from Rdata or tab-separated file
 
   setwd(QCreportObject$projectdir)
   
-  if (file_type(QCreportObject$data_file) == "gzfile" || grepl(".rdata", tolower(QCreportObject$data_file)) || tolower(tools::file_ext(QCreportObject$data_file)) == ".rdata")
-  {
+  if (file_type(QCreportObject$data_file) == "gzfile" || grepl(".rdata", tolower(QCreportObject$data_file)) 
+      || tolower(tools::file_ext(QCreportObject$data_file)) == ".rdata"){
     load (QCreportObject$data_file) # includes xset
     QCreportObject$xset <- xset
     QCreportObject$peakMatrix <- xcms::groupval(object=QCreportObject$xset, method="medret",value="into",intensity="into")
-    if (exists ("listOFlistArguments"))
-    {
+    if (exists ("listOFlistArguments")){
+      
       QCreportObject$listOFlistArguments <- listOFlistArguments
     }
     
@@ -107,12 +107,18 @@ createQCreportObject <- function(data_file,
   QCreportObject$excludeQC <- excludeQC
 
   QCreportObject <- qcrms::createProjectHeader(QCreportObject = QCreportObject)
+  
   QCreportObject <- qcrms::sampleSummary(QCreportObject = QCreportObject)
+  
   QCreportObject <- qcrms::sampleSummaryPlots(QCreportObject = QCreportObject)
+  
   QCreportObject <- qcrms::PCA(QCreportObject = QCreportObject)
   
-  if (!is.null(QCreportObject$xset) & plot_eic==TRUE)
-  {
+  # RT shifts
+  QCreportObject <- qcrms::RTstabilityAssement(QCreportObject=QCreportObject)
+  
+  if (!is.null(QCreportObject$xset) & plot_eic==TRUE){
+    
     QCreportObject <- qcrms::EICs(QCreportObject = QCreportObject)
   }
   

@@ -38,10 +38,13 @@ EICs <- function (QCreportObject)
   inthits <- order(maxints, decreasing = T)[1:200]
   inthits <- inthits[sample(1:200,10)]
 
+  # Check if selected indices are within range of extracted peak table, replace 1 with 2. And te max peak nemubre with it's -1 value
+  inthits[inthits == 1] <- 2
+  inthits[inthits == nrow(QCreportObject$peakMatrix)] <- nrow(QCreportObject$peakMatrix)-1
+
   inthits2 <- NULL
 
-  for (inth in 1:10)
-  {
+  for (inth in 1:10) {
     inthits2 <- append(inthits2,c(inthits[inth], inthits[inth]-1, inthits[inth]+1))
 
   }
@@ -49,12 +52,10 @@ EICs <- function (QCreportObject)
   # Using MSnBase package chromatograms function, will work only with MSnBase 2.4.0 or later. Bioconductor 3.6
   rawf <- vector("list", length(QCreportObject$xset@filepaths))
 
-  system.time (
-    { for (num in 1:length(rawf))
-      {
+  system.time ( {
+    for (num in 1:length(rawf)) {
         cat("Reading data file: ", num, "\n")
-        if (file.exists(QCreportObject$xset@filepaths[num]))
-        {
+        if (file.exists(QCreportObject$xset@filepaths[num])) {
           rawf[[num]] <- MSnbase::readMSData(QCreportObject$xset@filepaths[num], mode="onDisk")
         }
       }

@@ -1,5 +1,6 @@
 #' @importFrom  xcms groupval
 #' @import ggplot2
+#' @importFrom magrittr %>%
 #'
 NULL
 
@@ -49,6 +50,7 @@ XCMS_EIC_plot <- function (indexes, rawfiles, class, xset, Blank_label="Blank", 
       RTmi <- min_rt[chromind, chrn]
       RTma <- max_rt[chromind, chrn]
 
+      # Find index of corrected RT and replace RT with raw value
       if (RTcorrected==T) {
         RTind <- c(NA,NA)
         RTind[1] <- which(xset@rt$corrected[[chrn]]>=RTmi)[1]
@@ -59,30 +61,36 @@ XCMS_EIC_plot <- function (indexes, rawfiles, class, xset, Blank_label="Blank", 
       }
 
       if (!all(is.na(c(mzmi,mzma,RTmi,RTma))) && (!is.null(rawfiles[[chrn]]))) {
-        chroms[[chrn]] <- xcms::extractMsData (rawfiles[[chrn]], mz=c(mzmi, mzma), rt=c(RTmi,RTma), msLevel=1)[[1]]
+          chroms[[chrn]] <- rawfiles[[chrn]] %>%
+          xcms::filterRt(rt=c(RTmi, RTma)) %>%
+          xcms::filterMz(mz=c(mzmi, mzma)) %>%
+          as("data.frame")
 
-        # Replace raw RT with corrected if RT correction was applied
-        if (nrow(chroms[[chrn]])!=0 && RTcorrected==T) {
-          RThits <- which(xset@rt$raw[[chrn]] %in% chroms[[chrn]]$rt)
+          # remove file column
+          chroms[[chrn]]$file <- NULL
 
-          # For some weird reason, extracMsData can return mor than one peak for the same RT
-          if (length(RThits)!=nrow(chroms[[chrn]])) {
+          # Replace raw RT with corrected if RT correction was applied
+          if (nrow(chroms[[chrn]])!=0 && RTcorrected==T) {
+            RThits <- which(xset@rt$raw[[chrn]] %in% chroms[[chrn]]$rt)
+
+            # For some weird reason, extracMsData can return more than one peak for the same RT
+            if (length(RThits)!=nrow(chroms[[chrn]])) {
               RThits <- rownames (chroms[[chrn]])
               RThits <- sub("F1.S0", "", RThits)
               RThits <- round(as.numeric(RThits),0)
+            }
+
+            chroms[[chrn]]$rt <- xset@rt$corrected[[chrn]][RThits]
+
           }
-
-          chroms[[chrn]]$rt <- xset@rt$corrected[[chrn]][RThits]
-
-        }
 
         # To keeps track on class and sample labels, we need to have empty data frame, if there are no EIC's to extract
         if (nrow(chroms[[chrn]])==0) chroms[[chrn]] <- data.frame(rt=NA, mz=NA, i=NA)
+
       } else {
         chroms[[chrn]] <- data.frame(rt=NA, mz=NA, i=NA)
       }
     }
-
 
     # Probably there is cleaner way how to do that. Assign sample number and it's class
     for (chrn in 1:length(rawfiles))

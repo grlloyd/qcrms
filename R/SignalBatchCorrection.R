@@ -105,9 +105,10 @@ SignalBatchCorrection <- function(QCreportObject)
 
   #S/B correction
 
-  SBcorrected <- sbcms::QCRLSC(df=MV_filtered, order=QCreportObject$metaData$table$injection_order,
+  SBcorrected <- sbcms::QCRSC(df=MV_filtered, order=QCreportObject$metaData$table$injection_order,
                         batch=QCreportObject$metaData$table$batch, classes=class,
-                        loessSpan=0, minQC = 5)
+                        spar=0, minQC = 5)
+  
 
   # Temporary, to validate error from old pqn code
   #source("C:/Users/jankevia/Downloads/normalisation.R")

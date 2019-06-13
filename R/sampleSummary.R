@@ -80,14 +80,15 @@ sampleSummary <- function (QCreportObject)
   
   QCreportObject$timestamps <- rep(NA, length(QCreportObject$raw_paths))
   
-  for (i in 1:length(QCreportObject$raw_paths)){
+  if (!is.null(QCreportObject$raw_paths)){
+    for (i in 1:length(QCreportObject$raw_paths)){
     
-    if(file.exists(QCreportObject$raw_paths[i])){
+      if(file.exists(QCreportObject$raw_paths[i])){
       
-      QCreportObject$timestamps[i] <- qcrms::mzML.startTimeStamp(filename = QCreportObject$raw_paths[i])
+        QCreportObject$timestamps[i] <- qcrms::mzML.startTimeStamp(filename = QCreportObject$raw_paths[i])
+      }
     }
   }
-
   #chit <- which(colnames(QCreportObject$metaData$table)==QCreportObject$metaData$classColumn)
 
   # TIC data

@@ -65,7 +65,7 @@ createQCreportObject <- function(data_file,
     }
     
   } else {
-    QCreportObject$peakMatrix = as.matrix(read.table(QCreportObject$data_file, header=TRUE, row.names=1, check.names=FALSE))
+    QCreportObject$peakMatrix = as.matrix(read.csv(QCreportObject$data_file, header=TRUE, row.names=1, check.names=FALSE))
   }
 
   projectInfo <- list ()

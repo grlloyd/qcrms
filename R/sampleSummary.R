@@ -79,6 +79,9 @@ sampleSummary <- function (QCreportObject)
   # TimeStamp from mzML file
   
   QCreportObject$timestamps <- rep(NA, length(QCreportObject$raw_paths))
+  if (length(QCreportObject$timestamps)<1){
+    QCreportObject$timestamps <- rep(NA, ncol(QCreportObject$peakMatrix))
+  }
   
   if (!is.null(QCreportObject$raw_paths)){
     for (i in 1:length(QCreportObject$raw_paths)){

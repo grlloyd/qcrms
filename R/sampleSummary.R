@@ -20,7 +20,7 @@ sampleSummary <- function (QCreportObject)
     
     QCreportObject$metaData$table <- QCreportObject$xset@phenoData
   } else {
-    QCreportObject$metaData$table <- data.frame(row.names=colnames(QCreportObject$peakMatrix), class=rep(".", ncol(QCreportObject$peakMatrix)))
+    QCreportObject$metaData$table <- data.frame(Sample=colnames(QCreportObject$peakMatrix))
   }
   
   if (!is.null(QCreportObject$metaData$file)){
@@ -35,7 +35,10 @@ sampleSummary <- function (QCreportObject)
       metaDataTable <- read.table(QCreportObject$metaData$file, header=TRUE, check.names=FALSE)
     }
     
-    QCreportObject$metaData$table$Sample = rownames(QCreportObject$metaData$table)
+    if (!"Sample" %in% colnames(QCreportObject$metaData$table)){
+      QCreportObject$metaData$table$Sample = rownames(QCreportObject$metaData$table)  
+    }
+    
     QCreportObject$metaData$table <- dplyr::left_join(QCreportObject$metaData$table, metaDataTable, by="Sample")
     
   } else {

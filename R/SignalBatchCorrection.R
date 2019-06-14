@@ -24,10 +24,14 @@ SignalBatchCorrection <- function(QCreportObject)
 
 
   # Blank filter
-  blank_filtered <- filter_peaks_by_blank(QCreportObject$peakMatrix, 20, class,
+  if (QCreportObject$Blank_label %in% class){
+    blank_filtered <- filter_peaks_by_blank(QCreportObject$peakMatrix, 20, class,
                                         blank_label=QCreportObject$Blank_label,
                                         qc_label = NULL, remove = FALSE)[[1]]
-
+  } else {
+    blank_filtered <- QCreportObject$peakMatrix
+  }
+  
   # QC MV fraction filter
   # MV in QC samples
   MV_filtered <- filter_peaks_by_fraction(blank_filtered, min_frac = 0.8,

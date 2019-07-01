@@ -22,9 +22,18 @@ RTstabilityAssement <- function (QCreportObject){
   rt <- rt[, order(QCreportObject$timestamps)]
   peak_width <- peak_width[, order(QCreportObject$timestamps)]
 
+  # Don't include data from "removed"(lead QC's and other samples specified for removal in meta data) samples in the plots and tables
+  if ("Removed" %in% unique(QCreportObject$metaData$samp_lab)) {
+    rt <- rt[ , !(QCreportObject$metaData$samp_lab == "Removed")]
+    peak_width <- peak_width[ , !(QCreportObject$metaData$samp_lab == "Removed")]
+    samp_lab <- QCreportObject$metaData$samp_lab[!(QCreportObject$metaData$samp_lab == "Removed")]
+  } else {
+    samp_lab <- QCreportObject$metaData$samp_lab
+  }
+  
   #RSD vs MAD
-  rt_rsd <- do_variability_list(peak_data = rt, classes = QCreportObject$metaData$samp_lab, method = "RSD")
-  rt_mad <- do_variability_list(peak_data = rt, classes = QCreportObject$metaData$samp_lab, method = "MAD")
+  rt_rsd <- do_variability_list(peak_data = rt, classes = samp_lab, method = "RSD")
+  rt_mad <- do_variability_list(peak_data = rt, classes = samp_lab, method = "MAD")
 
   QCreportObject$tables$RT_rsd <- do_variability_table(rt_rsd, QC_label = QCreportObject$QC_label, Blank_label = QCreportObject$Blank_label)
   QCreportObject$tables$RT_mad <-do_variability_table(rt_mad, QC_label = QCreportObject$QC_label, Blank_label = QCreportObject$Blank_label)
@@ -33,7 +42,7 @@ RTstabilityAssement <- function (QCreportObject){
 
   # Peak width summary
   # Create a list of peak widths for each sample group, so it can be used by do_variability_table and plot functions
-  pw_median <- do_variability_list(peak_data = peak_width,classes = QCreportObject$metaData$samp_lab, method = "median")
+  pw_median <- do_variability_list(peak_data = peak_width,classes = samp_lab, method = "median")
 
   #pw_matrix <- do_variability_list(peak_data = peak_width,classes = QCreportObject$metaData$samp_lab, method = "none")
 
@@ -56,7 +65,12 @@ RTstabilityAssement <- function (QCreportObject){
 
   mz_ppm <- (mz - mz_mean)/(mz_mean * 10^-6)
 
-  mz_ppm_median_list <- do_variability_list(mz_ppm, classes = QCreportObject$metaData$samp_lab, method = "median")
+  # Don't include data from "removed"(lead QC's and other samples specified for removal in meta data) samples in the plots and tables
+  if ("Removed" %in% unique(QCreportObject$metaData$samp_lab)) {
+    mz_ppm <- mz_ppm[ , !(QCreportObject$metaData$samp_lab == "Removed")]
+  }
+  
+  mz_ppm_median_list <- do_variability_list(mz_ppm, classes = samp_lab, method = "median")
   #mz_ppm_list <- do_variability_list(mz_ppm, classes = QCreportObject$metaData$samp_lab, method = "none")
 
   QCreportObject$tables$mz_median <- do_variability_table(mz_ppm_median_list, QC_label = QCreportObject$QC_label, Blank_label = QCreportObject$Blank_label)

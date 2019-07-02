@@ -58,33 +58,33 @@ figs (name="S14", "Box plot of the features of  all QC and biological samples sc
       This figure is indicative for a stability of the whole analytical batch.")
 
 figs (name="S15", "Scores plot of the first two principal components of PCA model for  biological and
-      QC (first 5 QCs removed) samples after Blank and QC fraction filter. Data are normalised using
+      QC (first 5 QCs removed) samples after peak matrix filtering. Data are normalised using
       PQN normalisation and k-nearest (knn) method used (k=5) to fill in missing values.
       Glog transformation used to scale signal intensities.")
 
 figs (name="S16", "Scores plot of the first two principal components of PCA model for
-QC (first 5 QCs removed) samples after Blank and QC fraction filter. K-nearest (knn) method used (k=5) to fill in
+QC (first 5 QCs removed) samples after peak matrix filtering. K-nearest (knn) method used (k=5) to fill in
       missing values and signal intensities are scaled to unit variance.")
 
 figs (name="S17", "Scores plot of the first two principal components of PCA model for  biological and
-      QC (first 5 QCs removed) samples after Blank and QC fraction filtering, and signal/batch correction.
+      QC (first 5 QCs removed) samples after peak matrix filtering, and signal/batch correction.
       Data are normalised using PQN normalisation and k-nearest (knn) method used (k=5) to fill
       in missing values. Glog transformation used to scale signal intensities.")
 
 figs (name="S18", "Scores plot of the first two principal components of PCA model for
-      QC (first 5 QCs removed) samples after Blank and QC fraction filtering, and signal/batch correction.
+      QC (first 5 QCs removed) samples after peak matrix filtering, and signal/batch correction.
       K-nearest (knn) method used (k=5) to fill in missing values and signal intensities are scaled to unit variance.")
 
-figs (name="S19", "Violin plot of Relative Standard Deviation (RSD%) per sample group after Blank and QC
-      fraction filter. Equilibration QC samples were excluded from RSD% calculations. Horizontal
+figs (name="S19", "Violin plot of Relative Standard Deviation (RSD%) per sample group after peak
+      matrix filtering. Equilibration QC samples were excluded from RSD% calculations. Horizontal
       lines indicate 25%, 50% and 75% quantiles.")
 
-figs (name="S19a", "Violin plot of Relative Standard Deviation (RSD%) of QC samples per batch after Blank and QC
-      fraction filter. Equilibration QC samples were excluded from RSD% calculations. Horizontal
+figs (name="S19a", "Violin plot of Relative Standard Deviation (RSD%) of QC samples per batch after 
+      peak matrix filtering. Equilibration QC samples were excluded from RSD% calculations. Horizontal
       lines indicate 25%, 50% and 75% quantiles.")
 
-figs (name="S20", "Violin plot of Relative Standard Deviation (RSD%) per sample group after Blank
-      and QC fraction filter and signal/batch correction. Equilibration QC samples 1-5 were excluded
+figs (name="S20", "Violin plot of Relative Standard Deviation (RSD%) per sample group after 
+      peak matrix filtering and signal/batch correction. Equilibration QC samples 1-5 were excluded
       from RSD% calculations. Horizontal lines indicate 25%, 50% and 75% quantiles.")
 
 figs (name="RT_MAD", "Violin plots of MAD (meadian absolute deviation) of median RT per chromatographic feature.")
@@ -114,3 +114,10 @@ tbls (name="RT_MAD", "A summary of MAD (meadian absolute deviation) of median RT
 tbls (name="peak_width", "A summary of meadian peak width per chromatographic feature in s.")
 
 tbls (name="mz_precision", "A summary of meadian of mass precision per chromatographic feature in ppm.")
+
+tbls (name="filtering", "Several filters on extracted peak matrix are applied to asses data quality.
+   1) Blank filter; 2) Missing value (MV) filter across samples; 3) MV filter across features for QC
+   samples; 4) MV filter across feature and across all samples. 
+   Parameters and thresholds used are listed in table below. Column 'Number of features' shows how many 
+   features are retained after each filtering step, column 'Number of samples' how many samples are
+   retained and column 'Applied' if the filter was applied.")

@@ -84,7 +84,7 @@ SignalBatchCorrection <- function(QCreportObject)
 
   QCreportObject$plots$SBPCAbefore <- doPCA (Data=PCAinF2$Data, classes=PCAinF2$classes, PQN=T, mv_impute = T,
                                        glogScaling = T, scale=F,
-                labels=QCreportObject$pca_scores_labels, qc_label = QCreportObject$QC_label, plotTitle = "PCA, blank and QC MV filtered")
+                labels=QCreportObject$pca_scores_labels, qc_label = QCreportObject$QC_label, plotTitle = "PCA, filtered")
 
 
   QCreportObject$plots$SBPCAbeforeQC <- doPCA (Data=PCAinQC2$Data, classes=PCAinQC2$classes, PQN=F, mv_impute = T,

@@ -234,6 +234,24 @@ if (!is.null(QCreportObject$QC_label)){
 `r figs("S14")`
 
 \newpage
+<!-- Peak matrix filtering and S/B correction -->
+
+`r tbls("filtering")`
+
+```{r Peak matrix filtering, echo=FALSE}
+if (!is.null(QCreportObject$QC_label)){
+  kable (QCreportObject$filtering$table, digits=1)
+}
+```
+
+List of samples removed by missing value filter:
+```{r Samples removed, echo=FALSE}
+if (!is.null(QCreportObject$QC_label)){
+  print(QCreportObject$filtering$samples_removed)
+}
+```
+
+\newpage
 ```{r SB_correction_2, echo=FALSE, fig.height=6, fig.width=7, message=TRUE, warning=FALSE, cache=FALSE, comment="", results='hide'}
 if (!is.null(QCreportObject$QC_label)) print(QCreportObject$plots$SBPCAbefore)
 if (!is.null(QCreportObject$plots$plots_per_batch_pca)){

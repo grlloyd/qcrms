@@ -14,29 +14,59 @@ SignalBatchCorrection <- function(QCreportObject)
 {
   wb <- loadWorkbook(xlsxFile = QCreportObject$xlsxout)
 
-  # Samples are reordered so QC indexes have beens changed as well!
-  class <- QCreportObject$metaData$table[,which(colnames(QCreportObject$metaData$table)==QCreportObject$metaData$classColumn)]
+  metaData <- QCreportObject$metaData$table
+  class <- metaData[,which(colnames(metaData) == QCreportObject$metaData$classColumn)]
 
-  if (is.null(QCreportObject$metaData$table$batch)){
-
-    QCreportObject$metaData$table$batch <- rep(1, length(class))
+  if (is.null(metaData$batch)){
+    metaData$batch <- rep(1, length(class))
   }
 
-
+  # Filtering summary table
+  QCreportObject$filtering <- list()
+  
+  QCreportObject$filtering$table <- data.frame (Filter=c("Before filtering","Blank, fold_change=20, fraction=0",
+                       "MV Sample, max_perc_mv=0.5",
+                       "Features, method=QC, fraction=0.9",
+                       "Featrues, method=across, fraction=0.5"),
+              "Number of features"=c(nrow(QCreportObject$peakMatrix)),
+              "Number of samples"=c(ncol(QCreportObject$peakMatrix)),
+              Applied=rep(TRUE, 5),
+                        check.names=FALSE)
+  
   # Blank filter
   if (QCreportObject$Blank_label %in% class){
     blank_filtered <- filter_peaks_by_blank(QCreportObject$peakMatrix, 20, class,
                                         blank_label=QCreportObject$Blank_label,
                                         qc_label = NULL, remove = FALSE)[[1]]
+    QCreportObject$filtering$table$`Number of features`[2:5] <- nrow(blank_filtered)
   } else {
     blank_filtered <- QCreportObject$peakMatrix
+    QCreportObject$filtering$table$Applied[2] <- FALSE
+  }
+  
+  # MV filter for all samples
+  sample_filtered <- filter_samples_by_mv(df=blank_filtered, max_perc_mv=0.5, classes = NULL)
+  if (any(sample_filtered$flags[,2]==0)){
+    class <- class[as.logical(sample_filtered$flags[,2])]
+    metaData <- metaData[as.logical(sample_filtered$flags[,2]), ]
+    QCreportObject$filtering$table$`Number of samples`[3:5] <- ncol(sample_filtered$df)
+    QCreportObject$filtering$samples_removed <- sort(rownames(sample_filtered$flags)[sample_filtered$flags[,2]==0])
+    sample_filtered <- sample_filtered$df
+  } else {
+    sample_filtered <- blank_filtered
   }
   
   # QC MV fraction filter
   # MV in QC samples
-  MV_filtered <- filter_peaks_by_fraction(blank_filtered, min_frac = 0.8,
-                                        classes=class, method = "QC", qc_label = QCreportObject$QC_label)[[1]]
+  MV_filtered <- filter_peaks_by_fraction(sample_filtered, min_frac = 0.9,
+    classes=class, method = "QC", qc_label = QCreportObject$QC_label)[[1]]
+  QCreportObject$filtering$table$`Number of features`[4:5] <- nrow(MV_filtered)
 
+  # MV filter of 50% across all samples
+  MV_filtered <- filter_peaks_by_fraction(MV_filtered, min_frac = 0.5,
+    classes=class, method = "across", qc_label = NULL)[[1]]
+  QCreportObject$filtering$table$`Number of features`[5] <- nrow(MV_filtered)
+  
   PCAinF2 <- prepareData(Data=MV_filtered, classes=class,
                        blank = QCreportObject$Blank_label, PQN=T, mv_impute = T,
                        glogScaling = T,
@@ -60,26 +90,26 @@ SignalBatchCorrection <- function(QCreportObject)
   QCreportObject$plots$SBPCAbeforeQC <- doPCA (Data=PCAinQC2$Data, classes=PCAinQC2$classes, PQN=F, mv_impute = T,
                                            glogScaling = F, scale=T,
                                            labels="QC", qc_label = QCreportObject$QC_label,
-                                           plotTitle = "PCA, blank and QC MV filtered")
+                                           plotTitle = "PCA, filtered")
 
 
   QCreportObject$plots$SBRSDbefore <- do_variability_plot(list_object =PCAinF2$RSD,
-    plotTitle = "RSD (%) per sample group, blank and QC MV filtered")
+    plotTitle = "RSD (%) per sample group, filtered")
 
 
   # If multiple batches are present create PCA plots per batch before correction
-  nbatches <- unique(QCreportObject$metaD$table$batch)
+  nbatches <- unique(metaData$batch)
 
-  if (length (unique(QCreportObject$metaD$table$batch))>1){
+  if (length(nbatches) > 1){
 
     title_list <- classes_list <- data_list <- vector("list", length(nbatches))
 
     for (batch in 1:length(nbatches)){
 
-      batch_hits <- which (QCreportObject$metaData$table$batch == nbatches[batch])
-      data_list[[batch]] <- QCreportObject$peakMatrix[ , batch_hits]
+      batch_hits <- which (metaData$batch == nbatches[batch])
+      data_list[[batch]] <- MV_filtered[ , batch_hits]
       classes_list[[batch]] <- class[batch_hits]
-      title_list[[batch]] <- paste ("PCA, blank and QC MV filtered,", "Batch", nbatches[batch])
+      title_list[[batch]] <- paste ("PCA, filtered,", "Batch", nbatches[batch])
     }
 
     title_list <- unlist (title_list)
@@ -91,26 +121,26 @@ SignalBatchCorrection <- function(QCreportObject)
       glogScaling=T, mv_impute=T, scale=F, plot = F, labels = "all",
       blank=QCreportObject$Blank_label, qc_label = QCreportObject$QC_label)
 
-    # pca plots are all odd numbers nad RSD even numbers
+    # pca plots are all odd numbers and RSD even numbers
     QCreportObject$plots$plots_per_batch_pca <- plots_per_batch[seq(1, length(nbatches)*2, 2)]
     QCreportObject$plots$plots_per_batch_rsd <- plots_per_batch[seq(2, length(nbatches)*2, 2)]
 
     # Create summary RSD plot for QC samples per batch
     qc_hits <- which(class==QCreportObject$QC_label)
-    qc_data <- QCreportObject$peakMatrix[, class==QCreportObject$QC_label]
+    qc_data <- MV_filtered[, class==QCreportObject$QC_label]
     qc_class <- class[qc_hits]
-    qc_batch <- QCreportObject$metaData$table$batch[qc_hits]
+    qc_batch <- metaData$batch[qc_hits]
     qc_class <- paste(qc_class,"B",qc_batch, sep="_")
 
     qc_batch_rsd <- do_variability_list(peak_data = qc_data, classes = qc_class, method = "RSD")
     QCreportObject$plots$plots_per_batch_qc_rsd <- do_variability_plot (list_object = qc_batch_rsd,
-      plotTitle = "RSD (%) of QC samples per batch, blank and QC MV filtered")
+      plotTitle = "RSD (%) of QC samples per batch, filtered")
   }
 
   #S/B correction
 
-  SBcorrected <- sbcms::QCRSC(df=MV_filtered, order=QCreportObject$metaData$table$injection_order,
-                        batch=QCreportObject$metaData$table$batch, classes=class,
+  SBcorrected <- sbcms::QCRSC(df=MV_filtered, order=metaData$injection_order,
+                        batch=metaData$batch, classes=class,
                         spar=0, minQC = 5)
   
 
@@ -146,15 +176,15 @@ SignalBatchCorrection <- function(QCreportObject)
 
   QCreportObject$plots$SBPCAfter <- doPCA (Data=PCAinSB$Data, classes=PCAinSB$classes, PQN=T, mv_impute = T,
                                           glogScaling = T, scale=F,
-       labels="none", qc_label = QCreportObject$QC_label, plotTitle = "PCA, blank and QC MV filtered, S/B corrected")
+       labels="none", qc_label = QCreportObject$QC_label, plotTitle = "PCA, filtered and S/B corrected")
 
   QCreportObject$plots$SBPCAfterQC <- doPCA (Data=PCAinSBQC$Data, classes=PCAinSBQC$classes, PQN=F, mv_impute = T,
                                        glogScaling = F, scale= T,
-                                  labels="QC", qc_label = QCreportObject$QC_label, plotTitle = "PCA, blank and QC MV filtered, S/B corrected")
+                                  labels="QC", qc_label = QCreportObject$QC_label, plotTitle = "PCA, filtered and S/B corrected")
 
 
   QCreportObject$plots$SBRSDafter <- do_variability_plot (list_object = PCAinSB$RSD,
-                          plotTitle = "RSD% per sample group, blank and QC MV filtered, S/B corrected")
+                          plotTitle = "RSD% per sample group, filtered and S/B corrected")
 
   QCreportObject$tables$SBtableBefore <- do_variability_table(list_object = PCAinF2$RSD,
                                                   QC_label = QCreportObject$QC_label,

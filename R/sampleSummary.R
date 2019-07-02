@@ -60,6 +60,21 @@ sampleSummary <- function (QCreportObject)
       }
   }
 
+  # Check that column in meta data selected to be used for class lables doesn't contain NA's
+  # Also checks if ClassQC column exists, to use that for Blank and QC sample indices.
+  
+  if (any(is.na(QCreportObject$metaData$table[,QCreportObject$metaData$classColumn])) &
+        "ClassQC" %in% colnames(QCreportObject$metaData$table)){
+    na_hits <- which(is.na(QCreportObject$metaData$table[, QCreportObject$metaData$classColumn]))
+    QCreportObject$metaData$table[na_hits, QCreportObject$metaData$classColumn] <- 
+      QCreportObject$metaData$table[na_hits, "ClassQC"]
+    if (any(is.na(QCreportObject$metaData$table[,QCreportObject$metaData$classColumn]))){
+      stop("Selected meta data column for class labels contains missing values!")
+    }
+  } else if (any(is.na(QCreportObject$metaData$table[,QCreportObject$metaData$classColumn]))) {
+    stop("Selected meta data column for class labels contains missing values!")
+  }
+  
   if (!is.null(QCreportObject$raw_path)){
     QCreportObject$raw_paths <- paste(QCreportObject$raw_path,"/",QCreportObject$metaData$table$Sample,".mzML",sep="")
     

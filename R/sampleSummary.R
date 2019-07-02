@@ -18,7 +18,11 @@ sampleSummary <- function (QCreportObject)
   
   if (!is.null(QCreportObject$xset)){
     
-    QCreportObject$metaData$table <- QCreportObject$xset@phenoData
+    QCreportObject$metaData$table <- data.frame(Sample=rownames(QCreportObject$xset@phenoData),
+      xcms_class=QCreportObject$xset@phenoData$class)
+    if (length(unique(QCreportObject$metaData$table$xcms_class)) == 1){
+      QCreportObject$metaData$table$xcms_class <- NULL
+    }
   } else {
     QCreportObject$metaData$table <- data.frame(Sample=colnames(QCreportObject$peakMatrix))
   }

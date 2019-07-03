@@ -194,9 +194,15 @@ SignalBatchCorrection <- function(QCreportObject)
                                                   QC_label = QCreportObject$QC_label,
                                                   Blank_label = QCreportObject$Blank_label)
 
-  addWorksheet (wb,"dataMatrix_corrected")
-  writeData (wb,"dataMatrix_corrected", SBcorrected, rowNames = T)
+  addWorksheet (wb, "metaData_filtered")
+  writeData (wb, "metaData_filtered", metaData, rowNames = T)
+  
+  addWorksheet (wb, "dataMatrix_filtered")
+  writeData (wb, "dataMatrix_filtered", MV_filtered, rowNames = T)
 
+  addWorksheet (wb, "dataMatrix_corrected")
+  writeData (wb, "dataMatrix_corrected", SBcorrected, rowNames = T)
+  
   saveWorkbook (wb, QCreportObject$xlsxout, overwrite = T)
 
   QCreportObject

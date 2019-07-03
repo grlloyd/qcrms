@@ -95,11 +95,15 @@ sampleSummary <- function (QCreportObject)
     QCreportObject$raw_paths <- QCreportObject$xset@filepaths
   }
   
-  # TimeStamp from mzML file
+  # TimeStamp from mzML file and file size
   
   QCreportObject$timestamps <- rep(NA, length(QCreportObject$raw_paths))
-  if (length(QCreportObject$timestamps)<1){
+  QCreportObject$fileSize <- rep(NA, length(QCreportObject$raw_paths))
+  
+  # In case input is peak matrix, with no access to raw data files
+  if (length(QCreportObject$timestamps) < 1){
     QCreportObject$timestamps <- rep(NA, ncol(QCreportObject$peakMatrix))
+    QCreportObject$fileSize <- rep(NA, ncol(QCreportObject$peakMatrix))
   }
   
   if (!is.null(QCreportObject$raw_paths)){
@@ -107,10 +111,13 @@ sampleSummary <- function (QCreportObject)
     
       if(file.exists(QCreportObject$raw_paths[i])){
       
-        QCreportObject$timestamps[i] <- qcrms::mzML.startTimeStamp(filename = QCreportObject$raw_paths[i])
+        QCreportObject$timestamps[i] <- qcrms::mzML.startTimeStamp(filename=QCreportObject$raw_paths[i])
+        # File size in MB
+        QCreportObject$fileSize[i] <- file.info(QCreportObject$raw_paths[i])$size / (1024 * 1024)
       }
     }
   }
+  
   #chit <- which(colnames(QCreportObject$metaData$table)==QCreportObject$metaData$classColumn)
 
   # TIC data
@@ -153,9 +160,11 @@ sampleSummary <- function (QCreportObject)
   QCreportObject$samp.sum <- data.frame(sample=QCreportObject$metaData$table$Sample, 
                                         meas.time=QCreportObject$timestamps,
                                         class=QCreportObject$metaData$samp_lab,
-                                        peaks.detected=peaksDetected)
+                                        peaks.detected=peaksDetected,
+                                        file.size=round(QCreportObject$fileSize, 2))
 
-  colnames (QCreportObject$samp.sum) <- c("Sample","Measurement time","Class","Number of peaks")
+  colnames (QCreportObject$samp.sum) <- c("Sample", "Measurement time",
+    "Class", "Number of peaks", "mzML file size (MB)")
 
   QCreportObject$samp.sum <- QCreportObject$samp.sum[order(QCreportObject$timestamps),]
   

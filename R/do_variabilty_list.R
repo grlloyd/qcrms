@@ -7,7 +7,7 @@
 
 do_variability_list <- function(peak_data, classes, method="RSD"){
   
-  peak_data <- check_peak_matrix_orientation(peak_data = peak_data, classes = classes)
+  peak_data <- check_peak_matrix(peak_data = peak_data, classes = classes)
   
   cl <- unique (classes)
   out <- vector("list",length(cl))

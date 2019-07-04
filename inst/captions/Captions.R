@@ -94,6 +94,9 @@ figs (name="peak_width", "Violin plot of meadian peak width per chromatographic 
 figs (name="mz_precision", "Violin plot of meadian of mass precision per chromatographic feature in ppm. Values below -5 and
       above 5 ppm are excluded from a plot.")
 
+figs(name="size_vs_peaknr", "The relationship of the number of extracted features by XCMS versus the mzML file size.
+     This figure should be useful to identify possible technical issues during sample collection.")
+
 tbls (name="S1", "A summary of the Pearson's product-moment correlation coefficients for the data
       shown in Figures S2-S4 (blank samples are excluded from calculations). High correlation should not beens observed
       between measurement order and total signal intensity.")

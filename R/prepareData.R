@@ -9,11 +9,14 @@
 #' @param qc_label Label used for QC samples. If set to NULL, assumes that no QC samples are present in data set
 #' @param ignorelabel Label for samples which should be excluded from processed data
 #' @param checkNA removes rows or columns containing all NA's, also will chek if only all QC or analytical samples contain missing values
+#' @param store_lambda If value of glog optimised lambda parameter needs to be returned
 #' @return List of processed data table and RSD% per sample class
 #' @export
 
 
-prepareData <- function (Data, classes, blank="BLANK", PQN=F, mv_impute=T, glogScaling=T, qc_label="QC", ignorelabel="Removed", checkNA=T){
+prepareData <- function (Data, classes, blank="BLANK", PQN=F, mv_impute=T, 
+                         glogScaling=T, qc_label="QC", ignorelabel="Removed", 
+                         checkNA=T, store_lambda=FALSE){
   
     Data <- check_peak_matrix(peak_data = Data, classes = classes)
     
@@ -71,12 +74,18 @@ prepareData <- function (Data, classes, blank="BLANK", PQN=F, mv_impute=T, glogS
 
     #glog scaling
     if (glogScaling==T & !is.null(qc_label)){
-      
-      Data <- glog_transformation(df=Data, classes=classes, qc_label=qc_label)
+      if (store_lambda) {
+        Data <- glog_transformation(df=Data, classes=classes, qc_label=qc_label, store_lambda=TRUE)
+        lambda <- Data[[2]]
+        Data <- Data[[1]]
+      } else {
+        Data <- glog_transformation(df=Data, classes=classes, qc_label=qc_label)
+        lambda <-NULL
+      }
     }
 
-    out <- list(Data, classes, RSD)
-    names (out) <- c("Data","classes","RSD")
+    out <- list(Data, classes, RSD, lambda)
+    names (out) <- c("Data","classes","RSD","glog_lambda")
     out
 }
 

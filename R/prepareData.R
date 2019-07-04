@@ -82,8 +82,10 @@ prepareData <- function (Data, classes, blank="BLANK", PQN=F, mv_impute=T,
         Data <- glog_transformation(df=Data, classes=classes, qc_label=qc_label)
         lambda <-NULL
       }
+    } else {
+      lambda <- NULL
     }
-
+      
     out <- list(Data, classes, RSD, lambda)
     names (out) <- c("Data","classes","RSD","glog_lambda")
     out

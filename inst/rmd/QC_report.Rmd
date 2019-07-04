@@ -258,9 +258,21 @@ if (!is.null(QCreportObject$QC_label)){
 }
 ```
 
+Optimised glog lamba values:
+```{r glog lambda, echo=FALSE}
+if (!is.null(QCreportObject$QC_label)){
+  kable(data.frame(data=c("Filttred", "Filtered, S/B corrected"), 
+    "glog lambda"=c(QCreportObject$filtering$glog_lambda_filtered, 
+      QCreportObject$filtering$glog_lambda_filtered_SB),
+    check.names=FALSE))
+}
+```
+
 \newpage
 ```{r SB_correction_2, echo=FALSE, fig.height=6, fig.width=7, message=TRUE, warning=FALSE, cache=FALSE, comment="", results='hide'}
-if (!is.null(QCreportObject$QC_label)) print(QCreportObject$plots$SBPCAbefore)
+if (!is.null(QCreportObject$QC_label)){ 
+  print(QCreportObject$plots$SBPCAbefore)
+}
 if (!is.null(QCreportObject$plots$plots_per_batch_pca)){
   print(QCreportObject$plots$plots_per_batch_pca)
 }
@@ -270,7 +282,9 @@ if (!is.null(QCreportObject$plots$plots_per_batch_pca)){
 
 \newpage
 ```{r SB_correction_2a, echo=FALSE, fig.height=6, fig.width=7, message=TRUE, warning=FALSE, cache=FALSE, comment="", results='hide'}
-if (!is.null(QCreportObject$QC_label)) print(QCreportObject$plots$SBPCAbeforeQC)
+if (!is.null(QCreportObject$QC_label)) {
+  print(QCreportObject$plots$SBPCAbeforeQC)
+}
 ```
 
 `r figs("S16")`

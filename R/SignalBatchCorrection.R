@@ -21,17 +21,16 @@ SignalBatchCorrection <- function(QCreportObject)
     metaData$batch <- rep(1, length(class))
   }
 
-  # Filtering summary table
-  QCreportObject$filtering <- list()
   
   QCreportObject$filtering$table <- data.frame (Filter=c("Before filtering","Blank, fold_change=20, fraction=0",
-                       "MV Sample, max_perc_mv=0.5",
-                       "Features, method=QC, fraction=0.9",
-                       "Featrues, method=across, fraction=0.5"),
-              "Number of features"=c(nrow(QCreportObject$peakMatrix)),
-              "Number of samples"=c(ncol(QCreportObject$peakMatrix)),
-              Applied=rep(TRUE, 5),
-                        check.names=FALSE)
+    "MV Sample, max_perc_mv=0.5",
+    "Features, method=QC, fraction=0.9",
+    paste0("Featrues, method=", QCreportObject$filtering$mv_filter_method, 
+      ", fraction=", QCreportObject$filtering$mv_filter_frac)),
+    "Number of features"=c(nrow(QCreportObject$peakMatrix)),
+    "Number of samples"=c(ncol(QCreportObject$peakMatrix)),
+    Applied=rep(TRUE, 5),
+    check.names=FALSE)
   
   # Blank filter
   if (QCreportObject$Blank_label %in% class){
@@ -62,16 +61,20 @@ SignalBatchCorrection <- function(QCreportObject)
     classes=class, method = "QC", qc_label = QCreportObject$QC_label)[[1]]
   QCreportObject$filtering$table$`Number of features`[4:5] <- nrow(MV_filtered)
 
-  # MV filter of 50% across all samples
-  MV_filtered <- filter_peaks_by_fraction(MV_filtered, min_frac = 0.5,
-    classes=class, method = "across", qc_label = NULL)[[1]]
+  # MV filter across all samples or within class
+  MV_filtered <- filter_peaks_by_fraction(MV_filtered,
+    min_frac = QCreportObject$filtering$mv_filter_frac,
+    classes=class, method = QCreportObject$filtering$mv_filter_method,
+    qc_label = NULL)[[1]]
   QCreportObject$filtering$table$`Number of features`[5] <- nrow(MV_filtered)
   
   PCAinF2 <- prepareData(Data=MV_filtered, classes=class,
                        blank = QCreportObject$Blank_label, PQN=T, mv_impute = T,
                        glogScaling = T,
-                       qc_label = QCreportObject$QC_label, ignorelabel = "Removed")
+                       qc_label = QCreportObject$QC_label, ignorelabel = "Removed",
+                       store_lambda = TRUE)
 
+  QCreportObject$filtering$glog_lambda_filtered <- PCAinF2$glog_lambda
 
   samp_lab5 <- class
   samp_lab5[-c(which(class==QCreportObject$QC_label))] <- "Removed"
@@ -168,7 +171,9 @@ SignalBatchCorrection <- function(QCreportObject)
 
   PCAinSB <- prepareData(Data=SBcorrected, classes=class, blank = QCreportObject$Blank_label,
                        PQN=T, mv_impute = T, glogScaling = T,
-                       qc_label = QCreportObject$QC_label, ignorelabel = "Removed")
+                       qc_label = QCreportObject$QC_label, ignorelabel = "Removed", store_lambda=TRUE)
+  
+  QCreportObject$filtering$glog_lambda_filtered_SB <- PCAinSB$glog_lambda
 
   PCAinSBQC <- prepareData(Data=SBcorrected, classes=samp_lab5, blank = QCreportObject$Blank_label,
                        PQN=F, mv_impute = T, glogScaling = F,

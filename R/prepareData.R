@@ -15,7 +15,7 @@
 
 prepareData <- function (Data, classes, blank="BLANK", PQN=F, mv_impute=T, glogScaling=T, qc_label="QC", ignorelabel="Removed", checkNA=T){
   
-    Data <- check_peak_matrix_orientation(peak_data = Data, classes = classes)
+    Data <- check_peak_matrix(peak_data = Data, classes = classes)
     
     rem_samples <- NULL
     if (!is.null(blank)){
@@ -66,7 +66,7 @@ prepareData <- function (Data, classes, blank="BLANK", PQN=F, mv_impute=T, glogS
 
     # mv imputation
     if (mv_impute==T){
-      Data <- mv_imputation(Data, 'knn', k=5, rowmax=1, colmax=1)
+      Data <- mv_imputation(Data, 'knn', k=5, rowmax=0.5, colmax=0.5, maxp=NULL)
     }
 
     #glog scaling

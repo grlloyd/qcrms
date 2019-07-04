@@ -26,6 +26,9 @@ file_type <- function(path){
 #' @param excludeQC Which QC samples to exclude from RSD\% calculations, signal batch correction and PCA plots
 #' @param assay Names for analytical assay, if set to NULL name of the input Rdata file will be used
 #' @param plot_eic Will create pdf fail with selected peak EIC's if set to TRUE
+#' @param pca_scores_labels Defines if sample labels should be added to filtered data PCA scores plot
+#' @param mv_filter_method Defines what method for MV filter
+#' @param mv_filter_frac Threshod of faction of detection of MV filter
 #' @export
 
 createQCreportObject <- function(data_file,
@@ -42,13 +45,19 @@ createQCreportObject <- function(data_file,
                                  excludeQC=c(1:5),
                                  assay=NULL,
                                  plot_eic=TRUE,
-                                 pca_scores_labels="all"){
+                                 pca_scores_labels="all",
+                                 mv_filter_method="across",
+                                 mv_filter_frac=0.5){
 
   QCreportObject <- list()
 
   QCreportObject$pca_scores_labels <- pca_scores_labels
   QCreportObject$data_file <- data_file
   QCreportObject$projectdir <- projectdir
+  
+  QCreportObject$filtering <- list()
+  QCreportObject$filtering$mv_filter_method <- mv_filter_method
+  QCreportObject$filtering$mv_filter_frac <- mv_filter_frac
   
   # load data and create peakMatrix from Rdata or tab-separated file
 

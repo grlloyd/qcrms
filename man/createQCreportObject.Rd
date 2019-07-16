@@ -8,7 +8,9 @@ createQCreportObject(data_file, projectdir, author = "", metaData_file,
   raw_path = NULL, InternalProjectRef = "", Dataset = "",
   Organisation = "", QC_label = "QC", Blank_label = "Blank",
   classLabel = "Class", excludeQC = c(1:5), assay = NULL,
-  plot_eic = TRUE, pca_scores_labels = "all")
+  plot_eic = TRUE, pca_scores_labels = "all",
+  mv_filter_method = "across", mv_filter_frac = 0.5,
+  xcms_output = "xset")
 }
 \arguments{
 \item{data_file}{Rdata file containing XCMS output, object should be called xset}
@@ -38,6 +40,14 @@ createQCreportObject(data_file, projectdir, author = "", metaData_file,
 \item{assay}{Names for analytical assay, if set to NULL name of the input Rdata file will be used}
 
 \item{plot_eic}{Will create pdf fail with selected peak EIC's if set to TRUE}
+
+\item{pca_scores_labels}{Defines if sample labels should be added to filtered data PCA scores plot}
+
+\item{mv_filter_method}{Defines what method for MV filter}
+
+\item{mv_filter_frac}{Threshod of faction of detection of MV filter}
+
+\item{xcms_output}{Name of the R object in Rdata file containing XCMS outputs}
 }
 \description{
 Create initial qcrepotobject structure from input variable

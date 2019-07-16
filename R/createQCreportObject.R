@@ -29,6 +29,7 @@ file_type <- function(path){
 #' @param pca_scores_labels Defines if sample labels should be added to filtered data PCA scores plot
 #' @param mv_filter_method Defines what method for MV filter
 #' @param mv_filter_frac Threshod of faction of detection of MV filter
+#' @param xcms_output Name of the R object in Rdata file containing XCMS outputs
 #' @export
 
 createQCreportObject <- function(data_file,
@@ -47,10 +48,13 @@ createQCreportObject <- function(data_file,
                                  plot_eic=TRUE,
                                  pca_scores_labels="all",
                                  mv_filter_method="across",
-                                 mv_filter_frac=0.5){
+                                 mv_filter_frac=0.5,
+                                 xcms_output="xset"){
 
   QCreportObject <- list()
 
+  QCreportObject$xcms_output <- xcms_output
+  
   QCreportObject$pca_scores_labels <- pca_scores_labels
   QCreportObject$data_file <- data_file
   QCreportObject$projectdir <- projectdir
@@ -66,10 +70,23 @@ createQCreportObject <- function(data_file,
   if (file_type(QCreportObject$data_file) == "gzfile" || grepl(".rdata", tolower(QCreportObject$data_file)) 
       || tolower(tools::file_ext(QCreportObject$data_file)) == ".rdata"){
     load (QCreportObject$data_file) # includes xset
-    QCreportObject$xset <- xset
+    if (!exists(QCreportObject$xcms_output)){
+      stop ("Please check that XCMS object set in xcms_ouput can't be located.")
+    }
+    
+    if (class(get(QCreportObject$xcms_output)) == "xcmsSet"){
+      QCreportObject$xset <- get(QCreportObject$xcms_output)
+    } else if (class(get(QCreportObject$xcms_output)) == "XCMSnExp"){
+      QCreportObject$xset <- as(get(QCreportObject$xcms_output), "xcmsSet")
+      rownames(QCreportObject$xset@phenoData) <- QCreportObject$xset@phenoData$sample_name
+      QCreportObject$xset@phenoData$sample_name <- NULL
+      QCreportObject$xset@phenoData$class <- QCreportObject$xset@phenoData$sample_group
+      QCreportObject$xset@phenoData$sample_group <- NULL
+    }
+    
     QCreportObject$peakMatrix <- xcms::groupval(object=QCreportObject$xset, method="medret",value="into",intensity="into")
+    
     if (exists ("listOFlistArguments")){
-      
       QCreportObject$listOFlistArguments <- listOFlistArguments
     }
     

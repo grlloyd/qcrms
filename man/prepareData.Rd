@@ -6,7 +6,7 @@
 \usage{
 prepareData(Data, classes, blank = "BLANK", PQN = F, mv_impute = T,
   glogScaling = T, qc_label = "QC", ignorelabel = "Removed",
-  checkNA = T)
+  checkNA = T, store_lambda = FALSE)
 }
 \arguments{
 \item{Data}{Data frame.}
@@ -26,6 +26,8 @@ prepareData(Data, classes, blank = "BLANK", PQN = F, mv_impute = T,
 \item{ignorelabel}{Label for samples which should be excluded from processed data}
 
 \item{checkNA}{removes rows or columns containing all NA's, also will chek if only all QC or analytical samples contain missing values}
+
+\item{store_lambda}{If value of glog optimised lambda parameter needs to be returned}
 }
 \value{
 List of processed data table and RSD% per sample class

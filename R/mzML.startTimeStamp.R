@@ -22,8 +22,12 @@ mzML.startTimeStamp <- function(filename){
          line <- strsplit(line,"startTimeStamp=\\\"")[[1]][2]
          startTimeStamp <- strsplit (line,"\\\"")[[1]][1]
          break
-        }
-      }
+         }
+         if (length(grep("<spectrumList",line)) == 1){
+         startTimeStamp <- NA
+         break
+         }
+    }
   }
   close(con)
   startTimeStamp <- sub ("T"," ",startTimeStamp)

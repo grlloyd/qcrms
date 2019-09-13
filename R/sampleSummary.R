@@ -135,13 +135,13 @@ sampleSummary <- function (QCreportObject)
     QCreportObject$TICs <- tapply (peakt[,"into"], peakt[, "sample"], FUN=sum)
   
     # TIC's for raw files
-    # mzR is anout 10 times faster to read Raw data files than MSnbase implementation, So for tic needs I am using it.
+    # mzR is about 10 times faster to read Raw data files than MSnbase implementation, So for tic needs I am using it.
     for (sn in 1:length(QCreportObject$TICraw)){
       
-      if (file.exists(QCreportObject$raw_paths[i])){
+      if (file.exists(QCreportObject$raw_paths[sn])){
         
         A <- mzR::openMSfile(QCreportObject$raw_paths[sn])
-        tic <- mzR::tic(A)
+        tic <- tryCatch( mzR::tic(A), error = function(e){ return(NULL)})
         QCreportObject$TICraw[sn] <- sum(tic$TIC)
         QCreportObject$TICdata[[sn]] <- tic$TIC
         mzR::close(A)

@@ -75,8 +75,18 @@ sampleSummary <- function (QCreportObject)
     stop("Selected meta data column for class labels contains missing values!")
   }
   
+  ## Remove MS/MS data files if these are present
+  msms_sample_hits <- which (QCreportObject$metaData$table
+    [,QCreportObject$metaData$classColumn] == QCreportObject$msms_label)
+  if (length(msms_sample_hits) > 0){
+    QCreportObject$peakMatrix <- 
+      QCreportObject$peakMatrix[, -c(msms_sample_hits)]
+    QCreportObject$metaData$table <- 
+      QCreportObject$metaData$table[-c(msms_sample_hits), ]
+  }
+  
   if (!is.null(QCreportObject$raw_path)){
-    QCreportObject$raw_paths <- paste(QCreportObject$raw_path,"/",QCreportObject$metaData$table$Sample,".mzML",sep="")
+    QCreportObject$raw_paths <- paste(QCreportObject$raw_path,"/", QCreportObject$metaData$table$Sample,".mzML",sep="")
     
     ## If files are located across multiple folders, locate them one-by-one
     if (!all(file.exists(QCreportObject$raw_paths))){
@@ -92,7 +102,14 @@ sampleSummary <- function (QCreportObject)
     }
     
   } else if (!is.null(QCreportObject$xset)){
-    QCreportObject$raw_paths <- QCreportObject$xset@filepaths
+    if (length(msms_sample_hits) > 0){
+      QCreportObject$raw_paths <- 
+        QCreportObject$xset@filepaths[-c(msms_sample_hits)]
+    } else
+    {
+      QCreportObject$raw_paths <- 
+        QCreportObject$xset@filepaths
+    }
   }
   
   # TimeStamp from mzML file and file size
@@ -128,6 +145,12 @@ sampleSummary <- function (QCreportObject)
   if (!is.null(QCreportObject$xset)){
     
     peakt <- QCreportObject$xset@peaks
+    
+    ## Remove MS/MS data files
+    if (length(msms_sample_hits)>0){
+      sample_hits <- peakt[, "sample"] %in% msms_sample_hits
+      peakt <- peakt[!sample_hits, ]
+    }
     
     peaksDetected <- as.vector(table(peakt[,"sample"]))
     

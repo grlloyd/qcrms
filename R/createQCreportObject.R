@@ -30,6 +30,7 @@ file_type <- function(path){
 #' @param mv_filter_method Defines what method for MV filter
 #' @param mv_filter_frac Threshod of faction of detection of MV filter
 #' @param xcms_output Name of the R object in Rdata file containing XCMS outputs
+#' @param msms_label Label used for MS/MS data files
 #' @export
 
 createQCreportObject <- function(data_file,
@@ -49,7 +50,8 @@ createQCreportObject <- function(data_file,
                                  pca_scores_labels="all",
                                  mv_filter_method="across",
                                  mv_filter_frac=0.5,
-                                 xcms_output="xset"){
+                                 xcms_output="xset",
+                                 msms_label="MSMS"){
 
   QCreportObject <- list()
 
@@ -115,12 +117,13 @@ createQCreportObject <- function(data_file,
   metaData <- list ()
   metaData$file <- metaData_file
   metaData$classColumn <- classLabel
-
+  
   QCreportObject$metaData <- metaData
 
   QCreportObject$raw_path <- raw_path
 
   QCreportObject$QC_label <- QC_label
+  QCreportObject$msms_label <- msms_label
   QCreportObject$Blank_label <- Blank_label
 
   QCreportObject$pdfout <- file.path(QCreportObject$projectdir, paste(QCreportObject$projectInfo$assay, "_EICs.pdf", sep=""))

@@ -10,7 +10,7 @@ createQCreportObject(data_file, projectdir, author = "", metaData_file,
   classLabel = "Class", excludeQC = c(1:5), assay = NULL,
   plot_eic = TRUE, pca_scores_labels = "all",
   mv_filter_method = "across", mv_filter_frac = 0.5,
-  xcms_output = "xset")
+  xcms_output = "xset", msms_label = "MSMS")
 }
 \arguments{
 \item{data_file}{Rdata file containing XCMS output, object should be called xset}
@@ -48,6 +48,8 @@ createQCreportObject(data_file, projectdir, author = "", metaData_file,
 \item{mv_filter_frac}{Threshod of faction of detection of MV filter}
 
 \item{xcms_output}{Name of the R object in Rdata file containing XCMS outputs}
+
+\item{msms_label}{Label used for MS/MS data files}
 }
 \description{
 Create initial qcrepotobject structure from input variable

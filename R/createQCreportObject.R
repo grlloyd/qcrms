@@ -80,10 +80,11 @@ createQCreportObject <- function(data_file,
       QCreportObject$xset <- get(QCreportObject$xcms_output)
     } else if (class(get(QCreportObject$xcms_output)) == "XCMSnExp"){
       QCreportObject$xset <- as(get(QCreportObject$xcms_output), "xcmsSet")
-      rownames(QCreportObject$xset@phenoData) <- QCreportObject$xset@phenoData$sample_name
-      QCreportObject$xset@phenoData$sample_name <- NULL
-      QCreportObject$xset@phenoData$class <- QCreportObject$xset@phenoData$sample_group
-      QCreportObject$xset@phenoData$sample_group <- NULL
+      #rownames(QCreportObject$xset@phenoData) <- QCreportObject$xset@phenoData$sample_name
+      #QCreportObject$xset@phenoData$sample_name <- NULL
+      rownames(QCreportObject$xset@phenoData) <- sub(".mzML", "", rownames(QCreportObject$xset@phenoData))
+      QCreportObject$xset@phenoData$class <- rep(1, nrow(QCreportObject$xset@phenoData))
+      QCreportObject$xset@phenoData$sampleNames <- NULL
     }
     
     QCreportObject$peakMatrix <- xcms::groupval(object=QCreportObject$xset, method="medret",value="into",intensity="into")

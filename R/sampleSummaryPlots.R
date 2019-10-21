@@ -40,7 +40,10 @@ sampleSummaryPlots <- function(QCreportObject)
   if (length(bhits)>0)
   {
     A <- A[-c(bhits),]
-    QCreportObject$plotClass$manual_colors2 <- QCreportObject$plotClass$manual_colors[-2]
+    b_col_hit <- which (levels(QCreportObject$plotClass$class) ==
+      QCreportObject$Blank_label)
+    QCreportObject$plotClass$manual_colors2 <- 
+      QCreportObject$plotClass$manual_colors[-b_col_hit]
   } else
   {
     QCreportObject$plotClass$manual_colors2 <- QCreportObject$plotClass$manual_colors

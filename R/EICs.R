@@ -51,7 +51,7 @@ EICs <- function (QCreportObject)
 
   # Using MSnBase package chromatograms function, will work only with MSnBase 2.4.0 or later. Bioconductor 3.6
   rawf <- vector("list", length(QCreportObject$xset@filepaths))
-
+  
   system.time ( {
     for (num in 1:length(rawf)) {
         cat("Reading data file: ", num, "\n")
@@ -63,7 +63,11 @@ EICs <- function (QCreportObject)
 
   # PDF
   #pdf (paste(outputF,"QC_EICS.pdf",sep="/"))
-  plots <- XCMS_EIC_plot(indexes = inthits2, rawfiles = rawf, class=QCreportObject$metaData$samp_lab, xset=QCreportObject$xset)
+  
+  #Class labels have to be reordereng according MS files in XCMS object
+  class <- QCreportObject$metaData$samp_lab[order(order(QCreportObject$timestamps))]
+  
+  plots <- XCMS_EIC_plot(indexes = inthits2, rawfiles = rawf, class=class, xset=QCreportObject$xset)
 
   ml <- marrangeGrob(plots, nrow=3, ncol=1)
   ggsave (QCreportObject$pdfout, ml, width=20, height=28, units="cm")
@@ -71,8 +75,9 @@ EICs <- function (QCreportObject)
   inthits <- order(maxints, decreasing = T)[1]
   inthits2 <- c(inthits, inthits-1, inthits+1)
 
-  QCreportObject$plots$EICs  <- qcrms::XCMS_EIC_plot(indexes = inthits2[1:3], rawfiles = rawf, class = QCreportObject$metaData$samp_lab,
-                       xset=QCreportObject$xset)
+  QCreportObject$plots$EICs  <- qcrms::XCMS_EIC_plot(indexes = inthits2[1:3], 
+    rawfiles = rawf, class = class,
+    xset=QCreportObject$xset)
 
   QCreportObject
 }

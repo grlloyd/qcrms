@@ -73,15 +73,9 @@ XCMS_EIC_plot <- function (indexes, rawfiles, class, xset, Blank_label="Blank", 
           if (nrow(chroms[[chrn]])!=0 && RTcorrected==T) {
             RThits <- which(xset@rt$raw[[chrn]] %in% chroms[[chrn]]$rt)
 
-            # For some weird reason, extracMsData can return more than one peak for the same RT
-            if (length(RThits)!=nrow(chroms[[chrn]])) {
-              RThits <- rownames (chroms[[chrn]])
-              RThits <- sub("F1.S0", "", RThits)
-              RThits <- round(as.numeric(RThits),0)
+          if (length(RThits) > 0 & length(RThits) == nrow(chroms[[chrn]])){
+              chroms[[chrn]]$rt <- xset@rt$corrected[[chrn]][RThits]
             }
-
-            chroms[[chrn]]$rt <- xset@rt$corrected[[chrn]][RThits]
-
           }
 
         # To keeps track on class and sample labels, we need to have empty data frame, if there are no EIC's to extract

@@ -83,6 +83,12 @@ sampleSummary <- function (QCreportObject)
       QCreportObject$peakMatrix[, -c(msms_sample_hits)]
     QCreportObject$metaData$table <- 
       QCreportObject$metaData$table[-c(msms_sample_hits), ]
+    # Phenodata
+    QCreportObject$xset@phenoData <- QCreportObject$xset@phenoData[-c(msms_sample_hits), , drop=FALSE]
+    # rt
+    QCreportObject$xset@rt$raw[msms_sample_hits] <- NULL
+    QCreportObject$xset@rt$corrected[msms_sample_hits] <- NULL
+
   }
   
   if (!is.null(QCreportObject$raw_path)){
@@ -102,14 +108,8 @@ sampleSummary <- function (QCreportObject)
     }
     
   } else if (!is.null(QCreportObject$xset)){
-    if (length(msms_sample_hits) > 0){
-      QCreportObject$raw_paths <- 
-        QCreportObject$xset@filepaths[-c(msms_sample_hits)]
-    } else
-    {
       QCreportObject$raw_paths <- 
         QCreportObject$xset@filepaths
-    }
   }
   
   # TimeStamp from mzML file and file size

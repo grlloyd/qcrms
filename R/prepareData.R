@@ -69,7 +69,8 @@ prepareData <- function (Data, classes, blank="BLANK", PQN=F, mv_impute=T,
 
     # mv imputation
     if (mv_impute==T){
-      Data <- mv_imputation(Data, 'knn', k=5, rowmax=1, colmax=1, maxp=NULL)
+      Data <- mv_imputation(Data, 'knn', k=5, rowmax=1, colmax=1, maxp=NULL, 
+        check_df=FALSE)
     }
 
     #glog scaling

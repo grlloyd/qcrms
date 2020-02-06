@@ -68,7 +68,7 @@ createClassAndColors <- function (class, QC_label="QC", Blank_label="Blank", QC_
   # if too many levels then use rainbow scale with suitable number of colours
   if (length(reorderNames)>length(manual_color))
   {
-    manual_color=grDevices::rainbow(length(reorderNames))
+    manual_color=grDevices::rainbow(length(reorderNames), alpha=1)
   }
   
   hit1 <- which(reorderNames==QC_label)

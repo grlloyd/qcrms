@@ -16,7 +16,8 @@ test_that("createClassAndColors doesn't reorder ordered factor again", {
   expect_equal(out, testData$createClassAndColors_ordered)
 })
 
-test_that("createClassAndColors uses reainbow colors if number of classes exceeds ", {
+test_that("createClassAndColors uses reainbow colors if number of classes 
+  exceeds defined colors", {
   class <- c(1,1,2,3,3,3,4,4,5,5,7,7,8,8,10,10,11,11,12,12)
   out <- createClassAndColors(class)
   expect_equal(out, testData$createClassAndColors_rainbow)

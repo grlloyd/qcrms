@@ -1,24 +1,32 @@
+#' @import SummarizedExperiment
+NULL
+
 #' Wrapper function to transform data for statistical analysis
 #'
 #' @param Data Data frame.
 #' @param classes Vector of class labels.
-#' @param blank Label used for blank samples, if set to NULL no samples will be removed
-#' @param PQN Can be set to T or F, to perform PQN normalisation
-#' @param mv_impute T or F, indicates if missing value imputation has to be carried
-#' @param glogScaling T or F, applie glog transformation to the given data
-#' @param qc_label Label used for QC samples. If set to NULL, assumes that no QC samples are present in data set
-#' @param ignorelabel Label for samples which should be excluded from processed data
-#' @param checkNA removes rows or columns containing all NA's, also will chek if only all QC or analytical samples contain missing values
-#' @param store_lambda If value of glog optimised lambda parameter needs to be returned
-#' @return List of processed data table and RSD% per sample class
+#' @param blank Label used for blank samples, if set to NULL no samples will be
+#' removed.
+#' @param PQN Can be set to T or F, to perform PQN normalisation.
+#' @param mv_impute T or F, indicates if missing value imputation has to be
+#' carried.
+#' @param glogScaling T or F, applie glog transformation to the given data.
+#' @param qc_label Label used for QC samples. If set to NULL, assumes that no
+#'QC samples are present in data set.
+#' @param ignorelabel Label for samples which should be excluded from processed
+#' data.
+#' @param checkNA removes rows or columns containing all NA's, also will chek
+#' if only all QC or analytical samples contain missing values.
+#' @param store_lambda If value of glog optimised lambda parameter needs to be 
+#' returned.
+#' @return List of processed data table and RSD% per sample class.
 #' @export
-
 
 prepareData <- function (Data, classes, blank="BLANK", PQN=F, mv_impute=T, 
                          glogScaling=T, qc_label="QC", ignorelabel="Removed", 
                          checkNA=T, store_lambda=FALSE){
   
-    Data <- check_peak_matrix(peak_data = Data, classes = classes)
+    Data <- pmp:::check_input_data(df = Data, classes = classes)
     
     rem_samples <- NULL
     if (!is.null(blank)){
@@ -27,13 +35,12 @@ prepareData <- function (Data, classes, blank="BLANK", PQN=F, mv_impute=T,
     }
       
     if (!is.null(ignorelabel)){
-        
       rem_samples <- append(rem_samples,which(classes==ignorelabel))
     }
 
     if(length(rem_samples)>0){
       
-      Data <- Data[,-c(rem_samples)]
+      Data <- Data[ ,-c(rem_samples)]
       classes <- classes[-c(rem_samples)]
     }
 
@@ -45,17 +52,16 @@ prepareData <- function (Data, classes, blank="BLANK", PQN=F, mv_impute=T,
       AllNa <- function (x) all(is.na(x))
 
       if (is.null(qc_label)){
-        
-        hits2 <- which(apply(Data,1,AllNa)==T)
+        hits2 <- which(apply(assay(Data),1,AllNa)==T)
       } else {
         
-        hits2 <- which(apply(Data[,classes==qc_label],1,AllNa)==T)
-        hits2 <- append(hits2, which(apply(Data[,-c(which(classes==qc_label))],1,AllNa)==T))
+        hits2 <- which(apply(assay(Data)[ ,classes == qc_label], 1, AllNa)==T)
+        hits2 <- append(hits2, which(apply(assay(Data)
+          [ ,-c(which(classes==qc_label))], 1, AllNa) == T))
         hits2 <- unique(hits2)
       }
 
-      if (length(hits2)>0){
-        
+      if (length(hits2) > 0){
         Data <- Data[-c(hits2),]
       }
     }
@@ -64,21 +70,21 @@ prepareData <- function (Data, classes, blank="BLANK", PQN=F, mv_impute=T,
 
     #pqn normalisation
     if (PQN==T & !is.null(qc_label)){
-      Data <- pqn_normalisation(df=Data, classes=classes, qc_label = qc_label)[[1]]
+      Data <- pmp::pqn_normalisation(df=Data, classes=classes, qc_label = qc_label)
     }
 
     # mv imputation
     if (mv_impute==T){
-      Data <- mv_imputation(Data, 'knn', k=5, rowmax=1, colmax=1, maxp=NULL, 
+      Data <- pmp::mv_imputation(Data, 'knn', k=5, rowmax=1, colmax=1, maxp=NULL, 
         check_df=FALSE)
     }
 
     #glog scaling
     if (glogScaling==T & !is.null(qc_label)){
       if (store_lambda) {
-        Data <- glog_transformation(df=Data, classes=classes, qc_label=qc_label, store_lambda=TRUE)
-        lambda <- Data[[2]]
-        Data <- Data[[1]]
+        Data <- glog_transformation(df=Data, classes=classes, qc_label=qc_label,
+          store_lambda=TRUE)
+        lambda <- attributes(Data)$processing_history$glog_transformation$lambda_opt
       } else {
         Data <- glog_transformation(df=Data, classes=classes, qc_label=qc_label)
         lambda <-NULL
@@ -86,7 +92,10 @@ prepareData <- function (Data, classes, blank="BLANK", PQN=F, mv_impute=T,
     } else {
       lambda <- NULL
     }
-      
+    
+    metadata(Data)$original_data_structure <- "matrix"
+    Data <- pmp:::return_original_data_structure(Data)
+    
     out <- list(Data, classes, RSD, lambda)
     names (out) <- c("Data","classes","RSD","glog_lambda")
     out

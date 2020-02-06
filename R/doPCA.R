@@ -1,4 +1,5 @@
-#' @import stats
+#' @importFrom stats prcomp
+#' @importFrom stats median
 #' @import ggplot2
 NULL
 

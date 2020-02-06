@@ -5,7 +5,8 @@ test_that("dosummaryplot creates ggplot output", {
                  blank=NULL, PQN=F, mv_impute=T, glogScaling=T, scale=T, qc_label="QC", 
                  ignorelabel="Removed", labels="all", qc_shape=17, base_size = 10, 
                  pccomp=c(1,2), plot=F)
-  expect_equal(out, testData$doSummaryPlot)
+  expect_true(is(out[[1]], "ggplot"))
+  expect_true(is(out[[2]], "ggplot"))
 })
 
 test_that("dosummaryplot creates ggplot output for several batches", {
@@ -17,7 +18,10 @@ test_that("dosummaryplot creates ggplot output for several batches", {
                         blank=NULL, PQN=F, mv_impute=T, glogScaling=T, scale=T, qc_label=NULL, 
                         ignorelabel="Removed", labels="all", qc_shape=17, base_size = 10, 
                         pccomp=c(1,2), plot=F)
-  expect_equal(out, testData$doSummaryPlot_multiple_batches)
+  expect_true(is(out[[1]], "ggplot"))
+  expect_true(is(out[[2]], "ggplot"))
+  expect_true(is(out[[3]], "ggplot"))
+  expect_true(is(out[[4]], "ggplot"))
 })
 
 test_that("dosummaryplot stops if input isn't list or data.frame/matrix", {

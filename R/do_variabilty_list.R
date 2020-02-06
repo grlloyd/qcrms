@@ -7,7 +7,7 @@
 
 do_variability_list <- function(peak_data, classes, method="RSD"){
   
-  peak_data <- check_peak_matrix(peak_data = peak_data, classes = classes)
+  peak_data <- pmp:::check_input_data(df = peak_data, classes = classes)
   
   cl <- unique (classes)
   out <- vector("list",length(cl))
@@ -15,12 +15,12 @@ do_variability_list <- function(peak_data, classes, method="RSD"){
 
   #Calculate RSD before scaling and MV imputation
   if (method=="RSD"){
-    FUN <- function (x) sd(x,na.rm=T)/mean(x,na.rm=T)*100.0
-  } else if (method=="MAD") {
-    FUN <- function (x) mad(x, na.rm=T, constant = 1.4826)
-  } else if (method=="median"){
-    FUN <- function (x) median(x, na.rm = T)
-  } else if (method=="none") {
+    FUN <- function(x) sd(x, na.rm=TRUE) / mean(x, na.rm=TRUE) * 100.0
+  } else if (method == "MAD") {
+    FUN <- function(x) mad(x, na.rm=TRUE, constant = 1.4826)
+  } else if (method == "median"){
+    FUN <- function(x) median(x, na.rm=TRUE)
+  } else if (method == "none") {
     FUN <- NULL  
   }else {
     stop ("Method specified is not supported")
@@ -28,9 +28,10 @@ do_variability_list <- function(peak_data, classes, method="RSD"){
   
   for (slab in 1: length(out)){
     if (method=="none"){
-      out[[slab]] <- c(as.matrix(peak_data[,classes==names(out)[slab]]))
+      out[[slab]] <- c(as.matrix(assay(peak_data)[,classes==names(out)[slab]]))
     } else {
-      out[[slab]] <- apply(rbind(peak_data[,classes==names(out)[slab]], NULL),1,FUN)
+      out[[slab]] <- apply(rbind(assay(peak_data)[,classes==names(out)[slab]], 
+        NULL),1,FUN)
     }
   }
   

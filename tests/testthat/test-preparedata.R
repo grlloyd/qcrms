@@ -8,7 +8,9 @@ test_that("Prepare data returns expected output, mv imputation only", {
   # Remove which method was used for RSD calculations
   out$RSD$variability_method <- NULL
   
-  expect_equal(out, testData$prepareData_mv_impute)
+  expect_equal(out$RSD, testData$prepareData_mv_impute$RSD)
+  expect_equal(out$classes, testData$prepareData_mv_impute$classes)
+  expect_equal(as.data.frame(out$Data), testData$prepareData_mv_impute$Data)
 })
 
 test_that("Prepare data returns expected output, mv imputation and glog", {
@@ -17,7 +19,9 @@ test_that("Prepare data returns expected output, mv imputation and glog", {
                      qc_label = "QC", ignorelabel = "Removed")
   # Remove which method was used for RSD calculations
   out$RSD$variability_method <- NULL
-  expect_equal(out, testData$prepareData_mv_impute_glog)
+  expect_equal(out$RSD, testData$prepareData_mv_impute_glog$RSD)
+  expect_equal(out$classes, testData$prepareData_mv_impute_glog$classes)
+  expect_equal(as.data.frame(out$Data), testData$prepareData_mv_impute_glog$Data)
 })
 
 test_that("Prepare data returns expected output, mv imputation, glog and pqn", {
@@ -26,7 +30,9 @@ test_that("Prepare data returns expected output, mv imputation, glog and pqn", {
                      qc_label = "QC", ignorelabel = "Removed")
   # Remove which method was used for RSD calculations
   out$RSD$variability_method <- NULL
-  expect_equal(out, testData$prepareData_mv_impute_glog_pqn)
+  expect_equal(as.data.frame(out$Data), testData$prepareData_mv_impute_glog_pqn$Data)
+  expect_equal(out$RSD, testData$prepareData_mv_impute_glog_pqn$RSD)
+  expect_equal(out$classes, testData$prepareData_mv_impute_glog_pqn$classes)
 })
 
 test_that("If all values are missing the row or columns will be removed", {
@@ -37,6 +43,6 @@ test_that("If all values are missing the row or columns will be removed", {
                      qc_label = NULL, ignorelabel = "Removed")
   # Remove which method was used for RSD calculations
   out$RSD$variability_method <- NULL
-  expect_equal(out$Data, testData$prepareData_test_NA)
+  expect_equal(as.data.frame(out$Data), testData$prepareData_test_NA)
 })
 

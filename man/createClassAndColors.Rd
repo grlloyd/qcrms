@@ -4,10 +4,15 @@
 \alias{createClassAndColors}
 \title{Function to create sorted class labels and colors for reproducable ggplot objects}
 \usage{
-createClassAndColors(class, QC_label = "QC", Blank_label = "Blank",
-  QC_color = "#000000", Blank_color = "#A65628",
-  manual_color = c("#386cb0", "#ef3b2c", "#7fc97f", "#fdb462", "#984ea3",
-  "#a6cee3", "#778899", "#fb9a99", "#ffff33"))
+createClassAndColors(
+  class,
+  QC_label = "QC",
+  Blank_label = "Blank",
+  QC_color = "#000000",
+  Blank_color = "#A65628",
+  manual_color = c("#386cb0", "#ef3b2c", "#7fc97f", "#fdb462", "#984ea3", "#a6cee3",
+    "#778899", "#fb9a99", "#ffff33")
+)
 }
 \arguments{
 \item{class}{Vector of class labels.}

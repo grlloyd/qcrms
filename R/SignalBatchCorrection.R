@@ -1,4 +1,3 @@
-#' @import sbcms
 #' @import pmp
 #' @import openxlsx
 #'
@@ -142,7 +141,7 @@ SignalBatchCorrection <- function(QCreportObject)
 
   #S/B correction
 
-  SBcorrected <- sbcms::QCRSC(df=MV_filtered, order=metaData$injection_order,
+  SBcorrected <- pmp::QCRSC(df=MV_filtered, order=metaData$injection_order,
                         batch=metaData$batch, classes=class,
                         spar=0, minQC = 5)
   

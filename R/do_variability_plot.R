@@ -8,7 +8,8 @@
 #' @return Ggplot object with plot(s)
 #' @export
 
-do_variability_plot <- function (list_object, plotTitle=NULL, base_size = 12, subtitle=NULL, ylim=NULL)
+do_variability_plot <- function (list_object, plotTitle=NULL, base_size = 12, 
+  subtitle=NULL, ylim=NULL)
 {
   variability_method <- list_object$variability_method
   if (variability_method=="RSD") variability_method <- "RSD %"
@@ -29,6 +30,7 @@ do_variability_plot <- function (list_object, plotTitle=NULL, base_size = 12, su
   B <- data.frame (list_object=list_objects, class=plotClass$class)
 
   if(is.null(ylim)) ylim <- c(min(list_objects, na.rm=T), max(list_objects, na.rm=T))
+  if(length(ylim) == 1) ylim <- c(0, ylim)
 
   out <- ggplot (B, aes(y=list_object, x=class, colour=class, fill=class))+
     geom_violin(alpha=0.1, na.rm=T, show.legend = F, draw_quantiles = c(0.25,0.5,0.75))+

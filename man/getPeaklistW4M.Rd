@@ -4,8 +4,13 @@
 \alias{getPeaklistW4M}
 \title{This function prepares peaklist object from xcms output}
 \usage{
-getPeaklistW4M(xset, intval = "into", convertRTMinute = F,
-  numDigitsMZ = 4, numDigitsRT = 0)
+getPeaklistW4M(
+  xset,
+  intval = "into",
+  convertRTMinute = F,
+  numDigitsMZ = 4,
+  numDigitsRT = 0
+)
 }
 \arguments{
 \item{xset}{XCMS object to process}

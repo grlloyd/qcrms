@@ -4,13 +4,27 @@
 \alias{createQCreportObject}
 \title{Create initial qcrepotobject structure from input variable}
 \usage{
-createQCreportObject(data_file, projectdir, author = "", metaData_file,
-  raw_path = NULL, InternalProjectRef = "", Dataset = "",
-  Organisation = "", QC_label = "QC", Blank_label = "Blank",
-  classLabel = "Class", excludeQC = c(1:5), assay = NULL,
-  plot_eic = TRUE, pca_scores_labels = "all",
-  mv_filter_method = "across", mv_filter_frac = 0.5,
-  xcms_output = "xset", msms_label = "MSMS")
+createQCreportObject(
+  data_file,
+  projectdir,
+  author = "",
+  metaData_file,
+  raw_path = NULL,
+  InternalProjectRef = "",
+  Dataset = "",
+  Organisation = "",
+  QC_label = "QC",
+  Blank_label = "Blank",
+  classLabel = "Class",
+  excludeQC = c(1:5),
+  assay = NULL,
+  plot_eic = TRUE,
+  pca_scores_labels = "all",
+  mv_filter_method = "across",
+  mv_filter_frac = 0.5,
+  xcms_output = "xset",
+  msms_label = "MSMS"
+)
 }
 \arguments{
 \item{data_file}{Rdata file containing XCMS output, object should be called xset}

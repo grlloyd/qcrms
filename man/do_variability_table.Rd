@@ -4,8 +4,7 @@
 \alias{do_variability_table}
 \title{Create summary table of list object containing variabilty measures, for example output object of do_variability list function}
 \usage{
-do_variability_table(list_object, QC_label = "QC",
-  Blank_label = "Blank")
+do_variability_table(list_object, QC_label = "QC", Blank_label = "Blank")
 }
 \arguments{
 \item{list_object}{OUtput of dolist_object function}

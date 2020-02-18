@@ -1,5 +1,5 @@
 language: r
-r: bioc-devel
+r: bioc-release
 cache: 
   packages: true
 sudo: required
@@ -13,6 +13,8 @@ addons:
       - sourceline: 'ppa:cran/imagemagick'
     packages:
       - libmagick++-dev
+
+r_github_packages: computational-metabolomics/pmp#4d4d38f
 
 after_success:
     - Rscript -e 'covr::codecov()'

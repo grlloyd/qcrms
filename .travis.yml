@@ -13,6 +13,9 @@ addons:
       - sourceline: 'ppa:cran/imagemagick'
     packages:
       - libmagick++-dev
+      - libnetcdf-dev
+      - netcdf-bin
+      - libhdf5-dev
 
 r_github_packages: computational-metabolomics/pmp@R_3.6.x
 

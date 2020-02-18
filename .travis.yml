@@ -14,7 +14,7 @@ addons:
     packages:
       - libmagick++-dev
 
-r_github_packages: computational-metabolomics/pmp#4d4d38f
+r_github_packages: computational-metabolomics/pmp@R_3.6.x
 
 after_success:
     - Rscript -e 'covr::codecov()'

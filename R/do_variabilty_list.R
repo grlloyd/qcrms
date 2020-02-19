@@ -1,7 +1,12 @@
+#' @importFrom stats sd mad
+NULL
+
 #' Calculate RSD\% or MAD values per sample group of input peakmatrix
 #'
 #' @param peak_data peak matrix
 #' @param classes Vector of class labels
+#' @param method What method to use to summarise values. Supported methods are 
+#'  'RSD', 'MAD', 'median' and 'none'.
 #' @return List of RSD\% or MAD values for each feature for each sample group
 #' @export
 
@@ -23,7 +28,7 @@ do_variability_list <- function(peak_data, classes, method="RSD"){
   } else if (method == "none") {
     FUN <- NULL  
   }else {
-    stop ("Method specified is not supported")
+    stop ("Method specified is not supported.")
   }
   
   for (slab in 1: length(out)){

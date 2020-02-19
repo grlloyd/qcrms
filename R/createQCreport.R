@@ -1,4 +1,4 @@
-#' @import rmarkdown
+#' @importFrom rmarkdown render
 #' @import captioner
 #' @import pmp
 #' @import gridExtra
@@ -22,11 +22,13 @@ createQCreport <- function (QCreportObject, outputfile=NULL)
   source (file.path(system.file(package = "qcrms"), "captions", "Captions.R"))
   QCrmd <- file.path(system.file(package = "qcrms"), "rmd", "QC_report.Rmd")
 
-  render (QCrmd, output_format = "pdf_document", output_file = outputfile,
-          output_dir = QCreportObject$projectdir,
-          knit_root_dir = QCreportObject$projectdir,
-          intermediates_dir = QCreportObject$projectdir, clean = T)
+  rmarkdown::render (QCrmd, output_format = "pdf_document",
+    output_file = outputfile, output_dir = QCreportObject$projectdir,
+    knit_root_dir = QCreportObject$projectdir,
+    intermediates_dir = QCreportObject$projectdir, clean = T)
 
-  unlink (file.path(QCreportObject$projectdir, "functions"),recursive = T, force = T)
-  unlink (file.path(QCreportObject$projectdir, "Processing_steps"),recursive = T, force = T)
+  unlink (file.path(QCreportObject$projectdir, "functions"),recursive = T, 
+    force = T)
+  unlink (file.path(QCreportObject$projectdir, "Processing_steps"),
+    recursive = T, force = T)
 }

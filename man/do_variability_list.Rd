@@ -10,6 +10,9 @@ do_variability_list(peak_data, classes, method = "RSD")
 \item{peak_data}{peak matrix}
 
 \item{classes}{Vector of class labels}
+
+\item{method}{What method to use to summarise values. Supported methods are 
+'RSD', 'MAD', 'median' and 'none'.}
 }
 \value{
 List of RSD\% or MAD values for each feature for each sample group

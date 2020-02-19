@@ -103,11 +103,13 @@ XCMS_EIC_plot <- function (indexes, rawfiles, class, xset, Blank_label="Blank", 
 
     A$Class <- plotCols$class
 
-    chromPlots[[chromind]] <- ggplot (data=A, aes(x=rt, y=i, color=Class, group=sample))+ geom_line()+ theme_Publication(base_size = 12)+
-      scale_colour_manual(values=plotCols$manual_colors)+
-      xlab("retention time, s")+ylab("intensity")+
-      ggtitle(label=NULL, subtitle=ptitle)+
-      theme(legend.position = c(0.8, 0.8), legend.direction = "vertical")+
+    chromPlots[[chromind]] <- ggplot (data=A, 
+      aes_(x=~rt, y=~i, color=~Class, group=~sample)) + 
+      geom_line()+ theme_Publication(base_size = 12) +
+      scale_colour_manual(values=plotCols$manual_colors) +
+      xlab("retention time, s") + ylab("intensity") +
+      ggtitle(label=NULL, subtitle=ptitle) +
+      theme(legend.position = c(0.8, 0.8), legend.direction = "vertical") +
       theme(legend.title=element_blank())
 
   cat ("\n")

@@ -7,9 +7,11 @@
 prepare_boxplot_multiple_batches(vals, batch, class)
 }
 \arguments{
+\item{vals}{Data frame to be processed}
+
 \item{batch}{Vector with sample batch labels}
 
-\item{val}{Data frame to be processed}
+\item{class}{vector with sample clas labels}
 }
 \description{
 Prepare data for ggplot barplot

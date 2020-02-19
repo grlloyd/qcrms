@@ -1,4 +1,5 @@
-#' @import SummarizedExperiment
+#' @importFrom SummarizedExperiment assay
+#' @importFrom S4Vectors metadata
 NULL
 
 #' Wrapper function to transform data for statistical analysis
@@ -52,11 +53,12 @@ prepareData <- function (Data, classes, blank="BLANK", PQN=F, mv_impute=T,
       AllNa <- function (x) all(is.na(x))
 
       if (is.null(qc_label)){
-        hits2 <- which(apply(assay(Data),1,AllNa)==T)
+        hits2 <- which(apply(SummarizedExperiment::assay(Data),1,AllNa)==T)
       } else {
         
-        hits2 <- which(apply(assay(Data)[ ,classes == qc_label], 1, AllNa)==T)
-        hits2 <- append(hits2, which(apply(assay(Data)
+        hits2 <- which(apply(SummarizedExperiment::
+          assay(Data)[ ,classes == qc_label], 1, AllNa)==T)
+        hits2 <- append(hits2, which(apply(SummarizedExperiment::assay(Data)
           [ ,-c(which(classes==qc_label))], 1, AllNa) == T))
         hits2 <- unique(hits2)
       }
@@ -70,7 +72,8 @@ prepareData <- function (Data, classes, blank="BLANK", PQN=F, mv_impute=T,
 
     #pqn normalisation
     if (PQN==T & !is.null(qc_label)){
-      Data <- pmp::pqn_normalisation(df=Data, classes=classes, qc_label = qc_label)
+      Data <- pmp::pqn_normalisation(df=Data, classes=classes, 
+        qc_label = qc_label)
     }
 
     # mv imputation
@@ -82,9 +85,9 @@ prepareData <- function (Data, classes, blank="BLANK", PQN=F, mv_impute=T,
     #glog scaling
     if (glogScaling==T & !is.null(qc_label)){
       if (store_lambda) {
-        Data <- glog_transformation(df=Data, classes=classes, qc_label=qc_label,
-          store_lambda=TRUE)
-        lambda <- attributes(Data)$processing_history$glog_transformation$lambda_opt
+        Data <- glog_transformation(df=Data, classes=classes, qc_label=qc_label)
+        lambda <- 
+          attributes(Data)$processing_history$glog_transformation$lambda_opt
       } else {
         Data <- glog_transformation(df=Data, classes=classes, qc_label=qc_label)
         lambda <-NULL
@@ -93,7 +96,7 @@ prepareData <- function (Data, classes, blank="BLANK", PQN=F, mv_impute=T,
       lambda <- NULL
     }
     
-    metadata(Data)$original_data_structure <- "matrix"
+    S4Vectors::metadata(Data)$original_data_structure <- "matrix"
     Data <- pmp:::return_original_data_structure(Data)
     
     out <- list(Data, classes, RSD, lambda)

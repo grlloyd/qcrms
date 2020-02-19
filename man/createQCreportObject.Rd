@@ -27,17 +27,21 @@ createQCreportObject(
 )
 }
 \arguments{
-\item{data_file}{Rdata file containing XCMS output, object should be called xset}
+\item{data_file}{Rdata file containing XCMS output, object should be
+called xset}
 
-\item{projectdir}{Folder where Rdata file is located and where output should be directed}
+\item{projectdir}{Folder where Rdata file is located and where output should
+be directed}
 
 \item{author}{Character sring woth reports author name, optional}
 
-\item{metaData_file}{Files in xlsx format containing sample names and class labels}
+\item{metaData_file}{Files in xlsx format containing sample names and class
+labels}
 
 \item{raw_path}{File path where mzML files are located}
 
-\item{InternalProjectRef}{Character string containing project reference, optional}
+\item{InternalProjectRef}{Character string containing project reference, 
+optional}
 
 \item{Dataset}{Character string to describe data set, optional}
 
@@ -47,15 +51,19 @@ createQCreportObject(
 
 \item{Blank_label}{Label usef for QC samples}
 
-\item{classLabel}{Columns name in meta data file to use for class labels, default value is Class}
+\item{classLabel}{Columns name in meta data file to use for class labels, 
+default value is Class}
 
-\item{excludeQC}{Which QC samples to exclude from RSD\% calculations, signal batch correction and PCA plots}
+\item{excludeQC}{Which QC samples to exclude from RSD\% calculations, 
+signal batch correction and PCA plots}
 
-\item{assay}{Names for analytical assay, if set to NULL name of the input Rdata file will be used}
+\item{assay}{Names for analytical assay, if set to NULL name of the input 
+Rdata file will be used}
 
 \item{plot_eic}{Will create pdf fail with selected peak EIC's if set to TRUE}
 
-\item{pca_scores_labels}{Defines if sample labels should be added to filtered data PCA scores plot}
+\item{pca_scores_labels}{Defines if sample labels should be added to 
+filtered data PCA scores plot}
 
 \item{mv_filter_method}{Defines what method for MV filter}
 

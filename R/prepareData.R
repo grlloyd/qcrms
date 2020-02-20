@@ -31,7 +31,6 @@ prepareData <- function (Data, classes, blank="BLANK", PQN=F, mv_impute=T,
     
     rem_samples <- NULL
     if (!is.null(blank)){
-      
       rem_samples <- which(classes==blank)
     }
       
@@ -48,7 +47,7 @@ prepareData <- function (Data, classes, blank="BLANK", PQN=F, mv_impute=T,
     # Remove rows (features) with all NA's in QC sample or in analytical sample. 
     # It can happen if we process data from more than one batch.
     
-    if (checkNA==T){
+    if (checkNA == TRUE){
       
       AllNa <- function (x) all(is.na(x))
 
@@ -83,11 +82,11 @@ prepareData <- function (Data, classes, blank="BLANK", PQN=F, mv_impute=T,
     }
 
     #glog scaling
-    if (glogScaling==T & !is.null(qc_label)){
+    if (glogScaling == T & !is.null(qc_label)){
       if (store_lambda) {
         Data <- glog_transformation(df=Data, classes=classes, qc_label=qc_label)
         lambda <- 
-          attributes(Data)$processing_history$glog_transformation$lambda_opt
+          S4Vectors::metadata(Data)$processing_history$glog_transformation$lambda_opt
       } else {
         Data <- glog_transformation(df=Data, classes=classes, qc_label=qc_label)
         lambda <-NULL

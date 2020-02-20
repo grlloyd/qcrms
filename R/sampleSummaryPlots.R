@@ -34,8 +34,9 @@ sampleSummaryPlots <- function(QCreportObject)
     xlab("Injection order") + ylab("Total ion intensity of raw data")
 
   QCreportObject$plots$ticplot_2 <- ggplot2::ggplot (data=A, aes_(x=~label,
-      y=~TICe, color=class, label=sample)) +
-    geom_line (mapping=aes_(x=~label, y=~TICe), colour="#C0C0C0") + geom_point() +
+      y=~TICe, color=~class, label=~sample)) +
+    geom_line (mapping=aes_(x=~label, y=~TICe), colour="#C0C0C0") + 
+    geom_point() +
     scale_colour_manual(values=QCreportObject$plotClass$manual_colors) + 
     theme_Publication(base_size=12)+
     xlab("Injection order") + ylab("Total ion intensity of extracted features")

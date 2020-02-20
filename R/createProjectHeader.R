@@ -1,7 +1,6 @@
 #' Create a header for QC report
 #'
 #' @param QCreportObject QCreportObject
-#' @export
 
 createProjectHeader <- function (QCreportObject)
 {
@@ -16,22 +15,28 @@ createProjectHeader <- function (QCreportObject)
 
   QCreportObject$projectHeader <- dat
 
-  QCreportObject$peakPickingParams <- c("Number of peak groups:", nrow(QCreportObject$peakMatrix))
-  QCreportObject$peakPickingParams <- rbind(QCreportObject$peakPickingParams, NULL)
+  QCreportObject$peakPickingParams <- c("Number of peak groups:", 
+    nrow(QCreportObject$peakMatrix))
+  QCreportObject$peakPickingParams <- 
+    rbind(QCreportObject$peakPickingParams, NULL)
   
   if (!is.null(QCreportObject$listOFlistArguments))
   {
-    col1 <- c("method","ppm","peakwidth","mzdif","snthresh","integrate","noise","prefilter")
+    col1 <-  c("method", "ppm", "peakwidth", "mzdif", "snthresh", "integrate",
+      "noise", "prefilter")
     col2 <- c(QCreportObject$listOFlistArguments[[1]]$method,
               QCreportObject$listOFlistArguments[[1]]$ppm,
-              paste(QCreportObject$listOFlistArguments[[1]]$peakwidth, collapse = "-"),
+              paste(QCreportObject$listOFlistArguments[[1]]$peakwidth, 
+                collapse = "-"),
               QCreportObject$listOFlistArguments[[1]]$mzdiff,
               QCreportObject$listOFlistArguments[[1]]$snthresh,
               QCreportObject$listOFlistArguments[[1]]$integrate,
               QCreportObject$listOFlistArguments[[1]]$noise,
-              paste(QCreportObject$listOFlistArguments[[1]]$prefilter,collapse=", "))
+              paste(QCreportObject$listOFlistArguments[[1]]$prefilter, 
+                collapse=", "))
     
-    QCreportObject$peakPickingParams <- rbind(QCreportObject$peakPickingParams,cbind(col1, col2))
+    QCreportObject$peakPickingParams <- rbind(QCreportObject$peakPickingParams, 
+      cbind(col1, col2))
   }
   
   colnames(QCreportObject$peakPickingParams) <- c("","")

@@ -48,14 +48,14 @@ SignalBatchCorrection <- function(QCreportObject)
   # MV filter for all samples
   sample_filtered <- filter_samples_by_mv(df=blank_filtered, max_perc_mv=0.5,
     classes = NULL)
-  if (any(sample_filtered$flags[,2]==0)){
-    class <- class[as.logical(sample_filtered$flags[,2])]
-    metaData <- metaData[as.logical(sample_filtered$flags[,2]), ]
+  flags <- attributes(sample_filtered)$flags
+  if (any(flags[ , "filter_samples_by_mv_flags"] == 0)){
+    class <- class[as.logical(flags[ , "filter_samples_by_mv_flags"])]
+    metaData <- metaData[as.logical(flags[ , "filter_samples_by_mv_flags"]), ]
     QCreportObject$filtering$table$`Number of samples`[3:5] <- 
-      ncol(sample_filtered$df)
+      ncol(sample_filtered)
     QCreportObject$filtering$samples_removed <- 
-      sort(rownames(sample_filtered$flags)[sample_filtered$flags[,2]==0])
-    sample_filtered <- sample_filtered$df
+      sort(rownames(flags)[flags[ , "filter_samples_by_mv_flags"]==0])
   } else {
     sample_filtered <- blank_filtered
   }
@@ -63,14 +63,14 @@ SignalBatchCorrection <- function(QCreportObject)
   # QC MV fraction filter
   # MV in QC samples
   MV_filtered <- filter_peaks_by_fraction(sample_filtered, min_frac = 0.9,
-    classes=class, method = "QC", qc_label = QCreportObject$QC_label)[[1]]
+    classes=class, method = "QC", qc_label = QCreportObject$QC_label)
   QCreportObject$filtering$table$`Number of features`[4:5] <- nrow(MV_filtered)
 
   # MV filter across all samples or within class
   MV_filtered <- filter_peaks_by_fraction(MV_filtered,
     min_frac = QCreportObject$filtering$mv_filter_frac,
     classes=class, method = QCreportObject$filtering$mv_filter_method,
-    qc_label = NULL)[[1]]
+    qc_label = NULL)
   
   QCreportObject$filtering$table$`Number of features`[5] <- nrow(MV_filtered)
   

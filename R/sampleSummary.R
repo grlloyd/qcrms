@@ -40,7 +40,7 @@ sampleSummary <- function (QCreportObject)
       metaDataTable <- read.xlsx(xlsxFile = QCreportObject$metaData$file,
         sheet=sheet)
     } else {
-      metaDataTable <- read.table(QCreportObject$metaData$file, header=TRUE,
+      metaDataTable <- read.csv(QCreportObject$metaData$file, header=TRUE,
         check.names=FALSE)
     }
     

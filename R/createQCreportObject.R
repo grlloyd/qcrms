@@ -107,6 +107,9 @@ createQCreportObject <- function(data_file,
     }
     
   } else {
+    if (!exists(QCreportObject$data_file)){
+      stop("Specified input data file doesn't exist or can't be accessed!")
+    }
     QCreportObject$peakMatrix = as.matrix(read.csv(QCreportObject$data_file, 
     header=TRUE, row.names=1, check.names=FALSE))
   }

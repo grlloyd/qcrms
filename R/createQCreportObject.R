@@ -1,14 +1,14 @@
-#' @import xcms 
+#' @import xcms
 #' @importFrom utils read.csv
 NULL
 
 #' Check if input is a text file or xlsx file
-#' 
+#'
 #' @param path path to the file
 
-file_type <- function(path){
-  f = file(path)
-  ext = summary(f)$class
+file_type <- function(path) {
+  f <- file(path)
+  ext <- summary(f)$class
   close.connection(f)
   ext
 }
@@ -23,20 +23,20 @@ file_type <- function(path){
 #' @param metaData_file Files in xlsx format containing sample names and class
 #'  labels
 #' @param raw_path File path where mzML files are located
-#' @param InternalProjectRef Character string containing project reference, 
+#' @param InternalProjectRef Character string containing project reference,
 #'  optional
 #' @param Dataset Character string to describe data set, optional
 #' @param Organisation Character string containing organisation name, optional
 #' @param QC_label Label used for QC samples
 #' @param Blank_label Label usef for QC samples
-#' @param classLabel Columns name in meta data file to use for class labels, 
+#' @param classLabel Columns name in meta data file to use for class labels,
 #'  default value is Class
-#' @param excludeQC Which QC samples to exclude from RSD\% calculations, 
+#' @param excludeQC Which QC samples to exclude from RSD\% calculations,
 #'  signal batch correction and PCA plots
-#' @param assay Names for analytical assay, if set to NULL name of the input 
+#' @param assay Names for analytical assay, if set to NULL name of the input
 #'  Rdata file will be used
 #' @param plot_eic Will create pdf fail with selected peak EIC's if set to TRUE
-#' @param pca_scores_labels Defines if sample labels should be added to 
+#' @param pca_scores_labels Defines if sample labels should be added to
 #'  filtered data PCA scores plot
 #' @param mv_filter_method Defines what method for MV filter
 #' @param mv_filter_frac Threshod of faction of detection of MV filter
@@ -62,66 +62,66 @@ createQCreportObject <- function(data_file,
   mv_filter_method="across",
   mv_filter_frac=0.5,
   xcms_output="xset",
-  msms_label="MSMS"){
+  msms_label="MSMS") {
 
   QCreportObject <- list()
 
   QCreportObject$xcms_output <- xcms_output
-  
+
   QCreportObject$pca_scores_labels <- pca_scores_labels
   QCreportObject$data_file <- data_file
   QCreportObject$projectdir <- projectdir
-  
+
   QCreportObject$filtering <- list()
   QCreportObject$filtering$mv_filter_method <- mv_filter_method
   QCreportObject$filtering$mv_filter_frac <- mv_filter_frac
-  
+
   # load data and create peakMatrix from Rdata or tab-separated file
 
   setwd(QCreportObject$projectdir)
-  
-  if (file_type(QCreportObject$data_file) == "gzfile" || 
-      grepl(".rdata", tolower(QCreportObject$data_file)) || 
-      tolower(tools::file_ext(QCreportObject$data_file)) == ".rdata"){
-    load (QCreportObject$data_file) # includes xset
-    if (!exists(QCreportObject$xcms_output)){
-      stop ("Please check that XCMS object set in xcms_ouput can't be located.")
+
+  if (file_type(QCreportObject$data_file) == "gzfile" ||
+      grepl(".rdata", tolower(QCreportObject$data_file)) ||
+      tolower(tools::file_ext(QCreportObject$data_file)) == ".rdata") {
+    load(QCreportObject$data_file) # includes xset
+    if (!exists(QCreportObject$xcms_output)) {
+      stop("Please check that XCMS object set in xcms_ouput can't be located.")
     }
-    
-    if (class(get(QCreportObject$xcms_output)) == "xcmsSet"){
+
+    if (class(get(QCreportObject$xcms_output)) == "xcmsSet") {
       QCreportObject$xset <- get(QCreportObject$xcms_output)
-    } else if (class(get(QCreportObject$xcms_output)) == "XCMSnExp"){
+    } else if (class(get(QCreportObject$xcms_output)) == "XCMSnExp") {
       QCreportObject$xset <- as(get(QCreportObject$xcms_output), "xcmsSet")
-      rownames(QCreportObject$xset@phenoData) <- sub(".mzML", "", 
+      rownames(QCreportObject$xset@phenoData) <- sub(".mzML", "",
         rownames(QCreportObject$xset@phenoData))
-      QCreportObject$xset@phenoData$class <- 
+      QCreportObject$xset@phenoData$class <-
         rep(1, nrow(QCreportObject$xset@phenoData))
       QCreportObject$xset@phenoData$sampleNames <- NULL
     }
-    
-    QCreportObject$peakMatrix <- xcms::groupval(object=QCreportObject$xset, 
-      method="medret",value="into",intensity="into")
-    
-    if (exists ("listOFlistArguments")){
+
+    QCreportObject$peakMatrix <- xcms::groupval(object=QCreportObject$xset,
+      method="medret", value="into", intensity="into")
+
+    if (exists("listOFlistArguments")) {
       QCreportObject$listOFlistArguments <- listOFlistArguments
     }
-    
+
   } else {
-    if (!exists(QCreportObject$data_file)){
+    if (!exists(QCreportObject$data_file)) {
       stop("Specified input data file doesn't exist or can't be accessed!")
     }
-    QCreportObject$peakMatrix = as.matrix(read.csv(QCreportObject$data_file, 
+    QCreportObject$peakMatrix <- as.matrix(read.csv(QCreportObject$data_file,
     header=TRUE, row.names=1, check.names=FALSE))
   }
 
-  projectInfo <- list ()
+  projectInfo <- list()
   projectInfo$author <- author
   projectInfo$InternalProjectRef <- InternalProjectRef
   projectInfo$Dataset <- Dataset
   projectInfo$Organisation <- Organisation
-  
-  if (is.null(assay)){
-    projectInfo$assay <- sub(pattern = ".Rdata","",QCreportObject$data_file)
+
+  if (is.null(assay)) {
+    projectInfo$assay <- sub(pattern = ".Rdata", "", QCreportObject$data_file)
   } else {
     projectInfo$assay <- assay
   }
@@ -129,12 +129,10 @@ createQCreportObject <- function(data_file,
   QCreportObject$projectInfo <- projectInfo
   QCreportObject$projectdir <- projectdir
 
-  #QCreportObject$codebase <- codebase
-
-  metaData <- list ()
+  metaData <- list()
   metaData$file <- metaData_file
   metaData$classColumn <- classLabel
-  
+
   QCreportObject$metaData <- metaData
 
   QCreportObject$raw_path <- raw_path
@@ -143,9 +141,9 @@ createQCreportObject <- function(data_file,
   QCreportObject$msms_label <- msms_label
   QCreportObject$Blank_label <- Blank_label
 
-  QCreportObject$pdfout <- file.path(QCreportObject$projectdir, 
+  QCreportObject$pdfout <- file.path(QCreportObject$projectdir,
     paste(QCreportObject$projectInfo$assay, "_EICs.pdf", sep=""))
-  QCreportObject$xlsxout <- file.path(QCreportObject$projectdir, 
+  QCreportObject$xlsxout <- file.path(QCreportObject$projectdir,
     paste(QCreportObject$projectInfo$assay, ".xlsx", sep=""))
 
   QCreportObject$plots <- list()
@@ -155,33 +153,32 @@ createQCreportObject <- function(data_file,
   QCreportObject$excludeQC <- excludeQC
 
   QCreportObject <- createProjectHeader(QCreportObject=QCreportObject)
-  
+
   QCreportObject <- sampleSummary(QCreportObject = QCreportObject)
-  
+
   QCreportObject <- sampleSummaryPlots(QCreportObject = QCreportObject)
-  
+
   QCreportObject <- PCA(QCreportObject = QCreportObject)
-  
+
   # RT shifts
-  if (!is.null(QCreportObject$xset)){
+  if (!is.null(QCreportObject$xset)) {
     QCreportObject <- RTstabilityAssement(QCreportObject=QCreportObject)
   }
-  
-  if (!is.null(QCreportObject$xset) & plot_eic==TRUE){
-    
+
+  if (!is.null(QCreportObject$xset) & plot_eic == TRUE) {
     QCreportObject <- EICs(QCreportObject = QCreportObject)
   }
-  
+
   QCreportObject <- missingValues(QCreportObject = QCreportObject)
-  
+
   QCreportObject <- RSDstatistics(QCreportObject = QCreportObject)
-  
-  if (!is.null(QCreportObject$QC_label)) 
+
+  if (!is.null(QCreportObject$QC_label))
     QCreportObject <- QC(QCreportObject = QCreportObject)
-  
+
   QCreportObject <- createXlsx(QCreportObject = QCreportObject)
-  
-  if (!is.null(QCreportObject$QC_label)) 
+
+  if (!is.null(QCreportObject$QC_label))
     QCreportObject <- SignalBatchCorrection(QCreportObject = QCreportObject)
 
   QCreportObject

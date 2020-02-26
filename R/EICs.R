@@ -10,17 +10,18 @@ NULL
 #' @export
 
 
-EICs <- function (QCreportObject)
-{
+EICs <- function(QCreportObject) {
   QCreportObject$xset@filepaths <- QCreportObject$raw_paths
 
-  # Exclude QC and Blank samples from max intensity calculation, as these can be very noisy signals
-  maxints <- apply(QCreportObject$peakMatrix[,-c(QCreportObject$QC_hits,QCreportObject$Blank_hits)],
-                 1, max, na.rm=T)
+  # Exclude QC and Blank samples from max intensity calculation, as these
+  # can be very noisy signals
+  maxints <- apply(QCreportObject$peakMatrix[,
+    -c(QCreportObject$QC_hits, QCreportObject$Blank_hits)], 1L, max, na.rm=TRUE)
 
   # How many samples in total present per class
   gColn <- ncol(QCreportObject$xset@groups)
-  totalCount <- apply(cbind(QCreportObject$xset@groups[,8:gColn],NULL), 1, sum)
+  totalCount <-
+    apply(cbind(QCreportObject$xset@groups[, 8L:gColn], NULL), 1L, sum)
 
   # Check only these peakSets which are detected in at least 90% of samples
   ghits <- which(totalCount/nrow(QCreportObject$xset@phenoData)>=0.9)
@@ -28,55 +29,58 @@ EICs <- function (QCreportObject)
   maxints[-c(ghits)] <- NA
 
   # Remove peaks eluating before 90s
-  RThits <- which (QCreportObject$xset@groups[,5]<90)
+  RThits <- which(QCreportObject$xset@groups[, 5L] < 90.0)
 
-  if (length(RThits)>0) maxints[RThits] <- NA
+  if (length(RThits) > 0L) maxints[RThits] <- NA
 
-  # To avoid plotting fragments, isotopes etc from one single metaboilite. Randomly select 10 peak sets from most intense and present
-  # in 90% of samples
+  # To avoid plotting fragments, isotopes etc from one single metaboilite.
+  # Randomly select 10 peak sets from most intense and present in 90% of samples
 
-  inthits <- order(maxints, decreasing = T)[1:200]
-  inthits <- inthits[sample(1:200,10)]
+  inthits <- order(maxints, decreasing=TRUE)[seq_len(200L)]
+  inthits <- inthits[sample(seq_len(200L), 10L)]
 
-  # Check if selected indices are within range of extracted peak table, replace 1 with 2. And te max peak nemubre with it's -1 value
-  inthits[inthits == 1] <- 2
-  inthits[inthits == nrow(QCreportObject$peakMatrix)] <- nrow(QCreportObject$peakMatrix)-1
+  # Check if selected indices are within range of extracted peak table,
+  # replace 1 with 2. And te max peak nemubre with it's -1 value
+  inthits[inthits == 1L] <- 2L
+  inthits[inthits == nrow(QCreportObject$peakMatrix)] <-
+    nrow(QCreportObject$peakMatrix) - 1L
 
   inthits2 <- NULL
 
-  for (inth in 1:10) {
-    inthits2 <- append(inthits2,c(inthits[inth], inthits[inth]-1, inthits[inth]+1))
-
+  for (inth in seq_len(10L)) {
+    inthits2 <- append(inthits2, c(inthits[inth], inthits[inth] - 1L,
+      inthits[inth] + 1L))
   }
 
-  # Using MSnBase package chromatograms function, will work only with MSnBase 2.4.0 or later. Bioconductor 3.6
+  # Using MSnBase package chromatograms function, will work only with
+  # MSnBase 2.4.0 or later. Bioconductor 3.6
   rawf <- vector("list", length(QCreportObject$xset@filepaths))
-  
-  system.time ( {
-    for (num in 1:length(rawf)) {
+
+  system.time({
+    for (num in seq_len(rawf)) {
         cat("Reading data file: ", num, "\n")
         if (file.exists(QCreportObject$xset@filepaths[num])) {
-          rawf[[num]] <- MSnbase::readMSData(QCreportObject$xset@filepaths[num], mode="onDisk")
+          rawf[[num]] <- MSnbase::readMSData(QCreportObject$xset@filepaths[num],
+            mode="onDisk")
         }
       }
     })
 
-  # PDF
-  #pdf (paste(outputF,"QC_EICS.pdf",sep="/"))
-  
   #Class labels have to be reordereng according MS files in XCMS object
-  class <- QCreportObject$metaData$samp_lab[order(order(QCreportObject$timestamps))]
-  
-  plots <- XCMS_EIC_plot(indexes = inthits2, rawfiles = rawf, class=class, xset=QCreportObject$xset)
+  class <-
+    QCreportObject$metaData$samp_lab[order(order(QCreportObject$timestamps))]
 
-  ml <- marrangeGrob(plots, nrow=3, ncol=1)
-  ggsave (QCreportObject$pdfout, ml, width=20, height=28, units="cm")
+  plots <- XCMS_EIC_plot(indexes=inthits2, rawfiles=rawf, class=class,
+    xset=QCreportObject$xset)
 
-  inthits <- order(maxints, decreasing = T)[1]
-  inthits2 <- c(inthits, inthits-1, inthits+1)
+  ml <- marrangeGrob(plots, nrow=3L, ncol=1L)
+  ggsave(QCreportObject$pdfout, ml, width=20L, height=28L, units="cm")
 
-  QCreportObject$plots$EICs  <- qcrms::XCMS_EIC_plot(indexes = inthits2[1:3], 
-    rawfiles = rawf, class = class,
+  inthits <- order(maxints, decreasing=TRUE)[1L]
+  inthits2 <- c(inthits, inthits - 1L, inthits + 1L)
+
+  QCreportObject$plots$EICs  <- qcrms::XCMS_EIC_plot(indexes=inthits2[1L:3L],
+    rawfiles=rawf, class=class,
     xset=QCreportObject$xset)
 
   QCreportObject

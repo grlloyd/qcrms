@@ -7,15 +7,16 @@
 getPeaklistW4M(
   xset,
   intval = "into",
-  convertRTMinute = F,
-  numDigitsMZ = 4,
-  numDigitsRT = 0
+  convertRTMinute = FALSE,
+  numDigitsMZ = 4L,
+  numDigitsRT = 0L
 )
 }
 \arguments{
 \item{xset}{XCMS object to process}
 
-\item{intval}{Which value to use for peak area, see XCMS manual for more details}
+\item{intval}{Which value to use for peak area, see XCMS manual for more
+details}
 
 \item{convertRTMinute}{If RT shoudl be converted from seconds to minutes}
 

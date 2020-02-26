@@ -9,18 +9,18 @@ doSummaryPlot(
   classes,
   plotTitle = "PCA",
   blank = "BLANK",
-  PQN = F,
-  mv_impute = T,
-  glogScaling = T,
-  scale = T,
+  PQN = FALSE,
+  mv_impute = TRUE,
+  glogScaling = TRUE,
+  scale = TRUE,
   qc_label = "QC",
   ignorelabel = "Removed",
   output = "PCA_plot.pdf",
   labels = "QC",
-  qc_shape = 17,
-  base_size = 10,
-  pccomp = c(1, 2),
-  plot = T
+  qc_shape = 17L,
+  base_size = 10L,
+  pccomp = c(1L, 2L),
+  plot = TRUE
 )
 }
 \arguments{
@@ -30,23 +30,28 @@ doSummaryPlot(
 
 \item{plotTitle}{Title to use for plot output}
 
-\item{blank}{Label used for blank samples, if set to NULL no samples will be removed}
+\item{blank}{Label used for blank samples, if set to NULL no samples will be
+removed}
 
 \item{PQN}{Can be set to T or F, to perform PQN normalisation}
 
-\item{mv_impute}{T or F, indicates if missing value imputation has to be carried}
+\item{mv_impute}{T or F, indicates if missing value imputation has to be
+carried}
 
 \item{glogScaling}{T or F, applie glog transformation to the given data}
 
 \item{scale}{Perform UV scaling on data}
 
-\item{qc_label}{Label used for QC samples. If set to NULL, assumes that no QC samples are present in data set}
+\item{qc_label}{Label used for QC samples. If set to NULL, assumes that no
+QC samples are present in data set}
 
-\item{ignorelabel}{Label for samples which should be excluded from processed data}
+\item{ignorelabel}{Label for samples which should be excluded from processed
+data}
 
 \item{output}{File name for pdf output}
 
-\item{labels}{Can be set to "QC" to label only QC samples. "none" to no include labels. If set to any other value will use column names of Data.}
+\item{labels}{Can be set to "QC" to label only QC samples. "none" to no
+include labels. If set to any other value will use column names of Data.}
 
 \item{qc_shape}{Shape symbol to use for QC samples}
 

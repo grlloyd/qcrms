@@ -48,14 +48,14 @@ createQCreportObject <- function(data_file,
   projectdir,
   author="",
   metaData_file,
-  raw_path = NULL,
+  raw_path=NULL,
   InternalProjectRef="",
   Dataset="",
   Organisation="",
   QC_label="QC",
   Blank_label="Blank",
   classLabel="Class",
-  excludeQC=c(1:5),
+  excludeQC=c(1L:5L),
   assay=NULL,
   plot_eic=TRUE,
   pca_scores_labels="all",
@@ -95,7 +95,7 @@ createQCreportObject <- function(data_file,
       rownames(QCreportObject$xset@phenoData) <- sub(".mzML", "",
         rownames(QCreportObject$xset@phenoData))
       QCreportObject$xset@phenoData$class <-
-        rep(1, nrow(QCreportObject$xset@phenoData))
+        rep(1L, nrow(QCreportObject$xset@phenoData))
       QCreportObject$xset@phenoData$sampleNames <- NULL
     }
 
@@ -111,7 +111,7 @@ createQCreportObject <- function(data_file,
       stop("Specified input data file doesn't exist or can't be accessed!")
     }
     QCreportObject$peakMatrix <- as.matrix(read.csv(QCreportObject$data_file,
-    header=TRUE, row.names=1, check.names=FALSE))
+    header=TRUE, row.names=1L, check.names=FALSE))
   }
 
   projectInfo <- list()
@@ -121,7 +121,7 @@ createQCreportObject <- function(data_file,
   projectInfo$Organisation <- Organisation
 
   if (is.null(assay)) {
-    projectInfo$assay <- sub(pattern = ".Rdata", "", QCreportObject$data_file)
+    projectInfo$assay <- sub(pattern=".Rdata", "", QCreportObject$data_file)
   } else {
     projectInfo$assay <- assay
   }
@@ -154,11 +154,11 @@ createQCreportObject <- function(data_file,
 
   QCreportObject <- createProjectHeader(QCreportObject=QCreportObject)
 
-  QCreportObject <- sampleSummary(QCreportObject = QCreportObject)
+  QCreportObject <- sampleSummary(QCreportObject=QCreportObject)
 
-  QCreportObject <- sampleSummaryPlots(QCreportObject = QCreportObject)
+  QCreportObject <- sampleSummaryPlots(QCreportObject=QCreportObject)
 
-  QCreportObject <- PCA(QCreportObject = QCreportObject)
+  QCreportObject <- PCA(QCreportObject=QCreportObject)
 
   # RT shifts
   if (!is.null(QCreportObject$xset)) {
@@ -166,21 +166,20 @@ createQCreportObject <- function(data_file,
   }
 
   if (!is.null(QCreportObject$xset) & plot_eic == TRUE) {
-    QCreportObject <- EICs(QCreportObject = QCreportObject)
+    QCreportObject <- EICs(QCreportObject=QCreportObject)
   }
 
-  QCreportObject <- missingValues(QCreportObject = QCreportObject)
+  QCreportObject <- missingValues(QCreportObject=QCreportObject)
 
-  QCreportObject <- RSDstatistics(QCreportObject = QCreportObject)
-
-  if (!is.null(QCreportObject$QC_label))
-    QCreportObject <- QC(QCreportObject = QCreportObject)
-
-  QCreportObject <- createXlsx(QCreportObject = QCreportObject)
+  QCreportObject <- RSDstatistics(QCreportObject=QCreportObject)
 
   if (!is.null(QCreportObject$QC_label))
-    QCreportObject <- SignalBatchCorrection(QCreportObject = QCreportObject)
+    QCreportObject <- QC(QCreportObject=QCreportObject)
+
+  QCreportObject <- createXlsx(QCreportObject=QCreportObject)
+
+  if (!is.null(QCreportObject$QC_label))
+    QCreportObject <- SignalBatchCorrection(QCreportObject=QCreportObject)
 
   QCreportObject
 }
-

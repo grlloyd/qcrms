@@ -1,10 +1,10 @@
 context("test-dosummaryplot")
 
 test_that("dosummaryplot creates ggplot output", {
-  out <- doSummaryPlot (Data=testData$data, classes=testData$class, plotTitle="PCA", 
-                 blank=NULL, PQN=F, mv_impute=T, glogScaling=T, scale=T, qc_label="QC", 
-                 ignorelabel="Removed", labels="all", qc_shape=17, base_size = 10, 
-                 pccomp=c(1,2), plot=F)
+  out <- doSummaryPlot (Data=testData$data, classes=testData$class,
+    plotTitle="PCA", blank=NULL, PQN=F, mv_impute=T, glogScaling=T, scale=T,
+    qc_label="QC", ignorelabel="Removed", labels="all", qc_shape=17, 
+    base_size = 10, pccomp=c(1,2), plot=F)
   expect_true(is(out[[1]], "ggplot"))
   expect_true(is(out[[2]], "ggplot"))
 })
@@ -15,9 +15,9 @@ test_that("dosummaryplot creates ggplot output for several batches", {
   titleList <- list("Batch 1", "Batch 2")
   
   out <- doSummaryPlot (Data=dataList, classes=classList, plotTitle=titleList, 
-                        blank=NULL, PQN=F, mv_impute=T, glogScaling=T, scale=T, qc_label=NULL, 
-                        ignorelabel="Removed", labels="all", qc_shape=17, base_size = 10, 
-                        pccomp=c(1,2), plot=F)
+    blank=NULL, PQN=F, mv_impute=T, glogScaling=T, scale=T, qc_label=NULL, 
+    ignorelabel="Removed", labels="all", qc_shape=17, base_size = 10, 
+    pccomp=c(1,2), plot=F)
   expect_true(is(out[[1]], "ggplot"))
   expect_true(is(out[[2]], "ggplot"))
   expect_true(is(out[[3]], "ggplot"))
@@ -25,8 +25,8 @@ test_that("dosummaryplot creates ggplot output for several batches", {
 })
 
 test_that("dosummaryplot stops if input isn't list or data.frame/matrix", {
-  expect_error(doSummaryPlot (Data=testData$data[,1], classes=testData$class, plotTitle="PCA", 
-                        blank=NULL, PQN=F, mv_impute=T, glogScaling=T, scale=T, qc_label="QC", 
-                        ignorelabel="Removed", labels="all", qc_shape=17, base_size = 10, 
-                        pccomp=c(1,2), plot=F))
+  expect_error(doSummaryPlot (Data=testData$data[,1], classes=testData$class,
+    plotTitle="PCA", blank=NULL, PQN=F, mv_impute=T, glogScaling=T, scale=T, 
+    qc_label="QC", ignorelabel="Removed", labels="all", qc_shape=17, 
+    base_size = 10, pccomp=c(1,2), plot=F))
 })

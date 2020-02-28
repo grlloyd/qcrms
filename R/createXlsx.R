@@ -45,7 +45,6 @@ RTSecondToMinute <- function(variableMetadata, convertRTMinute) {
 #' @param convertRTMinute If RT shoudl be converted from seconds to minutes
 #' @param numDigitsRT decimal digits for RT
 #' @param numDigitsMZ number of deciaml digits for mz
-#' @export
 
 #@Modified from W4M code by G. Le Corguille
 # value: intensity values to be used into, maxo or intb
@@ -72,7 +71,6 @@ getPeaklistW4M <- function(xset, intval="into", convertRTMinute=FALSE,
 #' Create xlsx output file from XCMS output
 #'
 #' @param QCreportObject Qcreport object
-#' @export
 
 createXlsx <- function(QCreportObject) {
 

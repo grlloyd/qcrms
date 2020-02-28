@@ -8,12 +8,12 @@ prepareData(
   Data,
   classes,
   blank = "BLANK",
-  PQN = F,
-  mv_impute = T,
-  glogScaling = T,
+  PQN = FALSE,
+  mv_impute = TRUE,
+  glogScaling = TRUE,
   qc_label = "QC",
   ignorelabel = "Removed",
-  checkNA = T,
+  checkNA = TRUE,
   store_lambda = FALSE
 )
 }
@@ -41,7 +41,7 @@ data.}
 \item{checkNA}{removes rows or columns containing all NA's, also will chek
 if only all QC or analytical samples contain missing values.}
 
-\item{store_lambda}{If value of glog optimised lambda parameter needs to be 
+\item{store_lambda}{If value of glog optimised lambda parameter needs to be
 returned.}
 }
 \value{

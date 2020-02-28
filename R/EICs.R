@@ -7,8 +7,6 @@ NULL
 #' Create plots for EICs
 #'
 #' @param QCreportObject Qcreport object
-#' @export
-
 
 EICs <- function(QCreportObject) {
   QCreportObject$xset@filepaths <- QCreportObject$raw_paths

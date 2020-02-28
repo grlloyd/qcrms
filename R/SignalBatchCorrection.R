@@ -6,8 +6,6 @@ NULL
 #' Apply signal batch correction
 #'
 #' @param QCreportObject Qcreport object
-#' @export
-
 
 SignalBatchCorrection <- function(QCreportObject) {
   wb <- openxlsx::loadWorkbook(file=QCreportObject$xlsxout)

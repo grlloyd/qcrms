@@ -2,7 +2,8 @@
 % Please edit documentation in R/ggplot_theme_pub.R
 \name{createClassAndColors}
 \alias{createClassAndColors}
-\title{Function to create sorted class labels and colors for reproducable ggplot objects}
+\title{Function to create sorted class labels and colors for reproducable ggplot
+objects}
 \usage{
 createClassAndColors(
   class,
@@ -17,9 +18,11 @@ createClassAndColors(
 \arguments{
 \item{class}{Vector of class labels.}
 
-\item{QC_label}{Label used for QC samples. If set to NULL, assumes that no QC samples are present in data set}
+\item{QC_label}{Label used for QC samples. If set to NULL, assumes that no
+QC samples are present in data set}
 
-\item{Blank_label}{Label used for blank samples, if set to NULL no samples will be removed}
+\item{Blank_label}{Label used for blank samples, if set to NULL no samples
+will be removed}
 
 \item{QC_color}{Color to use for QC samples}
 
@@ -31,5 +34,6 @@ createClassAndColors(
 List of processed data table and RSD% per sample class
 }
 \description{
-Function to create sorted class labels and colors for reproducable ggplot objects
+Function to create sorted class labels and colors for reproducable ggplot
+objects
 }

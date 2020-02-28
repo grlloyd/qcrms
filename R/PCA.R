@@ -7,7 +7,6 @@ NULL
 #' Perform severl PCA models and create plots
 #'
 #' @param QCreportObject Qcreport object
-#' @export
 
 PCA <- function(QCreportObject) {
 

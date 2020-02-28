@@ -5,7 +5,6 @@ NULL
 #' Create QCreport data object to asses RSD
 #'
 #' @param QCreportObject Qcreport object
-#' @export
 
 RSDstatistics <- function(QCreportObject) {
 

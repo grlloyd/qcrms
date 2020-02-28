@@ -11,7 +11,7 @@ do_variability_list(peak_data, classes, method = "RSD")
 
 \item{classes}{Vector of class labels}
 
-\item{method}{What method to use to summarise values. Supported methods are 
+\item{method}{What method to use to summarise values. Supported methods are
 'RSD', 'MAD', 'median' and 'none'.}
 }
 \value{

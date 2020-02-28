@@ -8,7 +8,6 @@ NULL
 #' @param vals Data frame to be processed
 #' @param batch Vector with sample batch labels
 #' @param class vector with sample clas labels
-#' @export
 
 prepare_boxplot_multiple_batches <- function(vals, batch, class) {
 
@@ -43,7 +42,6 @@ prepare_boxplot_multiple_batches <- function(vals, batch, class) {
 #' Create QC quality plots
 #'
 #' @param QCreportObject Qcreport object
-#' @export
 
 QC <- function(QCreportObject) {
 

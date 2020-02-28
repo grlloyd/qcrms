@@ -7,7 +7,7 @@
 do_variability_plot(
   list_object,
   plotTitle = NULL,
-  base_size = 12,
+  base_size = 12L,
   subtitle = NULL,
   ylim = NULL
 )

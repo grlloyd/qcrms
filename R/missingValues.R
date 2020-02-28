@@ -5,7 +5,6 @@ NULL
 #' Create QCreport data object to asses missing values
 #'
 #' @param QCreportObject Qcreport object
-#' @export
 
 missingValues <- function(QCreportObject) {
 

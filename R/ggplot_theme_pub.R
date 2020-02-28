@@ -10,7 +10,6 @@ NULL
 #' Availaible from here: https://rpubs.com/Koundy/71792
 #'
 #' @param base_size Ggplot font size
-#' @export
 
 theme_Publication <- function(base_size=14L) {
   (theme_foundation(base_size=base_size) +
@@ -52,7 +51,6 @@ theme_Publication <- function(base_size=14L) {
 #' @param Blank_color Color to use for blank samples
 #' @param manual_color Colors to usef for samples classes
 #' @return List of processed data table and RSD% per sample class
-#' @export
 
 createClassAndColors <- function(class, QC_label="QC", Blank_label="Blank",
   QC_color="#000000", Blank_color="#A65628",

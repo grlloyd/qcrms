@@ -4,7 +4,7 @@
 \alias{theme_Publication}
 \title{Ggplot publication theme}
 \usage{
-theme_Publication(base_size = 14)
+theme_Publication(base_size = 14L)
 }
 \arguments{
 \item{base_size}{Ggplot font size}

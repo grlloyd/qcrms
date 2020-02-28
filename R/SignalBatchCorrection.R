@@ -102,7 +102,7 @@ SignalBatchCorrection <- function(QCreportObject) {
   # If multiple batches are present create PCA plots per batch before correction
   nbatches <- unique(metaData$batch)
 
-  if (nbatches > 1L) {
+  if (length(nbatches) > 1L) {
 
     title_list <- classes_list <- data_list <- vector("list", length(nbatches))
 

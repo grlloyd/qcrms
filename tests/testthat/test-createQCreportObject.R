@@ -22,3 +22,4 @@ expect_equal(as.vector(QCreport$peakMatrix[1, 1:3]),
 
 unlink(file.path(temp_dir, "qcrms_test_file.csv"))
 unlink(file.path(temp_dir, "qcrms_test_meta_data_file.csv"))
+unlink(file.path(temp_dir, "qcrms_test_file.csv.xlsx"))

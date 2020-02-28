@@ -123,8 +123,6 @@ createXlsx <- function(QCreportObject) {
     addWorksheet(wb, "variableMetaData")
     variableMetaData <- rowMeans(QCreportObject$peakMatrix, na.rm=TRUE,
       dims=1L)
-    print(data.frame(mz=names(variableMetaData),
-      intensity=as.vector(variableMetaData)))
     writeData(wb, "variableMetaData", data.frame(mz=names(variableMetaData),
       intensity=as.vector(variableMetaData)), rowNames=FALSE)
   }

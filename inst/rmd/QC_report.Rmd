@@ -7,7 +7,7 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-require(knitr, quietly=T)
+require(knitr, quietly=TRUE)
 #knitr::opts_chunk$set(echo = TRUE)
 #opts_knit$set(root.dir = projectdir)
 ```
@@ -20,7 +20,7 @@ require(knitr, quietly=T)
 
 
 ## Data processing summary
-```{r projectsetup, echo=F, message=FALSE, warning=FALSE, cache=FALSE, comment="", strip.white=TRUE}
+```{r projectsetup, echo=FALSE, message=FALSE, warning=FALSE, cache=FALSE, comment="", strip.white=TRUE}
 print(kable(QCreportObject$projectHeader))
 ```
 
@@ -116,7 +116,7 @@ if (!is.null(QCreportObject$QC_label)){
 <!-- RT stability -->
 `r tbls("RT_RSD")`
 
-```{r RT_RSD_table, echo=F, message=FALSE, warning=FALSE, cache=FALSE, comment=""}
+```{r RT_RSD_table, echo=FALSE, message=FALSE, warning=FALSE, cache=FALSE, comment=""}
 #if (!is.null(QCreportObject$QC_label)){
   #pander::pandoc.table(QCreportObject$tables$RT_rsd, round=c(rep(2,6),0), style="rmarkdown")
   #xtable::xtable(QCreportObject$tables$RT_rsd, digits=c(0,rep(2,6),0))
@@ -128,7 +128,7 @@ if (!is.null(QCreportObject$QC_label)){
 &nbsp;
 `r tbls("RT_MAD")`
 
-```{r RT_MAD_table, echo=F, message=FALSE, warning=FALSE, cache=FALSE, comment=""}
+```{r RT_MAD_table, echo=FALSE, message=FALSE, warning=FALSE, cache=FALSE, comment=""}
 #if (!is.null(QCreportObject$QC_label)){
   kable (QCreportObject$tables$RT_mad, digits=2)
 #}
@@ -146,7 +146,7 @@ if (!is.null(QCreportObject$QC_label)){
 
 `r tbls("peak_width")`
 
-```{r RT_PW_median, echo=F, message=FALSE, warning=FALSE, cache=FALSE, comment="", strip.white=TRUE}
+```{r RT_PW_median, echo=FALSE, message=FALSE, warning=FALSE, cache=FALSE, comment="", strip.white=TRUE}
 #if (!is.null(QCreportObject$QC_label)){
   kable (QCreportObject$tables$peak_width, digits=2)
 #}
@@ -176,7 +176,7 @@ if (!is.null(QCreportObject$plots$EICs)){
 
 `r tbls("mz_precision")`
 
-```{r mz_ppm, echo=F, message=FALSE, warning=FALSE, cache=FALSE, comment="", strip.white=TRUE}
+```{r mz_ppm, echo=FALSE, message=FALSE, warning=FALSE, cache=FALSE, comment="", strip.white=TRUE}
 #if (!is.null(QCreportObject$QC_label)){
   kable (QCreportObject$tables$mz_median, digits=2)
 #}
@@ -211,7 +211,7 @@ print(QCreportObject$plots$RSDplot1)
 
 `r tbls("S2")`
 
-```{r T2, echo=F, message=FALSE, warning=FALSE, cache=FALSE, comment="", strip.white=TRUE}
+```{r T2, echo=FALSE, message=FALSE, warning=FALSE, cache=FALSE, comment="", strip.white=TRUE}
 kable (QCreportObject$tables$RSDtable1, digits=1)
 ```
 
@@ -359,7 +359,7 @@ if (!is.null(QCreportObject$QC_label)){
 `r tbls("S5")`
 &nbsp;
 
-```{r sampinfo_2, echo=F, message=FALSE, warning=FALSE, cache=FALSE, comment="", strip.white=TRUE}
+```{r sampinfo_2, echo=FALSE, message=FALSE, warning=FALSE, cache=FALSE, comment="", strip.white=TRUE}
 kable (QCreportObject$samp.sum, catption="Summary of the sample metadata of the analytical batch")
 ```
 

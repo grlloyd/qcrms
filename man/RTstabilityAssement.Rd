@@ -2,7 +2,8 @@
 % Please edit documentation in R/RTstability.R
 \name{RTstabilityAssement}
 \alias{RTstabilityAssement}
-\title{Several diagnostic tables and plot for retention time and m/z shift assesment}
+\title{Several diagnostic tables and plot for retention time and m/z shift
+assesment}
 \usage{
 RTstabilityAssement(QCreportObject)
 }
@@ -10,5 +11,6 @@ RTstabilityAssement(QCreportObject)
 \item{QCreportObject}{QC report object.}
 }
 \description{
-Several diagnostic tables and plot for retention time and m/z shift assesment
+Several diagnostic tables and plot for retention time and m/z shift
+assesment
 }

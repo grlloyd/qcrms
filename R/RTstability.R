@@ -1,5 +1,6 @@
 
-#' Several diagnostic tables and plot for retention time and m/z shift assesment
+#' Several diagnostic tables and plot for retention time and m/z shift
+#' assesment
 #'
 #' @param QCreportObject QC report object.
 

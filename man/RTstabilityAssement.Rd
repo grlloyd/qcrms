@@ -2,23 +2,15 @@
 % Please edit documentation in R/RTstability.R
 \name{RTstabilityAssement}
 \alias{RTstabilityAssement}
-\title{Exctract and return ggplot2 object of EICs for specified xmcm features}
+\title{Several diagnostic tables and plot for retention time and m/z shift
+assesment}
 \usage{
 RTstabilityAssement(QCreportObject)
 }
 \arguments{
-\item{indexes}{vector of feautre indices to extract}
-
-\item{rawfiles}{List of MsnBase packages raw file objects}
-
-\item{class}{Sample class labels}
-
-\item{xset}{XCMS object from withc to extrat chromatograms}
-
-\item{Blank_labes}{Label used for Blank samples}
-
-\item{QC_label}{Label used for QC samples}
+\item{QCreportObject}{QC report object.}
 }
 \description{
-Exctract and return ggplot2 object of EICs for specified xmcm features
+Several diagnostic tables and plot for retention time and m/z shift
+assesment
 }

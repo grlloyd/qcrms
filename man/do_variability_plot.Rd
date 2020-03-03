@@ -4,8 +4,13 @@
 \alias{do_variability_plot}
 \title{Plot violin plots from the dolist_object fucntion output}
 \usage{
-do_variability_plot(list_object, plotTitle = NULL, base_size = 12,
-  subtitle = NULL, ylim = NULL)
+do_variability_plot(
+  list_object,
+  plotTitle = NULL,
+  base_size = 12L,
+  subtitle = NULL,
+  ylim = NULL
+)
 }
 \arguments{
 \item{list_object}{OUtput of do_variability_list function}

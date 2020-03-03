@@ -4,10 +4,23 @@
 \alias{doPCA}
 \title{Perform PCA analysis ot single data set or list of data sets}
 \usage{
-doPCA(Data, classes, plotTitle = "PCA", PQN, mv_impute, glogScaling,
-  scale = F, labels = "QC", qc_label, qc_shape = 17,
-  base_size = 12, pccomp = c(1, 2), subtitle = NULL, loadings = F,
-  loadingsCol = NULL)
+doPCA(
+  Data,
+  classes,
+  plotTitle = "PCA",
+  PQN,
+  mv_impute,
+  glogScaling,
+  scale = FALSE,
+  labels = "QC",
+  qc_label,
+  qc_shape = 17L,
+  base_size = 12L,
+  pccomp = c(1L, 2L),
+  subtitle = NULL,
+  loadings = FALSE,
+  loadingsCol = NULL
+)
 }
 \arguments{
 \item{Data}{Data frame.}
@@ -18,15 +31,18 @@ doPCA(Data, classes, plotTitle = "PCA", PQN, mv_impute, glogScaling,
 
 \item{PQN}{Can be set to T or F, to perform PQN normalisation}
 
-\item{mv_impute}{T or F, indicates if missing value imputation has to be carried}
+\item{mv_impute}{T or F, indicates if missing value imputation has to
+be carried}
 
 \item{glogScaling}{T or F, applie glog transformation to the given data}
 
 \item{scale}{Perform UV scaling on data}
 
-\item{labels}{Can be set to "QC" to label only QC samples. "none" to no include labels. If set to any other value will use column names of Data.}
+\item{labels}{Can be set to "QC" to label only QC samples. "none" to no
+include labels. If set to any other value will use column names of Data.}
 
-\item{qc_label}{Label used for QC samples. If set to NULL, assumes that no QC samples are present in data set}
+\item{qc_label}{Label used for QC samples. If set to NULL, assumes that no
+QC samples are present in data set}
 
 \item{qc_shape}{Shape symbol to use for QC samples}
 

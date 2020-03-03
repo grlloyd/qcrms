@@ -3,34 +3,32 @@
 #' @param filename Name of the mzML file
 #' @export
 
-mzML.startTimeStamp <- function(filename){
+mzML.startTimeStamp <- function(filename) {
 
-  # XML R package has a bug as it doesn't release memory after processing a file. So for now default code is to parse XML as the text file.
+  # XML R package has a bug as it doesn't release memory after processing a
+  # file. So for now default code is to parse XML as the text file.
   # If the first 5 lines of the file don't have reference to mzML schema - stop
-  con = file(filename, "r")
-  line = readLines(con, n=5)
-  if (length(grep ("mzML",line))==0)
-  {
-   cat ("Measurement date and time information can be extracted only from mzML data files.. \n")
+  con <- file(filename, "r")
+  line <- readLines(con, n=5L)
+  if (length(grep("mzML", line)) == 0L) {
+   cat("Measurement date and time information can be extracted only from mzML
+    data files.. \n")
    startTimeStamp <- NA
-   #stop ()
-  } else
-  {
-    while ( TRUE ) {
-      line = readLines(con, n = 1)
-         if ( length(grep("startTimeStamp",line)) == 1 ) {
-         line <- strsplit(line,"startTimeStamp=\\\"")[[1]][2]
-         startTimeStamp <- strsplit (line,"\\\"")[[1]][1]
-         break
+  } else {
+    while (TRUE) {
+      line <- readLines(con, n=1L)
+         if (length(grep("startTimeStamp", line)) == 1L) {
+          line <- strsplit(line, "startTimeStamp=\\\"")[[1L]][2L]
+          startTimeStamp <- strsplit(line, "\\\"")[[1L]][1L]
+          break
          }
-         if (length(grep("<spectrumList",line)) == 1){
-         startTimeStamp <- NA
-         break
+         if (length(grep("<spectrumList", line)) == 1L) {
+          startTimeStamp <- NA
+          break
          }
     }
   }
   close(con)
-  startTimeStamp <- sub ("T"," ",startTimeStamp)
-	startTimeStamp
+  startTimeStamp <- sub("T", " ", startTimeStamp)
+  startTimeStamp
 }
-

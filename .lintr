@@ -1,0 +1,11 @@
+linters: with_defaults(line_length_linter(80),
+    absolute_path_linter,
+    implicit_integer_linter,
+    infix_spaces_linter=NULL,
+    nonportable_path_linter,
+    semicolon_terminator_linter,
+    T_and_F_symbol_linter,
+    undesirable_function_linter,
+    undesirable_operator_linter,
+    unneeded_concatenation_linter)
+

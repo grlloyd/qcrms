@@ -4,8 +4,14 @@
 \alias{XCMS_EIC_plot}
 \title{Exctract and return ggplot2 object of EICs for specified xcms features}
 \usage{
-XCMS_EIC_plot(indexes, rawfiles, class, xset, Blank_label = "Blank",
-  QC_label = "QC")
+XCMS_EIC_plot(
+  indexes,
+  rawfiles,
+  class,
+  xset,
+  Blank_label = "Blank",
+  QC_label = "QC"
+)
 }
 \arguments{
 \item{indexes}{vector of feautre indices to extract}

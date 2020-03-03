@@ -2,19 +2,27 @@
 % Please edit documentation in R/ggplot_theme_pub.R
 \name{createClassAndColors}
 \alias{createClassAndColors}
-\title{Function to create sorted class labels and colors for reproducable ggplot objects}
+\title{Function to create sorted class labels and colors for reproducable ggplot
+objects}
 \usage{
-createClassAndColors(class, QC_label = "QC", Blank_label = "Blank",
-  QC_color = "#000000", Blank_color = "#A65628",
-  manual_color = c("#386cb0", "#ef3b2c", "#7fc97f", "#fdb462", "#984ea3",
-  "#a6cee3", "#778899", "#fb9a99", "#ffff33"))
+createClassAndColors(
+  class,
+  QC_label = "QC",
+  Blank_label = "Blank",
+  QC_color = "#000000",
+  Blank_color = "#A65628",
+  manual_color = c("#386cb0", "#ef3b2c", "#7fc97f", "#fdb462", "#984ea3", "#a6cee3",
+    "#778899", "#fb9a99", "#ffff33")
+)
 }
 \arguments{
 \item{class}{Vector of class labels.}
 
-\item{QC_label}{Label used for QC samples. If set to NULL, assumes that no QC samples are present in data set}
+\item{QC_label}{Label used for QC samples. If set to NULL, assumes that no
+QC samples are present in data set}
 
-\item{Blank_label}{Label used for blank samples, if set to NULL no samples will be removed}
+\item{Blank_label}{Label used for blank samples, if set to NULL no samples
+will be removed}
 
 \item{QC_color}{Color to use for QC samples}
 
@@ -26,5 +34,6 @@ createClassAndColors(class, QC_label = "QC", Blank_label = "Blank",
 List of processed data table and RSD% per sample class
 }
 \description{
-Function to create sorted class labels and colors for reproducable ggplot objects
+Function to create sorted class labels and colors for reproducable ggplot
+objects
 }

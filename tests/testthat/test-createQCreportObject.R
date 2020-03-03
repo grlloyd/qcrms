@@ -20,6 +20,11 @@ expect_warning(QCreport <- createQCreportObject(data_file="qcrms_test_file.csv",
 expect_equal(as.vector(QCreport$peakMatrix[1, 1:3]),
     c(28041.86, 28764.55, 27063.78))
 
+context("Test that QC report pdf file is created")
+expect_warning(qcrms::createQCreport(QCreport))
+expect_true(file.exists(file.path(temp_dir, "qcrms_test_file.csv.pdf")))
+
 unlink(file.path(temp_dir, "qcrms_test_file.csv"))
 unlink(file.path(temp_dir, "qcrms_test_meta_data_file.csv"))
 unlink(file.path(temp_dir, "qcrms_test_file.csv.xlsx"))
+unlink(file.path(temp_dir, "qcrms_test_file.csv.pdf"))

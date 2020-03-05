@@ -55,7 +55,7 @@ EICs <- function(QCreportObject) {
   rawf <- vector("list", length(QCreportObject$xset@filepaths))
 
   system.time({
-    for (num in seq_len(rawf)) {
+    for (num in seq_len(length(rawf))) {
         cat("Reading data file: ", num, "\n")
         if (file.exists(QCreportObject$xset@filepaths[num])) {
           rawf[[num]] <- MSnbase::readMSData(QCreportObject$xset@filepaths[num],

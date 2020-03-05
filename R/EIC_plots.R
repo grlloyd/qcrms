@@ -43,7 +43,7 @@ XCMS_EIC_plot <- function(indexes, rawfiles, class, xset, Blank_label="Blank",
 
   chromPlots <- vector("list", length(indexes))
 
-  for (chromind in seq_len(indexes)) {
+  for (chromind in seq_len(length(indexes))) {
     cat("EIC: ", chromind, " ... sample: ")
     chroms <- vector("list", length(rawfiles))
 

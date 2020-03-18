@@ -123,8 +123,10 @@ createXlsx <- function(QCreportObject) {
     addWorksheet(wb, "variableMetaData")
     variableMetaData <- rowMeans(QCreportObject$peakMatrix, na.rm=TRUE,
       dims=1L)
-    writeData(wb, "variableMetaData", data.frame(mz=names(variableMetaData),
-      intensity=as.vector(variableMetaData)), rowNames=FALSE)
+    # BeamsPy specific input, has to have columns: name, mz, intensity and rt.
+    writeData(wb, "variableMetaData", data.frame(name=names(variableMetaData),
+        mz=names(variableMetaData), intensity=as.vector(variableMetaData),
+        rt=0), rowNames=FALSE)
   }
 
   saveWorkbook(wb, QCreportObject$xlsxout, overwrite=TRUE)

@@ -6,3 +6,11 @@ mzml_files <- dir(system.file("extdata/dims/mzML", package = "msPurityData"),
 time_stamp <- qcrms:::mzML.startTimeStamp(mzml_files[1])
 
 expect_equal(time_stamp, "2015-07-10 15:25:01Z")
+
+context("Message of times stamp not avaliable is given.")
+
+mzml_files <- dir(system.file("cdf", package = "faahKO"),
+    full.names = TRUE, recursive = TRUE)
+
+expect_message(expect_warning(time_stamp <-
+    qcrms:::mzML.startTimeStamp(mzml_files[1])))

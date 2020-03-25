@@ -11,8 +11,8 @@ mzML.startTimeStamp <- function(filename) {
   con <- file(filename, "r")
   line <- readLines(con, n=5L)
   if (length(grep("mzML", line)) == 0L) {
-   cat("Measurement date and time information can be extracted only from mzML
-    data files.. \n")
+    message("Measurement date and time information can be extracted only
+    from mzML data files.. \n")
    startTimeStamp <- NA
   } else {
     while (TRUE) {

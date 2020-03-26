@@ -7,7 +7,7 @@ test_that("EIC plot is created and has correct data", {
         full.names=TRUE, recursive=TRUE)
     rawf <- MSnbase::readMSData(mzml_files[1:2], mode="onDisk", msLevel.=1)
     cwp <- xcms::CentWaveParam(snthresh=10)
-    xset <- expect_warning(xcms::findChromPeaks(rawf, param=cwp))
+    xset <- xcms::findChromPeaks(rawf, param=cwp)
     xset <- xcms::groupChromPeaks(xset,
         xcms::PeakDensityParam(sampleGroups=c("1", "1")))
     xset <- as(xset, "xcmsSet")

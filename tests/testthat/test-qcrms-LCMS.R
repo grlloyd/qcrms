@@ -145,7 +145,7 @@ test_that("createQCreportObject works with XCMS LCMS data outputs", {
     context("Test that QC report pdf file is created")
     expect_warning(qcrms::createQCreport(QCreport))
     expect_true(file.exists(file.path(temp_dir, "LCMS_xdata.pdf")))
-    expect_true(file.exists(file.path(temp_dir, "LCMS_xdata_EICS.pdf")))
+    expect_true(file.exists(file.path(temp_dir, "LCMS_xdata_EICs.pdf")))
     
     unlink(file.path(temp_dir, "LCMS_xdata.Rdata"))
     unlink(file.path(temp_dir, "qcrms_test_meta_data_file.csv"))

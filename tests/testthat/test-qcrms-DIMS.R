@@ -21,8 +21,19 @@ test_that("createQCreportObject can parse csv text file inputs", {
     expect_equal(as.vector(QCreport$peakMatrix[1, 1:3]),
         c(28041.86, 28764.55, 27063.78))
     expect_equal(QCreport$pca_scores_labels, "all")
+    
     expect_equal(QCreport$filtering$glog_lambda_filtered, 80142621)
+    expect_equivalent(QCreport$filtering$table[1:2,],
+        data.frame(
+            Filter=c("Before filtering", "Blank, fold_change=20, fraction=0"),
+            `Number of features`=c(100, 100),
+            `Number of samples`=c(172, 172),
+            Applied=c(TRUE, FALSE),
+        check.names=FALSE)
+    )
+    
     expect_equal(QCreport$metaData$classColumn, "Class")
+    
     expect_equal(as.character(QCreport$metaData$table$Sample[3]),
         "batch01_QC03")
     expect_equal(QCreport$metaData$table$Class[56], "S")
@@ -94,10 +105,34 @@ test_that("createQCreportObject can parse csv text file inputs", {
     
     expect_equal(QCreport$excludeQC, c(1:5))
     
+    expect_equivalent(QCreport$projectHeader[3, 2], "qcrms_test_file.csv")
+    expect_equivalent(QCreport$projectHeader[6, 2], "172")
+    expect_equivalent(QCreport$projectHeader[7, 2], "QC, C, S")
+    
+    expect_equivalent(QCreport$peakPickingParams[1,2], "100")
+    
+    expect_equivalent(QCreport$TICs[13], 4991575, tolerance=0.5)
+    expect_equivalent(QCreport$TICs[76], 4679116, tolerance=0.5)
+    
+    expect_equivalent(QCreport$TICraw[13], 4991575, tolerance=0.5)
+    expect_equivalent(QCreport$TICraw[76], 4679116, tolerance=0.5)
+    
+    expect_null(QCreport$TICdata[[3]])
+    
+    expect_equivalent(QCreport$samp.sum[c(1, 33, 67), ],
+        data.frame(
+            Sample=c("batch01_QC01", "batch02_C07", "batch03_S08"),
+            `Measurement time`=c(NA, NA, NA), Class=c("QC", "C", "S"),
+            `Number of peaks`=c(99, 95, 98),
+            `mzML file size (MB)`=as.numeric(c(NA, NA, NA)),
+        check.names=FALSE))
+    
+    expect_equal(QCreport$QC_hits[11:14], c(47, 53, 59, 65))
+    
     context("Test that QC report pdf file is created")
     expect_warning(qcrms::createQCreport(QCreport))
     expect_true(file.exists(file.path(temp_dir, "qcrms_test_file.csv.pdf")))
-
+    
     unlink(file.path(temp_dir, "qcrms_test_file.csv"))
     unlink(file.path(temp_dir, "qcrms_test_meta_data_file.csv"))
     unlink(file.path(temp_dir, "qcrms_test_file.csv.xlsx"))

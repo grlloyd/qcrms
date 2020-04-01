@@ -14,10 +14,6 @@ SignalBatchCorrection <- function(QCreportObject) {
   class <- metaData[, which(colnames(metaData) ==
     QCreportObject$metaData$classColumn)]
 
-  if (is.null(metaData$batch)) {
-    metaData$batch <- rep(1L, length(class))
-  }
-
   QCreportObject$filtering$table <-
     data.frame(Filter=c("Before filtering", "Blank, fold_change=20, fraction=0",
     "MV Sample, max_perc_mv=0.5", "Features, method=QC, fraction=0.9",

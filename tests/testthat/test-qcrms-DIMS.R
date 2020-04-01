@@ -13,7 +13,7 @@ test_that("createQCreportObject can parse csv text file inputs", {
     temp_dir <- tempdir()
     write.csv(file=file.path(temp_dir,"qcrms_test_file.csv"), peak_matrix)
     write.csv(file=file.path(temp_dir,"qcrms_test_meta_data_file.csv"),
-        meta_data)
+        meta_data, row.names=FALSE)
     expect_warning(QCreport <- createQCreportObject(
         data_file="qcrms_test_file.csv", projectdir=temp_dir,
         metaData_file="qcrms_test_meta_data_file.csv"))

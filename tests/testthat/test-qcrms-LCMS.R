@@ -7,7 +7,9 @@ test_that("createQCreportObject works with XCMS LCMS data outputs", {
         recursive=TRUE)
     ## Create a phenodata data.frame
     meta_data <- data.frame(Sample=sub(basename(cdfs), pattern=".CDF",
-        replacement="", fixed=TRUE), sample_group=c(rep("QC", 6), rep("WT", 6)),
+        replacement="", fixed=TRUE),
+        sample_group=c(rep("QC", 6), "MSMS",rep("WT", 5)),
+        remove=c(TRUE, rep(NA, 11)),
         stringsAsFactors=FALSE)
     rownames(meta_data) <- meta_data$Sample
     
@@ -15,35 +17,48 @@ test_that("createQCreportObject works with XCMS LCMS data outputs", {
         pdata=new("NAnnotatedDataFrame", meta_data), mode="onDisk"))
     cwp <- xcms::CentWaveParam(peakwidth = c(20, 80), noise=5000)
     xdata <- xcms::findChromPeaks(raw_data, param=cwp)
-    #xdata <- adjustRtime(xdata, param=ObiwarpParam(binSize=0.6))
+    xdata <- adjustRtime(xdata, param=ObiwarpParam(binSize=0.6))
     xdata <- xcms::groupChromPeaks(xdata,
-        xcms::PeakDensityParam(sampleGroups=meta_data$sample_group))
+        xcms::PeakDensityParam(sampleGroups=rep("S", 12)))
     
     temp_dir <- tempdir()
     write.csv(file=file.path(temp_dir, "qcrms_test_meta_data_file.csv"),
-        meta_data)
+        meta_data, row.names=F)
     save(file=file.path(temp_dir, "LCMS_xdata.Rdata"), list="xdata")
     
     expect_warning(QCreport <- createQCreportObject(
         data_file="LCMS_xdata.Rdata", projectdir=temp_dir,
         metaData_file="qcrms_test_meta_data_file.csv", xcms_output="xdata",
-        classLabel="sample_group", excludeQC=NULL))
+        classLabel="sample_group", excludeQC="remove", msms_label="MSMS"))
 
     expect_true(file.exists(file.path(temp_dir, "LCMS_xdata.xlsx")))
+    
+    expect_equal(QCreport$xcms_output, "xdata")
+    expect_equal(QCreport$pca_scores_labels, "all")
+    expect_equal(QCreport$data_file, "LCMS_xdata.Rdata")
+    expect_equal(QCreport$projectdir, temp_dir)
+    
+    expect_equal(QCreport$filtering$glog_lambda_filtered, 61043890465)
+    expect_equivalent(QCreport$filtering$table[c(1, 4), ],
+        data.frame(
+            Filter=c("Before filtering", "Features, method=QC, fraction=0.9"),
+            `Number of features`=c(268, 128),
+            `Number of samples`=c(11, 11),
+            Applied=c(TRUE, TRUE),
+        check.names=FALSE)
+    )
+    
+    #expect_equivalent(QCreport$xset@phenoData[c(1, 4, 9), ],
+    #    data.frame(
+    #        Sample=c("ko15", "ko19", "wt18")
+    #    check.names=FALSE)
+    #)
     
     #expect_equal(as.vector(QCreport$peakMatrix[1, 1:3]),
     #    c(28041.86, 28764.55, 27063.78))
     #expect_equal(QCreport$pca_scores_labels, "all")
     
-    #expect_equal(QCreport$filtering$glog_lambda_filtered, 80142621)
-    #expect_equivalent(QCreport$filtering$table[1:2,],
-    #    data.frame(
-    #        Filter=c("Before filtering", "Blank, fold_change=20, fraction=0"),
-    #        `Number of features`=c(100, 100),
-    #        `Number of samples`=c(172, 172),
-    #        Applied=c(TRUE, FALSE),
-    #    check.names=FALSE)
-    #)
+
     
     #expect_equal(QCreport$metaData$classColumn, "Class")
     

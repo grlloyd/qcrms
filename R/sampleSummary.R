@@ -130,6 +130,9 @@ sampleSummary <- function(QCreportObject) {
   } else if (!is.null(QCreportObject$xset)) {
       QCreportObject$raw_paths <-
         QCreportObject$xset@filepaths
+      if (length(msms_sample_hits) > 0L) {
+        QCreportObject$raw_paths <- QCreportObject$raw_paths[-msms_sample_hits]
+      }
   }
 
   # TimeStamp from mzML file and file size

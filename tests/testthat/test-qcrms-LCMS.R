@@ -38,7 +38,8 @@ test_that("createQCreportObject works with XCMS LCMS data outputs", {
     expect_equal(QCreport$data_file, "LCMS_xdata.Rdata")
     expect_equal(QCreport$projectdir, temp_dir)
     
-    expect_equal(QCreport$filtering$glog_lambda_filtered, 61043890465)
+    expect_equal(QCreport$filtering$glog_lambda_filtered, 61043890464.6641)
+    expect_equal(QCreport$filtering$glog_lambda_filtered_SB, 1338305112712.85)
     expect_equivalent(QCreport$filtering$table[c(1, 4), ],
         data.frame(
             Filter=c("Before filtering", "Features, method=QC, fraction=0.9"),
@@ -48,114 +49,213 @@ test_that("createQCreportObject works with XCMS LCMS data outputs", {
         check.names=FALSE)
     )
     
-    #expect_equivalent(QCreport$xset@phenoData[c(1, 4, 9), ],
-    #    data.frame(
-    #        Sample=c("ko15", "ko19", "wt18")
-    #    check.names=FALSE)
-    #)
+    expect_equivalent(QCreport$xset@phenoData[c(1, 4, 9), ],
+        data.frame(
+            Sample=c("ko15", "ko19", "wt19"),
+            sample_group=c("QC", "QC", "WT"),
+            remove=c(TRUE, NA, NA),
+            class=c(1, 1, 1),
+            check.names=FALSE,
+            stringsAsFactors=FALSE)
+    )
     
-    #expect_equal(as.vector(QCreport$peakMatrix[1, 1:3]),
-    #    c(28041.86, 28764.55, 27063.78))
-    #expect_equal(QCreport$pca_scores_labels, "all")
+    expect_equivalent(QCreport$xset@peaks[1, ],
+       c(453.2000122, 453.2000122, 453.2000122, 2509.2795410, 2501.3779297,
+            2528.2773438, 1007408.9731765, 1007380.8042353, 38152.0000000,
+            38151.0000000, 1)
+    )
     
+    expect_equivalent(QCreport$xset@groups[13:14, ],
+        matrix(nrow=2, ncol=8, byrow=TRUE,
+            c(269.2000122, 269.100006, 269.2000122, 3889.45959, 3859.553467,
+                3900.083740, 16, 11, 279.0000000, 279.0000000, 279.0000000,
+                2790.799072, 2751.645508, 2801.754883, 19, 12
+            )
+        )
+    )
+    
+    expect_equal(QCreport$xset@groupidx[[47]], 
+        c(1405, 2436, 2854, 3896, 4299, 4982, 4990))
+    
+    expect_equivalent(QCreport$xset@rt$raw[[5]][10:15],
+        c(2515.462, 2517.027, 2518.592, 2520.157, 2521.722, 2523.287))
+    expect_equivalent(QCreport$xset@rt$corrected[[5]][10:15],
+        c(2514.697510, 2516.180908, 2517.664795, 2519.149170, 2520.634277,
+            2522.120361))
+    
+    expect_equal(QCreport$xset@.processHistory[[1]]@type, "Peak detection")
+    expect_equal(QCreport$xset@.processHistory[[1]]@param@ppm, 25)
+    expect_equal(QCreport$xset@.processHistory[[1]]@param@peakwidth, c(20, 80))
+    expect_equal(QCreport$xset@.processHistory[[1]]@param@snthresh, 10)
+    expect_equal(QCreport$xset@.processHistory[[1]]@param@mzdiff, -0.001)
+    
+    expect_equal(QCreport$peakMatrix[1, 1:3],
+        c(ko15=1924712.01585714, ko16=1757150.9648, ko18=1714581.77647058))
+    
+    expect_equal(QCreport$metaData$table,
+        structure(list(
+            Sample=structure(c(1L, 2L, 3L, 4L, 5L, 6L, 8L, 9L, 10L, 11L, 12L),
+            .Label=c("ko15", "ko16", "ko18", "ko19", "ko21", "ko22", "wt15",
+                "wt16", "wt18", "wt19", "wt21", "wt22"), class="factor"),
+            sample_group=c("Removed", "QC", "QC", "QC", "QC", "QC", "WT", "WT",
+                "WT", "WT", "WT"),
+            remove=c(TRUE, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA),
+            injection_order=1:11, batch=c(1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 
+                1L, 1L)),
+            row.names=c(1L, 2L, 3L, 4L, 5L, 6L, 8L, 9L, 10L, 11L, 12L),
+            class="data.frame")
+    )
+    
+    expect_equal(QCreport$pca_scores_labels, "all")
+    expect_equal(QCreport$metaData$classColumn, "sample_group")
 
-    
-    #expect_equal(QCreport$metaData$classColumn, "Class")
-    
-    #expect_equal(as.character(QCreport$metaData$table$Sample[3]),
-    #    "batch01_QC03")
-    #expect_equal(QCreport$metaData$table$Class[56], "S")
-    
     # Plots
-    #expect_equal(QCreport$plots$ticplot_1$data[3,1], 4345633, tolerance=0.16)
-    #expect_equal(QCreport$plots$ticplot_2$data[5,1], 4412936)
-    #expect_equal(QCreport$plots$ticplot_3$data[6,3], 95)
-    #expect_equal(QCreport$plots$ticplot_4$data$nPeak[161], 89)
+    expect_equal(QCreport$plots$ticplot_1$data[3,1], 754424703.6)
+    expect_equal(QCreport$plots$ticplot_2$data[5,1], 536643304)
+    expect_equal(QCreport$plots$ticplot_3$data[6,3], 325)
+    expect_equal(QCreport$plots$ticplot_4$data$nPeak[7], 507)
+    expect_equal(QCreport$plots$ticplot_5$data$file.size[7], 3.56)
     
-    #expect_equal(QCreport$plots$PCAallSamples$data$pc1[67], -5.555397, 
-    #    tolerance=1^-7)
-    #expect_equal(QCreport$plots$PCAQCsamples$data$pc2[5], 4.676568,
-    #    tolerance=1^-7)
-    #expect_equal(QCreport$plots$PCAQCleading$data$pc1[13], 4.863442,
-    #    tolerance=1^-7)
-    #expect_equal(QCreport$plots$PCAallQCleading$data$pc2[10], 4.136927,
-    #    tolerance=1^-7)
+    expect_equal(QCreport$plots$PCAallSamples$data$pc1[4], 6.47846949411406)
+    expect_equal(QCreport$plots$PCAQCsamples$data$pc2[5], 0.335577926713068)
+    expect_equal(QCreport$plots$PCAQCleading$data$pc1[4], 7.56288127255809)
+    expect_equal(QCreport$plots$PCAallQCleading$data$pc2[7], -7.24165986257958)
     
-    #expect_equal(QCreport$plots$MVplot1$data$x[109], 13)
-    #expect_equal(QCreport$plots$MVplot2$data$x[99], 18.91892,
-    #    tolerance=1^-7)
-    #expect_equal(QCreport$plots$MVplot3$data$class[136], 7)
-    #expect_equal(QCreport$plots$MVplot4$data$class[288], 102.040816,
-    #    tolerance=1^-7)
+    expect_equal(QCreport$plots$MAD_rt$data$list_object[34], 4.15956171093739)
+    expect_equal(QCreport$plots$peak_width$data$list_object[34],
+        46.808349609375)
+    expect_equal(QCreport$plots$mz_median$data$list_object[523],
+        -69.3985738677017)
     
-    #expect_equal(QCreport$plots$RSDplot1$data$list_object[153], 30.63364,
-    #    tolerance=1^-7)
-    #expect_equal(QCreport$plots$RSDplot2$data$RSD[97], 7.758575,
-    #    tolerance=1^-7)
+    expect_equal(QCreport$plots$EICs[[1]]$data$rt[34], 3554.39404296875)
+    expect_equal(QCreport$plots$EICs[[1]]$data$mz[45], 508.200012207031)
+    expect_equal(QCreport$plots$EICs[[1]]$data$i[45], 78184)
+    expect_equal(QCreport$plots$EICs[[1]]$data$Class[45],
+        structure(1L, .Label=c("QC", "Removed", "WT"), class = c("ordered", 
+        "factor")))
+    expect_equal(QCreport$plots$EICs[[1]]$data$sample[45], 2L)
+
+    expect_equal(QCreport$plots$MVplot1$data$x[7], 17.910447761194)
+    expect_equal(QCreport$plots$MVplot2$data$x[10], 50)
+    expect_equal(QCreport$plots$MVplot3$data$class[6], 20.1492537313433)
+    expect_equal(QCreport$plots$MVplot4$data$class[531], 400)
     
-    #expect_equal(QCreport$plots$QCplot1$data$values[400], -1.104539,
-    #             tolerance=1^-7)
-    #expect_equal(QCreport$plots$QCplot1$data$values[1123], -0.5477665,
-    #             tolerance=1^-7)
+    expect_equal(QCreport$plots$RSDplot1$data$list_object[153],
+        42.1033162472477)
+    expect_equal(QCreport$plots$RSDplot2$data$RSD[97], 11.901710037869)
     
-    #expect_equal(QCreport$plots$SBPCAbefore$data$pc1[34], 1.77536,
-    #    tolerance=1^-7)
-    #expect_equal(QCreport$plots$SBPCAbeforeQC$data$pc1[3], -8.776818,
-    #    tolerance=1^-7)
-    #expect_equal(QCreport$plots$SBRSDbefore$data$list_object[43], 38.38334,
-    #    tolerance=1^-7)
-    #expect_equal(QCreport$plots$SBPCAfter$data$pc1[56], -2.820385,
-    #    tolerance=1^-7)
-    #expect_equal(QCreport$plots$SBPCAfterQC$data$pc1[4], -3.94937,
-    #    tolerance=1^-7)
-    #expect_equal(QCreport$plots$SBRSDafter$data$list_object[78], 62.04692, 
-    #    tolerance=1^-7)
+    expect_equal(QCreport$plots$QCplot1$data$values[3], 0.126531150918856)
+    expect_equal(QCreport$plots$QCplot1$data$values[1123],
+        -0.00868209214666562)
+    expect_equal(QCreport$plots$QCplot2$data$value[3], 0.64753837592395)
+    expect_equal(QCreport$plots$QCplot2$data$value[1123], -0.380990238832714)
+    
+    expect_equal(QCreport$plots$SBPCAbefore$data$pc1[4], 3.55062795302708)
+    expect_equal(QCreport$plots$SBPCAbeforeQC$data$pc1[3], 5.44564141304822)
+    expect_equal(QCreport$plots$SBRSDbefore$data$list_object[43],
+        26.0975634461339)
+    expect_equal(QCreport$plots$SBPCAfter$data$pc1[6], -0.370741378151436)
+    expect_equal(QCreport$plots$SBPCAfterQC$data$pc1[4], 5.89277901023488)
+    expect_equal(QCreport$plots$SBRSDafter$data$list_object[78],
+        2.30445829090211)
     
     # Tables
-    #expect_equal(QCreport$tables$corrMatrix[1, 1], 0.56, tolerance=1^-7)
-    #expect_equal(QCreport$tables$corrMatrix[2, 2], 1.041714e-15,
-    #    tolerance=1^-7)
-    #expect_equal(QCreport$tables$RSDtable1[2, 4], 40.2225, tolerance=1^-7)
-    #expect_equal(QCreport$tables$SBtableBefore[1, 3], 33.62639, tolerance=1^-7)
-    #expect_equal(QCreport$tables$SBtableAfter[1, 3], 56.40074, tolerance=1^-7)
+    expect_equal(QCreport$tables$corrMatrix[2, 1], -0.57)
+    expect_equal(QCreport$tables$corrMatrix[2, 2], 0.0650941627344147)
+    
+    expect_equal(QCreport$tables$RT_rsd,
+        structure(list(
+            Min.=c(0.00318857359890208, 0.00511148124967863),
+            `1st Qu.`=c(0.0840254897400688, 0.115441585461868),
+            Median=c(0.136879091709147, 0.238908162172896),
+            Mean=c(0.285418323971856, 0.34243500053187),
+            `3rd Qu.`=c(0.367293950976682, 0.511650919161229),
+            Max.=c(2.29359102554849, 2.08891122720008),
+            `NA's`=c(8, 10)),
+            row.names=c("QC", "WT"),
+        class = "data.frame")
+    )
+    
+    expect_equal(QCreport$tables$RT_mad, 
+        structure(list(
+            Min.=c(0, 0),
+            `1st Qu.`=c(1.7177122716795, 2.31271664428711),
+            Median=c(3.7412484375, 5.00069831542969),
+            Mean=c(8.60809614984987, 9.08930910256126),
+            `3rd Qu.`=c(10.419011315918, 11.7209465881348),
+            Max.=c(112.605569384766, 55.1881199707031),
+            `NA's`=c(0, 4)),
+            row.names = c("QC", "WT"),
+        class = "data.frame")
+    )
+    
+    expect_equal(QCreport$tables$peak_width, 
+        structure(list(
+            Min.=c(12.33056640625, 7.738037109375),
+            `1st Qu.`=c(38.6731630859375, 39.0038757324219),
+            Median=c(47.4981689453125, 48.1656494140625),
+            Mean=c(48.9647423296117, 49.7862030954072),
+            `3rd Qu.`=c(56.3682250976562, 56.9166870117188),
+            Max.=c(146.4296875, 108.039428710938),
+            `NA's`=c(0, 4)), 
+            row.names=c("QC", "WT"),
+        class="data.frame")
+    )
+    
+    expect_equal(QCreport$tables$mz_median, 
+        structure(list(
+            Min.=c(-272.227294755146, -284.60683892769),
+            `1st Qu.`=c(-21.3940776658473, 0),
+            Median=c(0, 0),
+            Mean=c(-12.9934795359947, 14.5174218106226),
+            `3rd Qu.`=c(0, 29.6237475668885),
+            Max.=c(120.794903450402, 223.103402367672),
+            `NA's`=c(0, 4)),
+            row.names=c("QC", "WT"),
+        class="data.frame")
+    )
+    
+    expect_equal(QCreport$tables$RSDtable1[2, 4], 45.8166907329745)
+    expect_equal(QCreport$tables$SBtableBefore[1, 3], 32.9090168180649)
+    expect_equal(QCreport$tables$SBtableAfter[1, 3], 11.2174961555864)
     
     # data
-    #expect_equal(QCreport$data$PCAinF$Data[4, 56], 15362.38, tolerance=1^-7)
-    #expect_equal(QCreport$data$PCAinF$classes[56], "C")
-    #expect_equal(QCreport$data$PCAinF$RSD$variability_method, "RSD")
-    #expect_equal(names(QCreport$data$PCAinF$RSD$C[45]), "113.02091")
-    #expect_equivalent(QCreport$data$PCAinF$RSD$C[45], 38.38334,
-    #    tolerance=1^-7)
-    #expect_equivalent(QCreport$data$PCAinF$RSD$S[45], 37.46615,
-    #    tolerance=1^-7)
-    #expect_equivalent(QCreport$data$PCAinF$RSD$QC[45], 21.16112,
-    #    tolerance=1^-7)
+    expect_equal(QCreport$data$PCAinF$Data[4, 5], 149097.550000002)
+    expect_equal(QCreport$data$PCAinF$classes[6], "WT")
+    expect_equal(QCreport$data$PCAinF$RSD$variability_method, "RSD")
+    expect_equal(names(QCreport$data$PCAinF$RSD$WT[34]), "305.1/2930")
+    expect_equal(QCreport$data$PCAinF$RSD$WT[45], 
+        c(`315/2513`=61.1306994096235))
+    expect_equal(QCreport$data$PCAinF$RSD$WT[45], 
+        c(`315/2513`=61.1306994096235))
+    expect_equal(QCreport$data$PCAinF$RSD$QC[45],
+        c(`315/2513` = 54.3657276849361))
     
-    #expect_equal(QCreport$excludeQC, c(1:5))
+    expect_equal(QCreport$excludeQC, "remove")
     
-    #expect_equivalent(QCreport$projectHeader[3, 2], "qcrms_test_file.csv")
-    #expect_equivalent(QCreport$projectHeader[6, 2], "172")
-    #expect_equivalent(QCreport$projectHeader[7, 2], "QC, C, S")
+    expect_equivalent(QCreport$projectHeader[3, 2], "LCMS_xdata")
+    expect_equivalent(QCreport$projectHeader[6, 2], "11")
+    expect_equivalent(QCreport$projectHeader[7, 2], "QC, WT")
     
-    #expect_equivalent(QCreport$peakPickingParams[1,2], "100")
+    expect_equivalent(QCreport$peakPickingParams[1,2], "268")
     
-    #expect_equivalent(QCreport$TICs[13], 4991575, tolerance=0.5)
-    #expect_equivalent(QCreport$TICs[76], 4679116, tolerance=0.5)
+    expect_equivalent(QCreport$TICs[10], c(`11` = 575133855.059309))
     
-    #expect_equivalent(QCreport$TICraw[13], 4991575, tolerance=0.5)
-    #expect_equivalent(QCreport$TICraw[76], 4679116, tolerance=0.5)
+    expect_equivalent(QCreport$TICraw[1], 0)
+
+    expect_null(QCreport$TICdata[[3]])
     
-    #expect_null(QCreport$TICdata[[3]])
+    expect_equivalent(QCreport$samp.sum[c(1, 5, 7), ],
+        data.frame(
+            Sample=c("ko15", "ko21", "wt16"),
+            `Measurement time`=as.factor(c(NA, NA, NA)),
+            Class=c("QC", "QC", "WT"),
+            `Number of peaks`=c(561, 276, 507),
+            `mzML file size (MB)`=c(3.52, 3.58, 3.56),
+        check.names=FALSE)
+    )
     
-    #expect_equivalent(QCreport$samp.sum[c(1, 33, 67), ],
-    #    data.frame(
-    #        Sample=c("batch01_QC01", "batch02_C07", "batch03_S08"),
-    #        `Measurement time`=c(NA, NA, NA), Class=c("QC", "C", "S"),
-    #        `Number of peaks`=c(99, 95, 98),
-    #        `mzML file size (MB)`=as.numeric(c(NA, NA, NA)),
-    #    check.names=FALSE))
-    
-    #expect_equal(QCreport$QC_hits[11:14], c(47, 53, 59, 65))
+    expect_equal(QCreport$QC_hits, 1L:6L)
     
     context("Test that QC report pdf file is created")
     expect_warning(qcrms::createQCreport(QCreport))

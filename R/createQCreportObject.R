@@ -102,10 +102,6 @@ createQCreportObject <- function(data_file,
     QCreportObject$peakMatrix <- xcms::groupval(object=QCreportObject$xset,
       method="medret", value="into", intensity="into")
 
-    if (exists("listOFlistArguments")) {
-      QCreportObject$listOFlistArguments <- listOFlistArguments
-    }
-
   } else {
     if (!file.exists(QCreportObject$data_file)) {
       stop("Specified input data file doesn't exist or can't be accessed!")

@@ -18,23 +18,29 @@ createProjectHeader <- function(QCreportObject) {
     QCreportObject$peakPickingParams <-
         rbind(QCreportObject$peakPickingParams, NULL)
 
-    if (!is.null(QCreportObject$listOFlistArguments)) {
-        col1 <-  c("method", "ppm", "peakwidth", "mzdif", "snthresh",
+    if (!is.null(QCreportObject$xset)) {
+        # Implementation of XProcessHistory class isn't really clear.
+        # For now only peak picking parameters for CentWave are implemented
+        if (is(QCreportObject$xset@.processHistory[[1L]]@param,
+            "CentWaveParam")) {
+            col1 <-  c("method", "ppm", "peakwidth", "mzdif", "snthresh",
             "integrate", "noise", "prefilter")
-        col2 <- c(QCreportObject$listOFlistArguments[[1L]]$method,
-            QCreportObject$listOFlistArguments[[1L]]$ppm,
-            paste(QCreportObject$listOFlistArguments[[1L]]$peakwidth,
-                collapse="-"),
-            QCreportObject$listOFlistArguments[[1L]]$mzdiff,
-            QCreportObject$listOFlistArguments[[1L]]$snthresh,
-            QCreportObject$listOFlistArguments[[1L]]$integrate,
-            QCreportObject$listOFlistArguments[[1L]]$noise,
-            paste(QCreportObject$listOFlistArguments[[1L]]$prefilter,
-                collapse=", "))
-
-        QCreportObject$peakPickingParams <-
-            rbind(QCreportObject$peakPickingParams, cbind(col1, col2))
+            col2 <- c(
+                "CentWave",
+                QCreportObject$xset@.processHistory[[1L]]@param@ppm,
+                paste(QCreportObject$xset@.processHistory[[1L]]@param@peakwidth,
+                    collapse="-"),
+                QCreportObject$xset@.processHistory[[1L]]@param@mzdiff,
+                QCreportObject$xset@.processHistory[[1L]]@param@snthresh,
+                QCreportObject$xset@.processHistory[[1L]]@param@integrate,
+                QCreportObject$xset@.processHistory[[1L]]@param@noise,
+                paste(QCreportObject$xset@.processHistory[[1L]]@param@prefilter,
+                    collapse=", ")
+            )
+            QCreportObject$peakPickingParams <-
+                rbind(QCreportObject$peakPickingParams, cbind(col1, col2))
+            colnames(QCreportObject$peakPickingParams) <- c("", "")
+        }
     }
-    colnames(QCreportObject$peakPickingParams) <- c("", "")
     QCreportObject
 }

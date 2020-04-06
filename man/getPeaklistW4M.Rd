@@ -4,25 +4,13 @@
 \alias{getPeaklistW4M}
 \title{This function prepares peaklist object from xcms output}
 \usage{
-getPeaklistW4M(
-  xset,
-  intval = "into",
-  convertRTMinute = FALSE,
-  numDigitsMZ = 4L,
-  numDigitsRT = 0L
-)
+getPeaklistW4M(xset, intval = "into")
 }
 \arguments{
 \item{xset}{XCMS object to process}
 
 \item{intval}{Which value to use for peak area, see XCMS manual for more
 details}
-
-\item{convertRTMinute}{If RT shoudl be converted from seconds to minutes}
-
-\item{numDigitsMZ}{number of deciaml digits for mz}
-
-\item{numDigitsRT}{decimal digits for RT}
 }
 \description{
 This function prepares peaklist object from xcms output

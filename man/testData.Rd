@@ -4,7 +4,9 @@
 \name{testData}
 \alias{testData}
 \title{Testing data set}
-\format{List of testing data sets}
+\format{
+List of testing data sets
+}
 \source{
 N/A
 }

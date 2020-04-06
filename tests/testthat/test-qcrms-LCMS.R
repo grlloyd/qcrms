@@ -102,9 +102,8 @@ test_that("createQCreportObject works with XCMS LCMS data outputs", {
 
     expect_equal(QCreport$metaData$table,
         structure(list(
-            Sample=structure(c(1L, 2L, 3L, 4L, 5L, 6L, 8L, 9L, 10L, 11L, 12L),
-            .Label=c("ko15", "ko16", "ko18", "ko19", "ko21", "ko22", "wt15",
-                "wt16", "wt18", "wt19", "wt21", "wt22"), class="factor"),
+            Sample=c("ko15", "ko16", "ko18", "ko19", "ko21", "ko22",
+                "wt16", "wt18", "wt19", "wt21", "wt22"),
             sample_group=c("Removed", "QC", "QC", "QC", "QC", "QC", "WT", "WT",
                 "WT", "WT", "WT"),
             remove=c(TRUE, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA),

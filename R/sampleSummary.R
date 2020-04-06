@@ -39,7 +39,7 @@ sampleSummary <- function(QCreportObject) {
         sheet=sheet)
     } else {
       metaDataTable <- read.csv(QCreportObject$metaData$file, header=TRUE,
-        check.names=FALSE)
+        check.names=FALSE, stringsAsFactors=FALSE)
     }
     QCreportObject$metaData$table <-
       dplyr::left_join(QCreportObject$metaData$table,

@@ -26,6 +26,14 @@ test_that("createQCreportObject works with XCMS LCMS data outputs", {
         meta_data, row.names=F)
     save(file=file.path(temp_dir, "LCMS_xdata.Rdata"), list="xdata")
 
+    # Create meta data xlsx file format
+    require (openxlsx)
+    wb <- createWorkbook()
+    addWorksheet (wb,"meta")
+    writeData (wb,"meta", meta_data, rowNames = F)
+    saveWorkbook (wb, file.path(temp_dir, "qcrms_meta_data.xlsx"),
+        overwrite = T)
+    
     expect_warning(QCreport <- createQCreportObject(
         data_file="LCMS_xdata.Rdata", projectdir=temp_dir,
         metaData_file="qcrms_test_meta_data_file.csv", xcms_output="xdata",
@@ -272,9 +280,30 @@ test_that("createQCreportObject works with XCMS LCMS data outputs", {
         )
     )
 
+    context("Using xlsx input for meta data returns the same output.")
+    expect_warning(QCreport <- createQCreportObject(
+        data_file="LCMS_xdata.Rdata", projectdir=temp_dir,
+        metaData_file="qcrms_meta_data.xlsx", xcms_output="xdata",
+        classLabel="sample_group", excludeQC="remove", msms_label="MSMS"))
+    expect_equal(QCreport$metaData$file, "qcrms_meta_data.xlsx")
+
+    expect_equal(QCreport$metaData$table,
+        structure(list(
+            Sample=c("ko15", "ko16", "ko18", "ko19", "ko21", "ko22",
+                "wt16", "wt18", "wt19", "wt21", "wt22"),
+            sample_group=c("Removed", "QC", "QC", "QC", "QC", "QC", "WT", "WT",
+                "WT", "WT", "WT"),
+            remove=c(TRUE, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA),
+            injection_order=1:11, batch=c(1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 
+                1L, 1L)),
+            row.names=c(1L, 2L, 3L, 4L, 5L, 6L, 8L, 9L, 10L, 11L, 12L),
+            class="data.frame")
+    )    
+    
     unlink(file.path(temp_dir, "LCMS_xdata.Rdata"))
     unlink(file.path(temp_dir, "qcrms_test_meta_data_file.csv"))
     unlink(file.path(temp_dir, "LCMS_xdata.xlsx"))
     unlink(file.path(temp_dir, "LCMS_xdata.pdf"))
     unlink(file.path(temp_dir, "LCMS_xdata_EICs.pdf"))
+    unlink(file.path(temp_dir, "qcrms_meta_data.xlsx"))
 })

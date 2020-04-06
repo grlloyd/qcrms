@@ -20,23 +20,6 @@ formatIonIdentifiers <- function(variableMetadata, numDigitsRT=0L,
     return(variableMetadata)
 }
 
-
-#' This function convert if it is required the Retention Time in minutes
-#' @author G. Le Corguille
-#' @param variableMetadata vairable meta data object
-#' @param convertRTMinute convert RT in seconds to minutes
-
-RTSecondToMinute <- function(variableMetadata, convertRTMinute) {
-  if (convertRTMinute) {
-    #converting the retention times (seconds) into minutes
-    print("converting the retention times into minutes in the variableMetadata")
-    variableMetadata[, "rt"] <- variableMetadata[, "rt"] / 60L
-    variableMetadata[, "rtmin"] <- variableMetadata[, "rtmin"] / 60L
-    variableMetadata[, "rtmax"] <- variableMetadata[, "rtmax"] / 60L
-  }
-  return(variableMetadata)
-}
-
 #' This function prepares peaklist object from xcms output
 #' @author G. Le Corguille
 #' @param xset XCMS object to process
@@ -59,7 +42,6 @@ getPeaklistW4M <- function(xset, intval="into", convertRTMinute=FALSE,
     variableMetadata_dataMatrix[, !(
       make.names(colnames(variableMetadata_dataMatrix)) %in%
       c(make.names(sampnames(xset))))]
-  variableMetadata <- RTSecondToMinute(variableMetadata, convertRTMinute)
   variableMetadata <- formatIonIdentifiers(variableMetadata,
     numDigitsRT=numDigitsRT, numDigitsMZ=numDigitsMZ)
 

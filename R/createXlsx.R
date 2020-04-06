@@ -1,38 +1,15 @@
 #' @import openxlsx
 NULL
 
-#' This function format ions identifiers
-#' @author G. Le Corguille
-#' @param variableMetadata vairable meta data object
-#' @param numDigitsRT decimal digits for RT
-#' @param numDigitsMZ number of deciaml digits for mz
-
-formatIonIdentifiers <- function(variableMetadata, numDigitsRT=0L,
-  numDigitsMZ=0L) {
-    splitDeco <- strsplit(as.character(variableMetadata$name), "_")
-    idsDeco <- sapply(splitDeco, function(x) { deco <- unlist(x)[2L];
-    if (is.na(deco)) return("") else return(paste0("_", deco)) })
-    namecustom <- make.unique(paste0("M", round(variableMetadata[, "mz"],
-      numDigitsMZ), "T", round(variableMetadata[, "rt"], numDigitsRT),
-      idsDeco))
-    variableMetadata <- cbind(name=variableMetadata$name, namecustom=namecustom,
-      variableMetadata[, !(colnames(variableMetadata) %in% "name")])
-    return(variableMetadata)
-}
-
 #' This function prepares peaklist object from xcms output
 #' @author G. Le Corguille
 #' @param xset XCMS object to process
 #' @param intval Which value to use for peak area, see XCMS manual for more
 #' details
-#' @param convertRTMinute If RT shoudl be converted from seconds to minutes
-#' @param numDigitsRT decimal digits for RT
-#' @param numDigitsMZ number of deciaml digits for mz
 
 #@Modified from W4M code by G. Le Corguille
 # value: intensity values to be used into, maxo or intb
-getPeaklistW4M <- function(xset, intval="into", convertRTMinute=FALSE,
-  numDigitsMZ=4L, numDigitsRT=0L) {
+getPeaklistW4M <- function(xset, intval="into") {
     variableMetadata_dataMatrix <- xcms::peakTable(xset, method="medret",
       value=intval)
     variableMetadata_dataMatrix <- cbind(name=groupnames(xset),
@@ -40,14 +17,10 @@ getPeaklistW4M <- function(xset, intval="into", convertRTMinute=FALSE,
 
   variableMetadata <-
     variableMetadata_dataMatrix[, !(
-      make.names(colnames(variableMetadata_dataMatrix)) %in%
-      c(make.names(sampnames(xset))))]
-  variableMetadata <- formatIonIdentifiers(variableMetadata,
-    numDigitsRT=numDigitsRT, numDigitsMZ=numDigitsMZ)
+      colnames(variableMetadata_dataMatrix) %in%
+      c(sampnames(xset)))]
 
-  out <- list()
-  out$variableMetaData <- variableMetadata
-  out
+  variableMetadata
 }
 
 #' Create xlsx output file from XCMS output
@@ -57,8 +30,8 @@ getPeaklistW4M <- function(xset, intval="into", convertRTMinute=FALSE,
 createXlsx <- function(QCreportObject) {
 
   if (!is.null(QCreportObject$xset)) {
-    W4M <- getPeaklistW4M(xset=QCreportObject$xset)
-    rownames(QCreportObject$peakMatrix) <- W4M$variableMetaData$name
+    variableMetaData <- getPeaklistW4M(xset=QCreportObject$xset)
+    rownames(QCreportObject$peakMatrix) <- variableMetaData$name
 
   } else {
     QCreportObject$peakMatrix[QCreportObject$peakMatrix == 0L] <- NA
@@ -72,26 +45,6 @@ createXlsx <- function(QCreportObject) {
   QCreportObject$metaData$table[, QCreportObject$metaData$classColumn] <-
     QCreportObject$metaData$samp_lab
 
-  # W4M for no good reason decided to check if file names contains "-" and
-  # similar symbols. Why?
-  # If it xcms can handle original file names, and after all files have been
-  # processed.
-  # Where is tracability to the original files if this has been done
-  # to the outputs?
-
-  if (!all(colnames(QCreportObject$data$dataMatrix) ==
-    QCreportObject$metaData$table$Sample)) {
-
-    if (all(colnames(QCreportObject$data$dataMatrix) ==
-      make.names(QCreportObject$metaData$table$Sample))) {
-      colnames(QCreportObject$data$dataMatrix) <-
-        QCreportObject$metaData$table$Sample
-    } else {
-        stop("Sample names present in XCMS output doesn't match with
-          meta data.")
-      }
-  }
-
   wb <- createWorkbook()
   addWorksheet(wb, "dataMatrix")
   writeData(wb, "dataMatrix", QCreportObject$peakMatrix, rowNames=TRUE)
@@ -100,7 +53,7 @@ createXlsx <- function(QCreportObject) {
   writeData(wb, "metaData", QCreportObject$metaData$table, rowNames=FALSE)
   if (!is.null(QCreportObject$xset)) {
     addWorksheet(wb, "variableMetaData")
-    writeData(wb, "variableMetaData", W4M$variableMetaData, rowNames=FALSE)
+    writeData(wb, "variableMetaData", variableMetaData, rowNames=FALSE)
   } else {
     addWorksheet(wb, "variableMetaData")
     variableMetaData <- rowMeans(QCreportObject$peakMatrix, na.rm=TRUE,

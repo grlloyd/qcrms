@@ -14,5 +14,5 @@ Imports: grDevices, stats, utils, captioner, ggplot2, gridExtra, mzR,
     dplyr, scales, ggthemes, reshape2, magrittr, SummarizedExperiment, S4Vectors
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.0
 Suggests: faahKO, msPurityData, testthat, covr

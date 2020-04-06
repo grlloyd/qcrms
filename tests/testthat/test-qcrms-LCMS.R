@@ -283,7 +283,9 @@ test_that("createQCreportObject works with XCMS LCMS data outputs", {
     expect_warning(QCreport <- createQCreportObject(
         data_file="LCMS_xdata.Rdata", projectdir=temp_dir,
         metaData_file="qcrms_meta_data.xlsx", xcms_output="xdata",
-        classLabel="sample_group", excludeQC="remove", msms_label="MSMS"))
+        classLabel="sample_group", excludeQC="remove", msms_label="MSMS")
+    )
+    
     expect_equal(QCreport$metaData$file, "qcrms_meta_data.xlsx")
 
     expect_equal(QCreport$metaData$table,
@@ -298,6 +300,36 @@ test_that("createQCreportObject works with XCMS LCMS data outputs", {
             row.names=c(1L, 2L, 3L, 4L, 5L, 6L, 8L, 9L, 10L, 11L, 12L),
             class="data.frame")
     )    
+    
+    context("Use classQC column to fill in missing sample labels. And reading
+        from metaData sheet in xlsx file.")
+    meta_data$ClassQC <- meta_data$sample_group
+    meta_data$sample_group[1:6] <- NA
+    addWorksheet (wb,"metaData")
+    writeData (wb,"metaData", meta_data, rowNames = F)
+    saveWorkbook (wb, file.path(temp_dir, "qcrms_meta_data.xlsx"),
+        overwrite = T)
+    
+    expect_warning(QCreport <- createQCreportObject(
+        data_file="LCMS_xdata.Rdata", projectdir=temp_dir,
+        metaData_file="qcrms_meta_data.xlsx", xcms_output="xdata",
+        classLabel="sample_group", excludeQC="remove", msms_label="MSMS")
+    )
+    
+    expect_equal(QCreport$metaData$file, "qcrms_meta_data.xlsx")
+
+    expect_equal(QCreport$metaData$table[, -4],
+        structure(list(
+            Sample=c("ko15", "ko16", "ko18", "ko19", "ko21", "ko22",
+                "wt16", "wt18", "wt19", "wt21", "wt22"),
+            sample_group=c("Removed", "QC", "QC", "QC", "QC", "QC", "WT", "WT",
+                "WT", "WT", "WT"),
+            remove=c(TRUE, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA),
+            injection_order=1:11, batch=c(1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 
+                1L, 1L)),
+            row.names=c(1L, 2L, 3L, 4L, 5L, 6L, 8L, 9L, 10L, 11L, 12L),
+            class="data.frame")
+    ) 
     
     unlink(file.path(temp_dir, "LCMS_xdata.Rdata"))
     unlink(file.path(temp_dir, "qcrms_test_meta_data_file.csv"))

@@ -41,10 +41,6 @@ sampleSummary <- function(QCreportObject) {
       metaDataTable <- read.csv(QCreportObject$metaData$file, header=TRUE,
         check.names=FALSE)
     }
-    if (!"Sample" %in% colnames(QCreportObject$metaData$table)) {
-      QCreportObject$metaData$table$Sample <-
-        rownames(QCreportObject$metaData$table)
-    }
     QCreportObject$metaData$table <-
       dplyr::left_join(QCreportObject$metaData$table,
         metaDataTable, by="Sample")

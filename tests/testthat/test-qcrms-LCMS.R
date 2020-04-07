@@ -283,7 +283,8 @@ test_that("createQCreportObject works with XCMS LCMS data outputs", {
     expect_warning(QCreport <- createQCreportObject(
         data_file="LCMS_xdata.Rdata", projectdir=temp_dir,
         metaData_file="qcrms_meta_data.xlsx", xcms_output="xdata",
-        classLabel="sample_group", excludeQC="remove", msms_label="MSMS")
+        classLabel="sample_group", excludeQC="remove", msms_label="MSMS",
+        plot_eic=FALSE)
     )
     
     expect_equal(QCreport$metaData$file, "qcrms_meta_data.xlsx")
@@ -313,7 +314,8 @@ test_that("createQCreportObject works with XCMS LCMS data outputs", {
     expect_warning(QCreport <- createQCreportObject(
         data_file="LCMS_xdata.Rdata", projectdir=temp_dir,
         metaData_file="qcrms_meta_data.xlsx", xcms_output="xdata",
-        classLabel="sample_group", excludeQC="remove", msms_label="MSMS")
+        classLabel="sample_group", excludeQC="remove", msms_label="MSMS",
+        plot_eic=FALSE)
     )
     
     expect_equal(QCreport$metaData$file, "qcrms_meta_data.xlsx")

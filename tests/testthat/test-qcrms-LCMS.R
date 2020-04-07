@@ -303,7 +303,13 @@ test_that("createQCreportObject works with XCMS LCMS data outputs", {
     )    
     
     context("Use classQC column to fill in missing sample labels. And reading
-        from metaData sheet in xlsx file.")
+        from metaData sheet in xlsx file. Locating raw data files in
+        different folder than xcms object.")
+    
+    raw_paths <- QCreport$raw_paths
+    # On M$ Windows xcms keeps "\\"
+    raw_paths <- gsub("\\\\", "/", QCreport$raw_paths)
+    
     meta_data$ClassQC <- meta_data$sample_group
     meta_data$sample_group[1:6] <- NA
     addWorksheet (wb,"metaData")
@@ -315,8 +321,11 @@ test_that("createQCreportObject works with XCMS LCMS data outputs", {
         data_file="LCMS_xdata.Rdata", projectdir=temp_dir,
         metaData_file="qcrms_meta_data.xlsx", xcms_output="xdata",
         classLabel="sample_group", excludeQC="remove", msms_label="MSMS",
-        plot_eic=FALSE)
+        plot_eic=FALSE,
+        raw_path=system.file("cdf", package="faahKO"))
     )
+    
+    expect_equivalent(QCreport$raw_paths, file.path(raw_paths))
     
     expect_equal(QCreport$metaData$file, "qcrms_meta_data.xlsx")
 
@@ -333,10 +342,25 @@ test_that("createQCreportObject works with XCMS LCMS data outputs", {
             class="data.frame")
     ) 
     
+    context ("locate-raw-files returns error if can't locate raw files")
+    QCreport$raw_path <- system.file("cdf", "WT",package="faahKO")
+    expect_error(qcrms:::locate_raw_files(QCreportObject=QCreport),
+        regexp="Some or all raw data files couldn't be located in folder")
+    
+    context ("If different file types are located in the raw data folder
+        return error.")
+    dir.create(file.path(temp_dir, "raw_files"))
+    file.create(file.path(temp_dir, "raw_files", "file1.mzML"))
+    file.create(file.path(temp_dir, "raw_files", "file2.CDF"))
+    QCreport$raw_path <- file.path(temp_dir, "raw_files")
+    expect_error(qcrms:::locate_raw_files(QCreport),
+        regexp="Some or all raw data files couldn't be located in folder")
+    
     unlink(file.path(temp_dir, "LCMS_xdata.Rdata"))
     unlink(file.path(temp_dir, "qcrms_test_meta_data_file.csv"))
     unlink(file.path(temp_dir, "LCMS_xdata.xlsx"))
     unlink(file.path(temp_dir, "LCMS_xdata.pdf"))
     unlink(file.path(temp_dir, "LCMS_xdata_EICs.pdf"))
     unlink(file.path(temp_dir, "qcrms_meta_data.xlsx"))
+    unlink(file.path(temp_dir, "raw_files"), recursive=TRUE)
 })

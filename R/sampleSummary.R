@@ -8,6 +8,51 @@
 #'
 NULL
 
+#' Return file extension from character vector if file paths
+#' @param file_paths character(), character vector containing file paths
+#' @return character(), character vector with unique file extensions
+
+get_file_extension <- function(file_paths) {
+    extensions <- strsplit(file_paths, "\\.")
+    extensions <- vapply(extensions, function(x) x[[length(x)]],
+        vector(mode="character", 1))
+    unique(paste0(".", extensions))
+}
+
+#' Locate raw LC/MS raw files on local files system and align with xcms output
+#' 
+#' @param QCreportObject Qcreport object
+
+locate_raw_files <- function(QCreportObject) {
+    file_extension <- get_file_extension(QCreportObject$xset@filepaths)
+    if (length(file_extension) > 1) {
+      stop ("More than one file extension are presnet in provided raw data
+          folder. Please check that only data files are stored in folder
+          provided.")
+    }
+    raw_paths <- paste(QCreportObject$raw_path, "/",
+        QCreportObject$metaData$table$Sample, file_extension, sep="")
+
+    ## If files are located across multiple folders, locate them one-by-one
+    if (!all(file.exists(raw_paths))) {
+        files_to_locate <- paste0(row.names(QCreportObject$xset@phenoData),
+            file_extension)
+        raw_paths <- rep(NA, length(files_to_locate))
+        for (file in seq_len(length(files_to_locate))) {
+            file_path <- dir(QCreportObject$raw_path, recursive=TRUE,
+                pattern=files_to_locate[file], full.names=TRUE)
+            if (length(file_path) > 0) {
+                raw_paths[file] <- file_path
+            }
+        }
+    }
+    if (any(is.na(raw_paths))) {
+        stop("Some or all raw data files couldn't be located in folder
+            specified in raw_path parameter.")
+    }
+    raw_paths
+}
+
 #' Exctract and return ggplot2 object of EICs for specified xmcm features
 #'
 #' @param QCreportObject Qcreport object
@@ -106,23 +151,7 @@ sampleSummary <- function(QCreportObject) {
   }
 
   if (!is.null(QCreportObject$raw_path)) {
-    QCreportObject$raw_paths <- paste(QCreportObject$raw_path, "/",
-      QCreportObject$metaData$table$Sample, ".mzML", sep="")
-
-    ## If files are located across multiple folders, locate them one-by-one
-    if (!all(file.exists(QCreportObject$raw_paths))) {
-      files_to_locate <- paste(row.names(QCreportObject$xset@phenoData),
-        "mzML", sep=".")
-      for (file in seq_len(length(files_to_locate))) {
-
-        QCreportObject$raw_paths[file] <- dir(QCreportObject$raw_path,
-          recursive=TRUE, pattern=files_to_locate[file], full.names=TRUE)
-      }
-    }
-    if (all(is.na(QCreportObject$raw_paths))) {
-      stop("Raw data files couldn't be located in folder specified
-       in raw_path parameter.")
-    }
+    QCreportObject$raw_paths <- locate_raw_files(QCreportObject)
   } else if (!is.null(QCreportObject$xset)) {
       QCreportObject$raw_paths <-
         QCreportObject$xset@filepaths

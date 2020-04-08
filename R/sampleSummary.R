@@ -25,11 +25,6 @@ get_file_extension <- function(file_paths) {
 
 locate_raw_files <- function(QCreportObject) {
     file_extension <- get_file_extension(QCreportObject$xset@filepaths)
-    if (length(file_extension) > 1) {
-      stop ("More than one file extension are presnet in provided raw data
-          folder. Please check that only data files are stored in folder
-          provided.")
-    }
     raw_paths <- paste(QCreportObject$raw_path, "/",
         QCreportObject$metaData$table$Sample, file_extension, sep="")
 

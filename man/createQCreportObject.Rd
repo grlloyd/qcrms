@@ -8,7 +8,7 @@ createQCreportObject(
   data_file,
   projectdir,
   author = "",
-  metaData_file,
+  metaData_file = NULL,
   raw_path = NULL,
   InternalProjectRef = "",
   Dataset = "",
@@ -23,7 +23,8 @@ createQCreportObject(
   mv_filter_method = "across",
   mv_filter_frac = 0.5,
   xcms_output = "xset",
-  msms_label = "MSMS"
+  msms_label = "MSMS",
+  group_names = NULL
 )
 }
 \arguments{
@@ -72,6 +73,10 @@ filtered data PCA scores plot}
 \item{xcms_output}{Name of the R object in Rdata file containing XCMS outputs}
 
 \item{msms_label}{Label used for MS/MS data files}
+
+\item{group_names}{character(), character vector containing uique sample
+group identifiers in the raw data files. If left empty function will
+attemp to fill in class labels for blank and QC samples.}
 }
 \description{
 Create initial qcrepotobject structure from input variable

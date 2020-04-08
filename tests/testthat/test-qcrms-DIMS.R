@@ -133,6 +133,26 @@ test_that("createQCreportObject can parse csv text file inputs", {
     expect_warning(qcrms::createQCreport(QCreport))
     expect_true(file.exists(file.path(temp_dir, "qcrms_test_file.csv.pdf")))
     
+    context ("DIMS: Create metadata file from sample filenames.")
+    expect_warning(QCreport <- 
+        createQCreportObject(data_file="qcrms_test_file.csv", 
+        projectdir=temp_dir, excludeQC=NULL)
+    )
+    expect_equal(QCreport$metaData$table[1:7, ],
+        structure(
+            list(
+                Sample = c("batch01_QC01", "batch01_QC02", "batch01_QC03",
+                    "batch01_C05", "batch01_S07", "batch01_C10",
+                    "batch01_QC04"), 
+                Class = c("QC", "QC", "QC", "sample", "sample", "sample", 
+                    "QC"),
+                injection_order = 1L:7L, 
+                batch = c(1L, 1L, 1L, 1L, 1L, 1L, 1L)
+            ),
+        row.names = c(NA, 7L),
+        class = "data.frame")
+    )
+    
     unlink(file.path(temp_dir, "qcrms_test_file.csv"))
     unlink(file.path(temp_dir, "qcrms_test_meta_data_file.csv"))
     unlink(file.path(temp_dir, "qcrms_test_file.csv.xlsx"))

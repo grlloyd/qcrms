@@ -361,6 +361,25 @@ test_that("createQCreportObject works with XCMS LCMS data outputs", {
     expect_error(qcrms:::locate_raw_files(QCreport),
         regexp="Some or all raw data files couldn't be located in folder")
     
+    context ("LCMS: Create metadata file from sample filenames.")
+    expect_warning(QCreport <- createQCreportObject(
+        data_file="LCMS_xdata.Rdata", projectdir=temp_dir, xcms_output="xdata",
+        classLabel="sample_group", excludeQC="remove", msms_label="MSMS",
+        plot_eic=FALSE, group_names=c("ko", "wt"), Blank_label=NULL,
+        QC_label=NULL)
+    )
+    
+    expect_equal(QCreport$metaData$table, 
+        structure(list(
+            Sample = c("ko15", "ko16", "ko18", "ko19", "ko21", "ko22", "wt15",
+                "wt16", "wt18", "wt19", "wt21", "wt22"),
+            sample_group = c("ko", "ko", "ko", "ko", "ko", "ko", "wt", "wt",
+                "wt", "wt", "wt", "wt"),
+            injection_order = 1:12),
+        row.names = c(NA, 12L),
+        class = "data.frame")
+    )
+    
     unlink(file.path(temp_dir, "LCMS_xdata.Rdata"))
     unlink(file.path(temp_dir, "qcrms_test_meta_data_file.csv"))
     unlink(file.path(temp_dir, "LCMS_xdata.xlsx"))

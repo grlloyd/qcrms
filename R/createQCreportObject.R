@@ -42,12 +42,16 @@ file_type <- function(path) {
 #' @param mv_filter_frac Threshod of faction of detection of MV filter
 #' @param xcms_output Name of the R object in Rdata file containing XCMS outputs
 #' @param msms_label Label used for MS/MS data files
+#' @param group_names character(), character vector containing uique sample
+#'  group identifiers in the raw data files. If left empty function will
+#'  attemp to fill in class labels for blank and QC samples.
+#' 
 #' @export
 
 createQCreportObject <- function(data_file,
   projectdir,
   author="",
-  metaData_file,
+  metaData_file=NULL,
   raw_path=NULL,
   InternalProjectRef="",
   Dataset="",
@@ -62,7 +66,8 @@ createQCreportObject <- function(data_file,
   mv_filter_method="across",
   mv_filter_frac=0.5,
   xcms_output="xset",
-  msms_label="MSMS") {
+  msms_label="MSMS",
+  group_names=NULL) {
 
   QCreportObject <- list()
 
@@ -71,6 +76,7 @@ createQCreportObject <- function(data_file,
   QCreportObject$pca_scores_labels <- pca_scores_labels
   QCreportObject$data_file <- data_file
   QCreportObject$projectdir <- projectdir
+  QCreportObject$group_names <- group_names
 
   QCreportObject$filtering <- list()
   QCreportObject$filtering$mv_filter_method <- mv_filter_method

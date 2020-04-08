@@ -48,6 +48,29 @@ locate_raw_files <- function(QCreportObject) {
     raw_paths
 }
 
+#' Generate meta data from sample filenames
+#' 
+#' @param QCreportObject Qcreport object
+
+meta_data_from_filenames <- function(QCreportObject) {
+    meta_data_table <- QCreportObject$metaData$table
+    meta_data_table[ , QCreportObject$metaData$classColumn] <- "sample"
+    
+    class_labels <- c(QCreportObject$Blank_label, QCreportObject$QC_label,
+        QCreportObject$group_names)
+    
+    if (length(class_labels) > 0L) {
+        for (classl in class_labels) {
+            ch <- grep(classl, meta_data_table$Sample)
+            if (length(ch) > 0L) {
+                meta_data_table[ch , QCreportObject$metaData$classColumn] <- 
+                    classl
+            }
+        }
+    }
+    meta_data_table
+}
+
 #' Exctract and return ggplot2 object of EICs for specified xmcm features
 #'
 #' @param QCreportObject Qcreport object
@@ -57,13 +80,14 @@ sampleSummary <- function(QCreportObject) {
 
     QCreportObject$metaData$table <- data.frame(
       Sample=rownames(QCreportObject$xset@phenoData),
-      xcms_class=QCreportObject$xset@phenoData$class)
+      xcms_class=QCreportObject$xset@phenoData$class,
+      stringsAsFactors=FALSE)
     if (length(unique(QCreportObject$metaData$table$xcms_class)) == 1L) {
       QCreportObject$metaData$table$xcms_class <- NULL
     }
   } else {
     QCreportObject$metaData$table <- data.frame(Sample=
-      colnames(QCreportObject$peakMatrix))
+      colnames(QCreportObject$peakMatrix), stringsAsFactors=F)
   }
 
   if (!is.null(QCreportObject$metaData$file)) {
@@ -85,25 +109,7 @@ sampleSummary <- function(QCreportObject) {
       dplyr::left_join(QCreportObject$metaData$table,
         metaDataTable, by="Sample")
   } else {
-    colnames(QCreportObject$metaData$table) <-
-      QCreportObject$metaData$classColumn
-    QCreportObject$metaData$table[, 1L] <-
-      as.vector(QCreportObject$metaData$table[, 1L])
-    QCreportObject$metaData$table$Sample <-
-      rownames(QCreportObject$metaData$table)
-
-    if (!is.null(QCreportObject$Blank_label)) {
-        bh <- grep(QCreportObject$Blank_label,
-          rownames(QCreportObject$metaData$table))
-        if (length(bh) > 0L) QCreportObject$metaData$table[bh, 1L] <-
-          QCreportObject$Blank_label
-      }
-    if (!is.null(QCreportObject$QC_label)) {
-        qh <- grep(QCreportObject$QC_label,
-          rownames(QCreportObject$metaData$table))
-        if (length(qh) > 0L) QCreportObject$metaData$table[qh, 1L] <-
-          QCreportObject$QC_label
-      }
+      QCreportObject$metaData$table <- meta_data_from_filenames(QCreportObject)
   }
 
   # Check that column in meta data selected to be used for class lables doesn't

@@ -39,7 +39,7 @@ SignalBatchCorrection <- function(QCreportObject) {
 
   # MV filter for all samples
   sample_filtered <- filter_samples_by_mv(df=blank_filtered, max_perc_mv=0.5,
-    classes=NULL)
+    classes=class)
   flags <- attributes(sample_filtered)$flags
   if (any(flags[, "filter_samples_by_mv_flags"] == 0L)) {
     class <- class[as.logical(flags[, "filter_samples_by_mv_flags"])]

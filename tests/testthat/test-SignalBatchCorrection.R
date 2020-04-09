@@ -19,7 +19,7 @@ temp_dir <- tempdir()
 QCreportObject$xlsxout <- file.path(temp_dir, "qcrms.xlsx")
 
 QCreportObject <- qcrms:::createXlsx(QCreportObject)
-expect_warning(QCreportObject <- qcrms:::SignalBatchCorrection(QCreportObject))
+expect_message(QCreportObject <- qcrms:::SignalBatchCorrection(QCreportObject))
 
 expect_equal(QCreportObject$filtering$table$Applied, c(TRUE, FALSE,TRUE,
     TRUE, TRUE))

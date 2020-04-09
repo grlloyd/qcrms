@@ -31,7 +31,8 @@ test_that("createQCreportObject can parse csv text file inputs", {
         c(28041.86, 28764.55, 27063.78))
     expect_equal(QCreport$pca_scores_labels, "all")
     
-    expect_equal(QCreport$filtering$glog_lambda_filtered, 113874336.986485)
+    expect_equal(QCreport$filtering$glog_lambda_filtered, 113874336,
+        tolerance=10)
     
     expect_equivalent(QCreport$filtering$table,
         structure(
@@ -48,6 +49,9 @@ test_that("createQCreportObject can parse csv text file inputs", {
                     Applied=c(TRUE, TRUE, TRUE, TRUE, TRUE)),
             row.names=c(NA, -5L), class="data.frame")
     )
+    
+    expect_equal(QCreport$filtering$samples_removed,
+        c("batch01_C05", "batch01_S07"))
     
     expect_equal(QCreport$metaData$classColumn, "Class")
     
@@ -168,7 +172,6 @@ test_that("createQCreportObject can parse csv text file inputs", {
     )
     
     context ("DIMS: check output if blank sample is present")
-    
     
     unlink(file.path(temp_dir, "qcrms_test_file.csv"))
     unlink(file.path(temp_dir, "qcrms_test_meta_data_file.csv"))

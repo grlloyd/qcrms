@@ -10,26 +10,43 @@ test_that("createQCreportObject can parse csv text file inputs", {
     meta_data <- SummarizedExperiment::colData(pmp::MTBLS79)
     meta_data$Sample <- rownames(meta_data)
 
+    # Simulate sample 4 and 5 as blank
+    peak_matrix[seq(1, 100, 2), 4:5] <- NA
+    peak_matrix[c(1:30), 4:5] <- NA
+    peak_matrix[, 4:5] <- peak_matrix[, 4:5] / 25
+    peak_matrix[c(46, 78), 4:5] <- peak_matrix[c(46, 78), 4:5] * 10^6
+    
+    meta_data$Class[4:5] <- "Blank"
+    
     temp_dir <- tempdir()
     write.csv(file=file.path(temp_dir,"qcrms_test_file.csv"), peak_matrix)
     write.csv(file=file.path(temp_dir,"qcrms_test_meta_data_file.csv"),
         meta_data, row.names=FALSE)
-    expect_warning(QCreport <- createQCreportObject(
+    expect_message(QCreport <- createQCreportObject(
         data_file="qcrms_test_file.csv", projectdir=temp_dir,
-        metaData_file="qcrms_test_meta_data_file.csv"))
+        metaData_file="qcrms_test_meta_data_file.csv"),
+        regexp="The number of NA and <= 0 values in peaksData before QC-RSC: 350")
 
     expect_equal(as.vector(QCreport$peakMatrix[1, 1:3]),
         c(28041.86, 28764.55, 27063.78))
     expect_equal(QCreport$pca_scores_labels, "all")
     
-    expect_equal(QCreport$filtering$glog_lambda_filtered, 80142621)
-    expect_equivalent(QCreport$filtering$table[1:2,],
-        data.frame(
-            Filter=c("Before filtering", "Blank, fold_change=20, fraction=0"),
-            `Number of features`=c(100, 100),
-            `Number of samples`=c(172, 172),
-            Applied=c(TRUE, FALSE),
-        check.names=FALSE)
+    expect_equal(QCreport$filtering$glog_lambda_filtered, 113874336.986485)
+    
+    expect_equivalent(QCreport$filtering$table,
+        structure(
+            list(
+                    Filter=structure(c(1L, 2L, 5L, 4L, 3L),
+                    .Label=c("Before filtering",
+                                "Blank, fold_change=20, fraction=0",
+                                "Featrues, method=across, fraction=0.5",
+                                "Features, method=QC, fraction=0.9",
+                                "MV Sample, max_perc_mv=0.5"),
+                    class="factor"),
+                    `Number of features`=c(100L, 95L, 95L, 83L, 83L),
+                    `Number of samples`=c(172L, 172L, 170L, 170L, 170L),
+                    Applied=c(TRUE, TRUE, TRUE, TRUE, TRUE)),
+            row.names=c(NA, -5L), class="data.frame")
     )
     
     expect_equal(QCreport$metaData$classColumn, "Class")
@@ -40,9 +57,9 @@ test_that("createQCreportObject can parse csv text file inputs", {
     
     # Plots
     expect_equal(QCreport$plots$ticplot_1$data[3,1], 4345633, tolerance=0.16)
-    expect_equal(QCreport$plots$ticplot_2$data[5,1], 4412936)
-    expect_equal(QCreport$plots$ticplot_3$data[6,3], 95)
-    expect_equal(QCreport$plots$ticplot_4$data$nPeak[161], 89)
+    expect_equal(QCreport$plots$ticplot_2$data[5,1], 3826233650.09348)
+    expect_equal(QCreport$plots$ticplot_3$data[6,3], 99)
+    expect_equal(QCreport$plots$ticplot_4$data$nPeak[161], 95)
     
     expect_equal(QCreport$plots$PCAallSamples$data$pc1[67], -5.555397, 
         tolerance=1^-7)
@@ -50,15 +67,13 @@ test_that("createQCreportObject can parse csv text file inputs", {
         tolerance=1^-7)
     expect_equal(QCreport$plots$PCAQCleading$data$pc1[13], 4.863442,
         tolerance=1^-7)
-    expect_equal(QCreport$plots$PCAallQCleading$data$pc2[10], 4.136927,
-        tolerance=1^-7)
+    expect_equal(QCreport$plots$PCAallQCleading$data$pc2[10], -3.96314994724299)
     
     expect_equal(QCreport$plots$MVplot1$data$x[109], 13)
     expect_equal(QCreport$plots$MVplot2$data$x[99], 18.91892,
         tolerance=1^-7)
     expect_equal(QCreport$plots$MVplot3$data$class[136], 7)
-    expect_equal(QCreport$plots$MVplot4$data$class[288], 102.040816,
-        tolerance=1^-7)
+    expect_equal(QCreport$plots$MVplot4$data$class[288], 32.529659395331)
     
     expect_equal(QCreport$plots$RSDplot1$data$list_object[153], 30.63364,
         tolerance=1^-7)
@@ -70,8 +85,7 @@ test_that("createQCreportObject can parse csv text file inputs", {
     expect_equal(QCreport$plots$QCplot1$data$values[1123], -0.5477665,
                  tolerance=1^-7)
     
-    expect_equal(QCreport$plots$SBPCAbefore$data$pc1[34], 1.77536,
-        tolerance=1^-7)
+    expect_equal(QCreport$plots$SBPCAbefore$data$pc1[34], -2.18008575589513)
     expect_equal(QCreport$plots$SBPCAbeforeQC$data$pc1[3], -8.776818,
         tolerance=1^-7)
     expect_equal(QCreport$plots$SBRSDbefore$data$list_object[43], 38.38334,
@@ -93,7 +107,7 @@ test_that("createQCreportObject can parse csv text file inputs", {
     
     # data
     expect_equal(QCreport$data$PCAinF$Data[4, 56], 15362.38, tolerance=1^-7)
-    expect_equal(QCreport$data$PCAinF$classes[56], "C")
+    expect_equal(QCreport$data$PCAinF$classes[56], "S")
     expect_equal(QCreport$data$PCAinF$RSD$variability_method, "RSD")
     expect_equal(names(QCreport$data$PCAinF$RSD$C[45]), "113.02091")
     expect_equivalent(QCreport$data$PCAinF$RSD$C[45], 38.38334,
@@ -107,7 +121,7 @@ test_that("createQCreportObject can parse csv text file inputs", {
     
     expect_equivalent(QCreport$projectHeader[3, 2], "qcrms_test_file.csv")
     expect_equivalent(QCreport$projectHeader[6, 2], "172")
-    expect_equivalent(QCreport$projectHeader[7, 2], "QC, C, S")
+    expect_equivalent(QCreport$projectHeader[7, 2], "QC, Blank, C, S")
     
     expect_equivalent(QCreport$peakPickingParams[1,2], "100")
     
@@ -134,7 +148,7 @@ test_that("createQCreportObject can parse csv text file inputs", {
     expect_true(file.exists(file.path(temp_dir, "qcrms_test_file.csv.pdf")))
     
     context ("DIMS: Create metadata file from sample filenames.")
-    expect_warning(QCreport <- 
+    expect_message(QCreport <- 
         createQCreportObject(data_file="qcrms_test_file.csv", 
         projectdir=temp_dir, excludeQC=NULL)
     )
@@ -152,6 +166,9 @@ test_that("createQCreportObject can parse csv text file inputs", {
         row.names = c(NA, 7L),
         class = "data.frame")
     )
+    
+    context ("DIMS: check output if blank sample is present")
+    
     
     unlink(file.path(temp_dir, "qcrms_test_file.csv"))
     unlink(file.path(temp_dir, "qcrms_test_meta_data_file.csv"))

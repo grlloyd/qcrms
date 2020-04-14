@@ -66,28 +66,32 @@ XCMS_EIC_plot <- function(indexes, rawfiles, class, xset, Blank_label="Blank",
 
       if (!all(is.na(c(mzmi, mzma, RTmi, RTma))) &&
         (!is.null(rawfiles[[chrn]]))) {
-          chroms[[chrn]] <- rawfiles[[chrn]] %>%
-          xcms::filterRt(rt=c(RTmi, RTma)) %>%
-          xcms::filterMz(mz=c(mzmi, mzma)) %>%
-          as("data.frame")
-
-          # remove file column
-          chroms[[chrn]]$file <- NULL
-
-          # Replace raw RT with corrected if RT correction was applied
-          if (nrow(chroms[[chrn]]) != 0L && RTcorrected == TRUE) {
-            RThits <- which(xset@rt$raw[[chrn]] %in% chroms[[chrn]]$rt)
-
-          if (length(RThits) > 0L & length(RThits) == nrow(chroms[[chrn]])) {
-              chroms[[chrn]]$rt <- xset@rt$corrected[[chrn]][RThits]
+            ch <- tryCatch(
+              rawfiles[[chrn]] %>%
+              xcms::filterRt(rt=c(RTmi, RTma)) %>%
+              xcms::filterMz(mz=c(mzmi, mzma)) %>%
+              as("data.frame"), 
+             error=function(e) {return(NULL)}
+            )
+            if (!is.null(ch)){
+                chroms[[chrn]] <- ch
+                # remove file column
+                chroms[[chrn]]$file <- NULL
+                # Replace raw RT with corrected if RT correction was applied
+                if (nrow(chroms[[chrn]]) != 0L && RTcorrected == TRUE) {
+                    RThits <- which(xset@rt$raw[[chrn]] %in% chroms[[chrn]]$rt)
+                if (length(RThits) > 0L & length(RThits) == 
+                    nrow(chroms[[chrn]])) {
+                        chroms[[chrn]]$rt <- xset@rt$corrected[[chrn]][RThits]
+                    }
+                }
+            } else {
+                chroms[[chrn]] <-data.frame(rt=NA, mz=NA, i=NA)
             }
-          }
-
         # To keeps track on class and sample labels, we need to have empty
         # data frame, if there are no EIC's to extract
         if (nrow(chroms[[chrn]]) == 0L) chroms[[chrn]] <-
           data.frame(rt=NA, mz=NA, i=NA)
-
       } else {
         chroms[[chrn]] <- data.frame(rt=NA, mz=NA, i=NA)
       }

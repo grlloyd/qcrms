@@ -18,7 +18,7 @@ getPeaklistW4M <- function(xset, intval="into") {
   variableMetadata <-
     variableMetadata_dataMatrix[, !(
       colnames(variableMetadata_dataMatrix) %in%
-      c(sampnames(xset)))]
+      c(make.names(sampnames(xset))))]
 
   variableMetadata
 }

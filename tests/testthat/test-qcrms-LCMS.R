@@ -41,6 +41,31 @@ test_that("createQCreportObject works with XCMS LCMS data outputs", {
 
     expect_true(file.exists(file.path(temp_dir, "LCMS_xdata.xlsx")))
 
+    # Check content of output xlsx file
+    wb_temp <- openxlsx::loadWorkbook(file.path(temp_dir, "LCMS_xdata.xlsx"))
+    
+    variableMetaData <- readWorkbook(wb_temp, "variableMetaData")
+    expect_equal(head (variableMetaData),
+        structure(list(name = c("M205T2791", "M206T2790", "M207T2719", 
+            "M233T3029", "M241T3686", "M244T2835"),
+        mz=c(205, 206, 207.100006103516, 233, 241.100006103516,
+            244.100006103516),
+        mzmin=c(205, 206, 207.100006103516, 233, 241.100006103516,
+            244.100006103516),
+        mzmax=c(205, 206, 207.100006103516, 233, 241.199996948242,
+            244.100006103516),
+        rt=c(2791.04516601562, 2790.11202148437, 2718.83251953125, 
+            3029.41455078125, 3686.39326269531, 2834.84826660156),
+        rtmin=c(2787.63159179688, 2786.41528320312, 2712.60815429688,
+            3014.683, 3671.52124023438,  2830.10083007812),
+        rtmax=c(2795.03662109375, 2795.61206054688, 2723.601,
+            3063.19799804688, 3740.9423828125, 2836.123046875), 
+        npeaks=c(12, 12, 13, 11, 20, 6),
+        S=c(12, 11, 9, 9, 11, 6)), 
+        row.names=c(NA, 6L), class="data.frame")
+    )
+    rm (wb_temp)
+    
     expect_equal(QCreport$xcms_output, "xdata")
     expect_equal(QCreport$pca_scores_labels, "all")
     expect_equal(QCreport$data_file, "LCMS_xdata.Rdata")

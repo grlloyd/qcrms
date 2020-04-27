@@ -405,11 +405,64 @@ test_that("createQCreportObject works with XCMS LCMS data outputs", {
         class = "data.frame")
     )
     
+    context ("LCMS: outputs using older xcmsSet class.")
+    xset <- xcmsSet(cdfs, method='centWave', ppm=25, peakwidth=c(20, 80),
+        snthresh=10, prefilter=c(3,100), integrate=1, mzdiff=-0.001,
+        verbose.columns=FALSE, fitgauss=FALSE, noise=5000)
+    # New xcms methods updates RT in peaks slot as well, that's not compatible
+    # with older xcmsSet
+    # xset <- xcms::retcor(xset, method="obiwarp", profStep=0.6, gapInit=0.3,
+    #    gapExtend=2.4, localAlignment=FALSE)
+    xset@phenoData$class <- rep("S", 12)
+    xset <- xcms::group(xset, method="density", bw=30, minfrac=0.5, minsamp=1)
+    
+    xdata <- xcms::findChromPeaks(raw_data, param=cwp)
+    xdata <- xcms::groupChromPeaks(xdata,
+        xcms::PeakDensityParam(sampleGroups=rep("S", 12)))
+    
+    context ("Compare xcmsSet and XCMSnExp outputs.")
+    expect_equivalent(xcms::peaks(xset), xcms::chromPeaks(xdata))
+    expect_equivalent(xcms::groups(xset),
+        as.matrix(xcms::featureDefinitions(xdata)[, 1:8]))
+
+    expect_error(QCreport <- createQCreportObject(
+        data_file="LCMS_xdata.Rdata", projectdir=temp_dir,
+        metaData_file="qcrms_meta_data.xlsx", xcms_output="xset_oeer",
+        classLabel="sample_group", excludeQC="remove", msms_label="MSMS",
+        plot_eic=FALSE, assay="xset"), regexp="Please check that XCMS object"
+    )
+
+    save(file=file.path(temp_dir, "LCMS_xdata.Rdata"), list="xset")
+    
+    expect_warning(QCreport <- createQCreportObject(
+        data_file="LCMS_xdata.Rdata", projectdir=temp_dir,
+        metaData_file="qcrms_meta_data.xlsx", xcms_output="xset",
+        classLabel="sample_group", excludeQC="remove", msms_label="MSMS",
+        plot_eic=FALSE, assay="xset")
+    )
+    
+    expect_equal(QCreport$xcms_output, "xset")
+    expect_equivalent(QCreport$projectHeader[3, ], c("Assay:", "xset"))
+    
+    expect_equal(QCreport$filtering$table, 
+        structure(
+            list(Filter = structure(c(1L, 2L, 5L, 4L, 3L),
+            .Label = c("Before filtering", "Blank, fold_change=20, fraction=0",
+                "Featrues, method=across, fraction=0.5",
+                "Features, method=QC, fraction=0.9",
+                "MV Sample, max_perc_mv=0.5"),
+            class = "factor"),
+            `Number of features` = c(266L, 266L, 266L, 129L, 129L),
+            `Number of samples` = c(11L, 11L, 11L, 11L, 11L), 
+            Applied = c(TRUE, FALSE, TRUE, TRUE, TRUE)),
+        row.names = c(NA, -5L), class = "data.frame")
+    )
+    
     unlink(file.path(temp_dir, "LCMS_xdata.Rdata"))
     unlink(file.path(temp_dir, "qcrms_test_meta_data_file.csv"))
     unlink(file.path(temp_dir, "LCMS_xdata.xlsx"))
     unlink(file.path(temp_dir, "LCMS_xdata.pdf"))
     unlink(file.path(temp_dir, "LCMS_xdata_EICs.pdf"))
     unlink(file.path(temp_dir, "qcrms_meta_data.xlsx"))
-    unlink(file.path(temp_dir, "raw_files"), recursive=TRUE)
+    unlink(file.path(temp_dir, "raw_files"), recursive=TRUE)    
 })

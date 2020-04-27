@@ -96,6 +96,7 @@ createQCreportObject <- function(data_file,
 
     if (class(get(QCreportObject$xcms_output)) == "xcmsSet") {
       QCreportObject$xset <- get(QCreportObject$xcms_output)
+      QCreportObject$xcms_class <- "xcmsSet"
     } else if (class(get(QCreportObject$xcms_output)) == "XCMSnExp") {
       QCreportObject$xset <- as(get(QCreportObject$xcms_output), "xcmsSet")
       rownames(QCreportObject$xset@phenoData) <- sub(".mzML", "",
@@ -103,6 +104,7 @@ createQCreportObject <- function(data_file,
       QCreportObject$xset@phenoData$class <-
         rep(1L, nrow(QCreportObject$xset@phenoData))
       QCreportObject$xset@phenoData$sampleNames <- NULL
+      QCreportObject$xcms_class <- "XCMSnExp"
     }
 
     QCreportObject$peakMatrix <- xcms::groupval(object=QCreportObject$xset,
@@ -114,6 +116,7 @@ createQCreportObject <- function(data_file,
     }
     QCreportObject$peakMatrix <- as.matrix(read.csv(QCreportObject$data_file,
     header=TRUE, row.names=1L, check.names=FALSE))
+    QCreportObject$xcms_class <- "none"
   }
 
   projectInfo <- list()

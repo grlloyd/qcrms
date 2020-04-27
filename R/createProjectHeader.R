@@ -18,7 +18,7 @@ createProjectHeader <- function(QCreportObject) {
     QCreportObject$peakPickingParams <-
         rbind(QCreportObject$peakPickingParams, NULL)
 
-    if (!is.null(QCreportObject$xset)) {
+    if (!is.null(QCreportObject$xset) & QCreportObject$xcms_class == "XCMSnExp"){
         # Implementation of XProcessHistory class isn't really clear.
         # For now only peak picking parameters for CentWave are implemented
         if (is(QCreportObject$xset@.processHistory[[1L]]@param,

@@ -30,3 +30,14 @@ test_that("dosummaryplot stops if input isn't list or data.frame/matrix", {
     scale=TRUE, qc_label="QC", ignorelabel="Removed", labels="all", qc_shape=17,
     base_size = 10, pccomp=c(1,2), plot=FALSE))
 })
+
+test_that("dosummaryplot creates pdf output", {
+  output_file <- file.path(tempdir(), "out.pdf")
+  out <- expect_warning(qcrms:::doSummaryPlot (Data=qcrms:::testData$data,
+    classes=qcrms:::testData$class, plotTitle="PCA", blank=NULL, PQN=FALSE,
+    mv_impute=TRUE, glogScaling=TRUE, scale=TRUE, qc_label="QC",
+    ignorelabel="Removed", labels="all", qc_shape=17, base_size=10,
+    pccomp=c(1,2), plot=TRUE, output=output_file))
+  expect_true(file.exists(output_file))
+  file.remove(output_file)
+})

@@ -1,5 +1,17 @@
 context("LCMS data")
 
+library(xcms)
+library(BiocManager)
+if(!requireNamespace("msPurityData", quietly=TRUE)){
+    BiocManager::install("msPurityData")
+}
+
+library(xcms)
+library(BiocManager)
+if(!requireNamespace("fahhKO", quietly=TRUE)){
+    BiocManager::install("faahKO")
+}
+
 test_that("createQCreportObject works with XCMS LCMS data outputs", {
     require(xcms)
     ## Get the full path to the CDF files

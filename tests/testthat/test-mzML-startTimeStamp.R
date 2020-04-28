@@ -1,5 +1,17 @@
 context ("Test start time stamp extraction from mzML files.")
 
+library(xcms)
+library(BiocManager)
+if(!requireNamespace("msPurityData", quietly=TRUE)){
+    BiocManager::install("msPurityData")
+}
+
+library(xcms)
+library(BiocManager)
+if(!requireNamespace("fahhKO", quietly=TRUE)){
+    BiocManager::install("faahKO")
+}
+
 test_that("Timestamp gets extracted", {
     mzml_files <- dir(system.file("extdata/dims/mzML",
         package = "msPurityData"), full.names = TRUE, recursive = TRUE)

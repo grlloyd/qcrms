@@ -1,8 +1,12 @@
 context ("Test EIC plot.")
 
+library(xcms)
+library(BiocManager)
+if(!requireNamespace("msPurityData", quietly=TRUE)){
+    BiocManager::install("msPurityData")
+}
+
 test_that("EIC plot is created and has correct data", {
-    require(xcms)
-    
     mzml_files <- dir(system.file("extdata/lcms/mzML", package="msPurityData"),
         full.names=TRUE, recursive=TRUE)
     rawf <- MSnbase::readMSData(mzml_files[1:2], mode="onDisk", msLevel.=1)

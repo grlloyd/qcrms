@@ -1,5 +1,10 @@
 language: r
-r: bioc-release
+r:
+  - oldrel
+  - release
+  
+bioc_required: true
+
 cache: 
   packages: true
 sudo: required

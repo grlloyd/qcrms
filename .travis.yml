@@ -1,8 +1,7 @@
 language: r
 r:
   - oldrel
-  - release
-  
+
 bioc_required: true
 
 cache: 

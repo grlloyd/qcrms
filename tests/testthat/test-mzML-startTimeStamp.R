@@ -6,9 +6,7 @@ if(!requireNamespace("msPurityData", quietly=TRUE)){
     BiocManager::install("msPurityData")
 }
 
-library(xcms)
-library(BiocManager)
-if(!requireNamespace("fahhKO", quietly=TRUE)){
+if(!requireNamespace("faahKO", quietly=TRUE)){
     BiocManager::install("faahKO")
 }
 

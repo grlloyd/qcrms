@@ -37,13 +37,11 @@ test_that("createQCreportObject can parse csv text file inputs", {
     expect_equivalent(QCreport$filtering$table,
         structure(
             list(
-                    Filter=structure(c(1L, 2L, 5L, 4L, 3L),
-                    .Label=c("Before filtering",
-                                "Blank, fold_change=20, fraction=0",
-                                "Featrues, method=across, fraction=0.5",
-                                "Features, method=QC, fraction=0.9",
-                                "MV Sample, max_perc_mv=0.5"),
-                    class="factor"),
+                   Filter = c("Before filtering", 
+                    "Blank, fold_change=20, fraction=0", 
+                    "MV Sample, max_perc_mv=0.5",
+                    "Features, method=QC, fraction=0.9", 
+                    "Featrues, method=across, fraction=0.5"),
                     `Number of features`=c(100L, 95L, 95L, 83L, 83L),
                     `Number of samples`=c(172L, 172L, 170L, 170L, 170L),
                     Applied=c(TRUE, TRUE, TRUE, TRUE, TRUE)),
@@ -140,7 +138,8 @@ test_that("createQCreportObject can parse csv text file inputs", {
     expect_equivalent(QCreport$samp.sum[c(1, 33, 67), ],
         data.frame(
             Sample=c("batch01_QC01", "batch02_C07", "batch03_S08"),
-            `Measurement time`=c(NA, NA, NA), Class=c("QC", "C", "S"),
+            `Measurement time`=as.character(NA, NA, NA), 
+            Class=c("QC", "C", "S"),
             `Number of peaks`=c(99, 95, 98),
             `mzML file size (MB)`=as.numeric(c(NA, NA, NA)),
         check.names=FALSE))

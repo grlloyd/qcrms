@@ -22,7 +22,7 @@ SignalBatchCorrection <- function(QCreportObject) {
     "Number of features"=c(nrow(QCreportObject$peakMatrix)),
     "Number of samples"=c(ncol(QCreportObject$peakMatrix)),
     Applied=rep(TRUE, 5L),
-    check.names=FALSE)
+    check.names=FALSE, stringsAsFactors=FALSE)
 
   # Blank filter
   if (QCreportObject$Blank_label %in% class) {

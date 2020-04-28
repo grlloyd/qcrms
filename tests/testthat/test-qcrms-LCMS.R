@@ -6,9 +6,7 @@ if(!requireNamespace("msPurityData", quietly=TRUE)){
     BiocManager::install("msPurityData")
 }
 
-library(xcms)
-library(BiocManager)
-if(!requireNamespace("fahhKO", quietly=TRUE)){
+if(!requireNamespace("faahKO", quietly=TRUE)){
     BiocManager::install("faahKO")
 }
 
@@ -91,7 +89,7 @@ test_that("createQCreportObject works with XCMS LCMS data outputs", {
             `Number of features`=c(268, 128),
             `Number of samples`=c(11, 11),
             Applied=c(TRUE, TRUE),
-        check.names=FALSE)
+        check.names=FALSE, stringsAsFactors=FALSE)
     )
 
     expect_equivalent(QCreport$xset@phenoData[c(1, 4, 9), ],
@@ -292,7 +290,7 @@ test_that("createQCreportObject works with XCMS LCMS data outputs", {
     expect_equivalent(QCreport$samp.sum[c(1, 5, 7), ],
         data.frame(
             Sample=c("ko15", "ko21", "wt16"),
-            `Measurement time`=as.factor(c(NA, NA, NA)),
+            `Measurement time`=as.character(c(NA, NA, NA)),
             Class=c("QC", "QC", "WT"),
             `Number of peaks`=c(561, 276, 507),
             `mzML file size (MB)`=c(3.52, 3.58, 3.56),
@@ -458,12 +456,11 @@ test_that("createQCreportObject works with XCMS LCMS data outputs", {
     
     expect_equal(QCreport$filtering$table, 
         structure(
-            list(Filter = structure(c(1L, 2L, 5L, 4L, 3L),
-            .Label = c("Before filtering", "Blank, fold_change=20, fraction=0",
-                "Featrues, method=across, fraction=0.5",
+            list(Filter = c("Before filtering",
+                "Blank, fold_change=20, fraction=0",
+                "MV Sample, max_perc_mv=0.5",
                 "Features, method=QC, fraction=0.9",
-                "MV Sample, max_perc_mv=0.5"),
-            class = "factor"),
+                "Featrues, method=across, fraction=0.5"),
             `Number of features` = c(266L, 266L, 266L, 129L, 129L),
             `Number of samples` = c(11L, 11L, 11L, 11L, 11L), 
             Applied = c(TRUE, FALSE, TRUE, TRUE, TRUE)),

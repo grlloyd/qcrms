@@ -232,8 +232,8 @@ sampleSummary <- function(QCreportObject) {
 
   QCreportObject$samp.sum <-
     data.frame(sample=QCreportObject$metaData$table$Sample,
-      meas.time=QCreportObject$timestamps,
-      class=QCreportObject$metaData$samp_lab,
+      meas.time=as.character(QCreportObject$timestamps),
+      class=as.character(QCreportObject$metaData$samp_lab),
       peaks.detected=peaksDetected,
       file.size=round(QCreportObject$fileSize, 2L))
 

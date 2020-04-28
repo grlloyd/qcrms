@@ -15,6 +15,8 @@ Github, R 3.6.x
 
 .. code-block:: r
 
+  install.packages("remotes")
+  Sys.setenv(R_REMOTES_NO_ERRORS_FROM_WARNINGS="true")
   remotes::install_github('computational-metabolomics/pmp', ref="R_3.6.x")
   remotes::install_github('computational-metabolomics/qcrms')
 
@@ -24,6 +26,9 @@ Github, R 4.x.x
 
 .. code-block:: r
 
+  install.packages("remotes")
+  Sys.setenv(R_REMOTES_NO_ERRORS_FROM_WARNINGS="true")
+  
   if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 

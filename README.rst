@@ -10,7 +10,7 @@ An **R package** to assess the data quality of Liquid Chromatography - Mass Spec
 Install
 ------------
 
-Github, R 3.6.x
+Using R 3.6.x and Bioconductor 3.10 release
 ------------
 
 .. code-block:: r
@@ -18,10 +18,9 @@ Github, R 3.6.x
   install.packages("remotes")
   Sys.setenv(R_REMOTES_NO_ERRORS_FROM_WARNINGS="true")
   remotes::install_github('computational-metabolomics/pmp', ref="R_3.6.x")
-  remotes::install_github('computational-metabolomics/qcrms')
+  remotes::install_github('computational-metabolomics/qcrms', ref="v0.99.0_Bioc_3.10")
 
-
-Github, R 4.x.x
+Using R 4.x.x and Bioconductor 3.11 release
 ------------
 
 .. code-block:: r

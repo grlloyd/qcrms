@@ -1,5 +1,6 @@
 #' @importFrom xcms groupval
 #' @importFrom xcms featureValues
+#' @importFrom xcms adjustedRtime
 #' @import ggplot2
 #' @importFrom magrittr %>%
 #'
@@ -9,6 +10,7 @@ NULL
 #'
 #' @param xset XCMS object from which to extrat chromatograms.
 #' @return logicla(1), TRUE if retention time correction has been applied.
+#' @noRd
 
 check_rt_correction <- function(xset){
     rt_corrected <- FALSE
@@ -23,10 +25,69 @@ check_rt_correction <- function(xset){
     rt_corrected
 }
 
+#' For retention time corrected data return matching RT before correction
+#' 
+#' @param xset XCMS object from which to extrat chromatograms.
+#' @param RTmi numeric(1), minimum retention time for the EIC.
+#' @param RTmax numeric(1), maximum retention time tof the EIC.
+#' @param chrn integer(1), index of the raw data file.
+#' @noRd
+
+.rt_corrected_extract_raw_rt <- function(xset, RTmi, RTma, chrn){
+    RTind <- c(NA, NA)
+    if (is(xset, "xcmsSet")){
+        RTind[1L] <- which(xset@rt$corrected[[chrn]] >= RTmi)[1L]
+        RTind[2L] <- which(xset@rt$corrected[[chrn]] >= RTma)[1L]
+        RTmi <- xset@rt$raw[[chrn]][RTind[1L]]
+        RTma <- xset@rt$raw[[chrn]][RTind[2L]]
+    }
+    if (is(xset, "XCMSnExp")){
+        RTind[1L] <- which(xcms::adjustedRtime(xset,
+            bySample=TRUE)[[chrn]] >= RTmi)[1L]
+        RTind[2L] <- which(xcms::adjustedRtime(xset,
+            bySample=TRUE)[[chrn]] >= RTma)[1L]
+        xset <- xcms::dropAdjustedRtime(xset)
+        RTmi <- xcms::rtime(xset, bySample=TRUE,
+            adjusted=FALSE)[[chrn]][RTind[1L]]
+        RTmax <- xcms::rtime(xset, bySample=TRUE,
+            adjusted=FALSE)[[chrn]][RTind[2L]]
+    }
+    c(RTmi, RTma)
+}
+
+#' In extracted EIC replace raw retention time with corrected value
+#' 
+#' @param xset XCMS object from which to extrat chromatograms.
+#' @param chrn integer(1), index of the raw data file.
+#' @param chromatogram data.frame(), eic chromatogram with mz, rt and
+#' intensity values.
+#' @noRd
+
+.rt_corrected_update_eic_rt <- function(xset, chrn, chromatogram){
+    if (is(xset, "xcmsSet")){
+        RThits <- which(xset@rt$raw[[chrn]] %in% chromatogram$rt)
+        if (length(RThits) > 0L & length(RThits) == 
+            nrow(chromatogram)) {
+            chromatogram$rt <- xset@rt$corrected[[chrn]][RThits]
+        }
+    }
+    if (is(xset, "XCMSnExp")){
+         RThits <- which(xcms::rtime(xset, bySample=TRUE,
+            adjusted=FALSE)[[chrn]] %in% chromatogram$rt)
+        if (length(RThits) > 0L & length(RThits) == 
+            nrow(chromatogram)) {
+            chromatogram$rt <- xcms::adjustedRtime(xset,
+                bySample=TRUE)[[chrn]][RThits]
+        }
+    }
+    chromatogram
+}
+
 #' Return summaries of XCMS grouping RT and mz values per sample.
 #' 
 #' @param xset XCMS object from which to extrat chromatograms.
 #' @param indexes vector of feautre indices to extract
+#' @noRd
 
 xcms_groups_rt_mz_summary <- function(xset, indexes){
     groups_rt_mz_list <- list()
@@ -93,12 +154,11 @@ XCMS_EIC_plot <- function(indexes, rawfiles, class, xset, Blank_label="Blank",
 
       # Find index of corrected RT and replace RT with raw value
       if (rt_corrected == TRUE) {
-        RTind <- c(NA, NA)
-        RTind[1L] <- which(xset@rt$corrected[[chrn]] >= RTmi)[1L]
-        RTind[2L] <- which(xset@rt$corrected[[chrn]] >= RTma)[1L]
-
-        RTmi <- xset@rt$raw[[chrn]][RTind[1L]]
-        RTma <- xset@rt$raw[[chrn]][RTind[2L]]
+        rt_corr <- .rt_corrected_extract_raw_rt(xset=xset, RTmi=RTmi,
+            RTma=RTma, chrn=chrn)
+        RTmi <- rt_corr[1]
+        RTma <- rt_corr[2]
+        rm (rt_corr)
       }
 
       if (!all(is.na(c(mzmi, mzma, RTmi, RTma))) &&
@@ -116,11 +176,8 @@ XCMS_EIC_plot <- function(indexes, rawfiles, class, xset, Blank_label="Blank",
                 chroms[[chrn]]$file <- NULL
                 # Replace raw RT with corrected if RT correction was applied
                 if (nrow(chroms[[chrn]]) != 0L && rt_corrected == TRUE) {
-                    RThits <- which(xset@rt$raw[[chrn]] %in% chroms[[chrn]]$rt)
-                if (length(RThits) > 0L & length(RThits) == 
-                    nrow(chroms[[chrn]])) {
-                        chroms[[chrn]]$rt <- xset@rt$corrected[[chrn]][RThits]
-                    }
+                    chroms[[chrn]] <- .rt_corrected_update_eic_rt(xset=xset, 
+                        chrn=chrn, chromatogram=chroms[[chrn]])
                 }
             } else {
                 chroms[[chrn]] <-data.frame(rt=NA, mz=NA, i=NA)

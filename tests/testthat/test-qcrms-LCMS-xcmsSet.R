@@ -1,4 +1,4 @@
-context("LCMS data")
+context("LCMS data, xcmsSet")
 
 library(xcms)
 library(BiocManager)
@@ -10,7 +10,7 @@ if(!requireNamespace("faahKO", quietly=TRUE)){
     BiocManager::install("faahKO")
 }
 
-test_that("createQCreportObject works with XCMS LCMS data outputs", {
+test_that("createQCreportObject works with XCMS xcmsSet LCMS data outputs", {
     require(xcms)
     ## Get the full path to the CDF files
     cdfs <- dir(system.file("cdf", package="faahKO"), full.names=TRUE,
@@ -23,18 +23,20 @@ test_that("createQCreportObject works with XCMS LCMS data outputs", {
         stringsAsFactors=FALSE)
     rownames(meta_data) <- meta_data$Sample
 
-    expect_message(raw_data <- readMSData(files=cdfs,
-        pdata=new("NAnnotatedDataFrame", meta_data), mode="onDisk"))
-    cwp <- xcms::CentWaveParam(peakwidth = c(20, 80), noise=5000)
-    xdata <- xcms::findChromPeaks(raw_data, param=cwp)
-    xdata <- adjustRtime(xdata, param=ObiwarpParam(binSize=0.6))
-    xdata <- xcms::groupChromPeaks(xdata,
-        xcms::PeakDensityParam(sampleGroups=rep("S", 12)))
+    xset <- xcmsSet(cdfs, method='centWave', ppm=25, peakwidth=c(20, 80),
+        snthresh=10, prefilter=c(3,100), integrate=1, mzdiff=-0.001,
+        verbose.columns=FALSE, fitgauss=FALSE, noise=5000)
+    xset <- xcms::retcor(xset, method="obiwarp", profStep=0.6, center=6,
+        gapInit=0.3, gapExtend=2.4, localAlignment=FALSE)
+    
+    xset@phenoData$class <- "S"
+    xset <- xcms::group(xset, method = "density", bw = 30, minfrac = 0.5,
+        minsamp = 1)
 
     temp_dir <- tempdir()
     write.csv(file=file.path(temp_dir, "qcrms_test_meta_data_file.csv"),
         meta_data, row.names=F)
-    save(file=file.path(temp_dir, "LCMS_xdata.Rdata"), list="xdata")
+    save(file=file.path(temp_dir, "LCMS_xdata.Rdata"), list="xset")
 
     # Create meta data xlsx file format
     require (openxlsx)
@@ -46,7 +48,7 @@ test_that("createQCreportObject works with XCMS LCMS data outputs", {
     
     expect_warning(QCreport <- createQCreportObject(
         data_file="LCMS_xdata.Rdata", projectdir=temp_dir,
-        metaData_file="qcrms_test_meta_data_file.csv", xcms_output="xdata",
+        metaData_file="qcrms_test_meta_data_file.csv", xcms_output="xset",
         classLabel="sample_group", excludeQC="remove", msms_label="MSMS"))
 
     expect_true(file.exists(file.path(temp_dir, "LCMS_xdata.xlsx")))
@@ -56,8 +58,8 @@ test_that("createQCreportObject works with XCMS LCMS data outputs", {
     
     variableMetaData <- readWorkbook(wb_temp, "variableMetaData")
     expect_equal(head (variableMetaData),
-        structure(list(name = c("M205T2791", "M206T2790", "M207T2719", 
-            "M233T3029", "M241T3686", "M244T2835"),
+        structure(list(name = c("M205T2792", "M206T2789", "M207T2718", 
+            "M233T3029", "M241T3687", "M244T2834"),
         mz=c(205, 206, 207.100006103516, 233, 241.100006103516,
             244.100006103516),
         mzmin=c(205, 206, 207.100006103516, 233, 241.100006103516,
@@ -73,16 +75,16 @@ test_that("createQCreportObject works with XCMS LCMS data outputs", {
         npeaks=c(12, 12, 13, 11, 20, 6),
         S=c(12, 11, 9, 9, 11, 6)), 
         row.names=c(NA, 6L), class="data.frame")
-    )
+    , tolerance=0.01)
     rm (wb_temp)
     
-    expect_equal(QCreport$xcms_output, "xdata")
+    expect_equal(QCreport$xcms_output, "xset")
     expect_equal(QCreport$pca_scores_labels, "all")
     expect_equal(QCreport$data_file, "LCMS_xdata.Rdata")
     expect_equal(QCreport$projectdir, temp_dir)
 
-    expect_equal(QCreport$filtering$glog_lambda_filtered, 61043890464.6641)
-    expect_equal(QCreport$filtering$glog_lambda_filtered_SB, 1338305112712.85)
+    expect_equal(QCreport$filtering$glog_lambda_filtered, 30668121138.5039)
+    expect_equal(QCreport$filtering$glog_lambda_filtered_SB, 1537023804191.65)
     expect_equivalent(QCreport$filtering$table[c(1, 4), ],
         data.frame(
             Filter=c("Before filtering", "Features, method=QC, fraction=0.9"),
@@ -92,29 +94,28 @@ test_that("createQCreportObject works with XCMS LCMS data outputs", {
         check.names=FALSE, stringsAsFactors=FALSE)
     )
 
-    expect_equivalent(QCreport$xset@phenoData[c(1, 4, 9), ],
-        data.frame(
-            Sample=c("ko15", "ko19", "wt19"),
-            sample_group=c("QC", "QC", "WT"),
-            remove=c(TRUE, NA, NA),
-            class=c(1, 1, 1),
-            check.names=FALSE,
-            stringsAsFactors=FALSE)
+    expect_equivalent(QCreport$xset@phenoData,
+        structure(list(class = c("S", "S", "S", "S", "S", "S", "S", "S", 
+            "S", "S", "S")),
+            row.names = c("ko15", "ko16", "ko18", "ko19", "ko21", "ko22",
+                "wt16", "wt18", "wt19", "wt21", "wt22"),
+        class = "data.frame")
     )
 
     expect_equivalent(QCreport$xset@peaks[1, ],
-       c(453.2000122, 453.2000122, 453.2000122, 2509.2795410, 2501.3779297,
-            2528.2773438, 1007408.9731765, 1007380.8042353, 38152.0000000,
-            38151.0000000, 1)
+        c(mz = 453.200012207031, mzmin = 453.200012207031,
+            mzmax = 453.200012207031, rt = 2509.463, rtmin = 2501.378,
+            rtmax = 2528.842, into = 1007408.97317646, intb = 1007380.80423529,
+            maxo = 38152, sn = 38151, sample = 1
+        )
     )
 
     expect_equivalent(QCreport$xset@groups[13:14, ],
-        matrix(nrow=2, ncol=8, byrow=TRUE,
-            c(269.2000122, 269.100006, 269.2000122, 3889.45959, 3859.553467,
-                3900.083740, 16, 11, 279.0000000, 279.0000000, 279.0000000,
-                2790.799072, 2751.645508, 2801.754883, 19, 12
-            )
-        )
+        structure(c(269.200012207031, 279, 269.100006103516, 279,
+            269.200012207031, 279, 3888.7115, 2789.33, 3859.308, 2744.971,
+            3900.291, 2800.604, 16, 19, 11, 12),
+            .Dim = c(2L, 8L), .Dimnames = list(NULL, c("mzmed", "mzmin",
+        "mzmax", "rtmed", "rtmin", "rtmax", "npeaks", "S")))
     )
 
     expect_equal(QCreport$xset@groupidx[[47]], 
@@ -124,13 +125,9 @@ test_that("createQCreportObject works with XCMS LCMS data outputs", {
         c(2515.462, 2517.027, 2518.592, 2520.157, 2521.722, 2523.287))
     expect_equivalent(QCreport$xset@rt$corrected[[5]][10:15],
         c(2514.697510, 2516.180908, 2517.664795, 2519.149170, 2520.634277,
-            2522.120361))
+            2522.120361), tolerance=0.1)
 
     expect_equal(QCreport$xset@.processHistory[[1]]@type, "Peak detection")
-    expect_equal(QCreport$xset@.processHistory[[1]]@param@ppm, 25)
-    expect_equal(QCreport$xset@.processHistory[[1]]@param@peakwidth, c(20, 80))
-    expect_equal(QCreport$xset@.processHistory[[1]]@param@snthresh, 10)
-    expect_equal(QCreport$xset@.processHistory[[1]]@param@mzdiff, -0.001)
 
     expect_equal(QCreport$peakMatrix[1, 1:3],
         c(ko15=1924712.01585714, ko16=1757150.9648, ko18=1714581.77647058))
@@ -158,20 +155,11 @@ test_that("createQCreportObject works with XCMS LCMS data outputs", {
     expect_equal(QCreport$plots$ticplot_4$data$nPeak[7], 507)
     expect_equal(QCreport$plots$ticplot_5$data$file.size[7], 3.56)
 
-    expect_equal(QCreport$plots$PCAallSamples$data$pc1[4], 6.47846949411406)
-    expect_equal(QCreport$plots$PCAQCsamples$data$pc2[5], 0.335577926713068)
-    expect_equal(QCreport$plots$PCAQCleading$data$pc1[4], 7.56288127255809)
-    expect_equal(QCreport$plots$PCAallQCleading$data$pc2[7], -7.24165986257958)
-
-    expect_equal(QCreport$plots$MAD_rt$data$list_object[34], 4.15956171093739)
-    expect_equal(QCreport$plots$peak_width$data$list_object[34],
-        46.808349609375)
     expect_equal(QCreport$plots$mz_median$data$list_object[523],
         -69.3985738677017)
 
-    expect_equal(QCreport$plots$EICs[[1]]$data$rt[34], 3554.39404296875)
     expect_equal(QCreport$plots$EICs[[1]]$data$mz[45], 508.200012207031)
-    expect_equal(QCreport$plots$EICs[[1]]$data$i[45], 78184)
+    expect_equal(QCreport$plots$EICs[[1]]$data$i[45], 42264)
     expect_equal(QCreport$plots$EICs[[1]]$data$Class[45],
         structure(1L, .Label=c("QC", "Removed", "WT"), class = c("ordered", 
         "factor")))
@@ -184,20 +172,15 @@ test_that("createQCreportObject works with XCMS LCMS data outputs", {
 
     expect_equal(QCreport$plots$RSDplot1$data$list_object[153],
         42.1033162472477)
-    expect_equal(QCreport$plots$RSDplot2$data$RSD[97], 11.901710037869)
-
+   
     expect_equal(QCreport$plots$QCplot1$data$values[3], 0.126531150918856)
     expect_equal(QCreport$plots$QCplot1$data$values[1123],
         -0.00868209214666562)
     expect_equal(QCreport$plots$QCplot2$data$value[3], 0.64753837592395)
     expect_equal(QCreport$plots$QCplot2$data$value[1123], -0.380990238832714)
 
-    expect_equal(QCreport$plots$SBPCAbefore$data$pc1[4], 3.55062795302708)
-    expect_equal(QCreport$plots$SBPCAbeforeQC$data$pc1[3], 5.44564141304822)
     expect_equal(QCreport$plots$SBRSDbefore$data$list_object[43],
         26.0975634461339)
-    expect_equal(QCreport$plots$SBPCAfter$data$pc1[6], -0.370741378151436)
-    expect_equal(QCreport$plots$SBPCAfterQC$data$pc1[4], 5.89277901023488)
     expect_equal(QCreport$plots$SBRSDafter$data$list_object[78],
         2.30445829090211)
 
@@ -205,73 +188,13 @@ test_that("createQCreportObject works with XCMS LCMS data outputs", {
     expect_equal(QCreport$tables$corrMatrix[2, 1], -0.57)
     expect_equal(QCreport$tables$corrMatrix[2, 2], 0.0650941627344147)
 
-    expect_equal(QCreport$tables$RT_rsd,
-        structure(list(
-            Min.=c(0.00318857359890208, 0.00511148124967863),
-            `1st Qu.`=c(0.0840254897400688, 0.115441585461868),
-            Median=c(0.136879091709147, 0.238908162172896),
-            Mean=c(0.285418323971856, 0.34243500053187),
-            `3rd Qu.`=c(0.367293950976682, 0.511650919161229),
-            Max.=c(2.29359102554849, 2.08891122720008),
-            `NA's`=c(8, 10)),
-            row.names=c("QC", "WT"),
-        class = "data.frame")
-    )
-
-    expect_equal(QCreport$tables$RT_mad, 
-        structure(list(
-            Min.=c(0, 0),
-            `1st Qu.`=c(1.7177122716795, 2.31271664428711),
-            Median=c(3.7412484375, 5.00069831542969),
-            Mean=c(8.60809614984987, 9.08930910256126),
-            `3rd Qu.`=c(10.419011315918, 11.7209465881348),
-            Max.=c(112.605569384766, 55.1881199707031),
-            `NA's`=c(0, 4)),
-            row.names = c("QC", "WT"),
-        class = "data.frame")
-    )
-
-    expect_equal(QCreport$tables$peak_width, 
-        structure(list(
-            Min.=c(12.33056640625, 7.738037109375),
-            `1st Qu.`=c(38.6731630859375, 39.0038757324219),
-            Median=c(47.4981689453125, 48.1656494140625),
-            Mean=c(48.9647423296117, 49.7862030954072),
-            `3rd Qu.`=c(56.3682250976562, 56.9166870117188),
-            Max.=c(146.4296875, 108.039428710938),
-            `NA's`=c(0, 4)), 
-            row.names=c("QC", "WT"),
-        class="data.frame")
-    )
-
-    expect_equal(QCreport$tables$mz_median, 
-        structure(list(
-            Min.=c(-272.227294755146, -284.60683892769),
-            `1st Qu.`=c(-21.3940776658473, 0),
-            Median=c(0, 0),
-            Mean=c(-12.9934795359947, 14.5174218106226),
-            `3rd Qu.`=c(0, 29.6237475668885),
-            Max.=c(120.794903450402, 223.103402367672),
-            `NA's`=c(0, 4)),
-            row.names=c("QC", "WT"),
-        class="data.frame")
-    )
-
-    expect_equal(QCreport$tables$RSDtable1[2, 4], 45.8166907329745)
-    expect_equal(QCreport$tables$SBtableBefore[1, 3], 32.9090168180649)
-    expect_equal(QCreport$tables$SBtableAfter[1, 3], 11.2174961555864)
-
     # data
     expect_equal(QCreport$data$PCAinF$Data[4, 5], 149097.550000002)
     expect_equal(QCreport$data$PCAinF$classes[6], "WT")
     expect_equal(QCreport$data$PCAinF$RSD$variability_method, "RSD")
-    expect_equal(names(QCreport$data$PCAinF$RSD$WT[34]), "305.1/2930")
+    expect_equal(names(QCreport$data$PCAinF$RSD$WT[34]), "305.1/2929")
     expect_equal(QCreport$data$PCAinF$RSD$WT[45], 
-        c(`315/2513`=61.1306994096235))
-    expect_equal(QCreport$data$PCAinF$RSD$WT[45], 
-        c(`315/2513`=61.1306994096235))
-    expect_equal(QCreport$data$PCAinF$RSD$QC[45],
-        c(`315/2513` = 54.3657276849361))
+        c(`315/2514`=61.1306994096235))
 
     expect_equal(QCreport$excludeQC, "remove")
 
@@ -305,19 +228,13 @@ test_that("createQCreportObject works with XCMS LCMS data outputs", {
     expect_true(file.exists(file.path(temp_dir, "LCMS_xdata_EICs.pdf")))
 
     expect_equal(QCreport$peakPickingParams,
-        structure(
-            c("Number of peak groups:", "method", "ppm", "peakwidth", "mzdif",
-                "snthresh", "integrate", "noise", "prefilter", "268",
-                "CentWave", "25", "20-80", "-0.001", "10", "1", "5000",
-                "3, 100"),
-            .Dim=c(9L, 2L), .Dimnames=list(NULL, c("", ""))
-        )
+        structure(c("Number of peak groups:", "268"), .Dim = 1:2)
     )
 
     context("Using xlsx input for meta data returns the same output.")
     expect_warning(QCreport <- createQCreportObject(
         data_file="LCMS_xdata.Rdata", projectdir=temp_dir,
-        metaData_file="qcrms_meta_data.xlsx", xcms_output="xdata",
+        metaData_file="qcrms_meta_data.xlsx", xcms_output="xset",
         classLabel="sample_group", excludeQC="remove", msms_label="MSMS",
         plot_eic=FALSE)
     )
@@ -354,7 +271,7 @@ test_that("createQCreportObject works with XCMS LCMS data outputs", {
     
     expect_warning(QCreport <- createQCreportObject(
         data_file="LCMS_xdata.Rdata", projectdir=temp_dir,
-        metaData_file="qcrms_meta_data.xlsx", xcms_output="xdata",
+        metaData_file="qcrms_meta_data.xlsx", xcms_output="xset",
         classLabel="sample_group", excludeQC="remove", msms_label="MSMS",
         plot_eic=FALSE,
         raw_path=system.file("cdf", package="faahKO"))
@@ -398,7 +315,7 @@ test_that("createQCreportObject works with XCMS LCMS data outputs", {
     
     context ("LCMS: Create metadata file from sample filenames.")
     expect_warning(QCreport <- createQCreportObject(
-        data_file="LCMS_xdata.Rdata", projectdir=temp_dir, xcms_output="xdata",
+        data_file="LCMS_xdata.Rdata", projectdir=temp_dir, xcms_output="xset",
         classLabel="sample_group", excludeQC="remove", msms_label="MSMS",
         plot_eic=FALSE, group_names=c("ko", "wt"), Blank_label=NULL,
         QC_label=NULL)
@@ -413,58 +330,6 @@ test_that("createQCreportObject works with XCMS LCMS data outputs", {
             injection_order = 1:12),
         row.names = c(NA, 12L),
         class = "data.frame")
-    )
-    
-    context ("LCMS: outputs using older xcmsSet class.")
-    xset <- xcmsSet(cdfs, method='centWave', ppm=25, peakwidth=c(20, 80),
-        snthresh=10, prefilter=c(3,100), integrate=1, mzdiff=-0.001,
-        verbose.columns=FALSE, fitgauss=FALSE, noise=5000)
-    # New xcms methods updates RT in peaks slot as well, that's not compatible
-    # with older xcmsSet
-    # xset <- xcms::retcor(xset, method="obiwarp", profStep=0.6, gapInit=0.3,
-    #    gapExtend=2.4, localAlignment=FALSE)
-    xset@phenoData$class <- rep("S", 12)
-    xset <- xcms::group(xset, method="density", bw=30, minfrac=0.5, minsamp=1)
-    
-    xdata <- xcms::findChromPeaks(raw_data, param=cwp)
-    xdata <- xcms::groupChromPeaks(xdata,
-        xcms::PeakDensityParam(sampleGroups=rep("S", 12)))
-    
-    context ("Compare xcmsSet and XCMSnExp outputs.")
-    expect_equivalent(xcms::peaks(xset), xcms::chromPeaks(xdata))
-    expect_equivalent(xcms::groups(xset),
-        as.matrix(xcms::featureDefinitions(xdata)[, 1:8]))
-
-    expect_error(QCreport <- createQCreportObject(
-        data_file="LCMS_xdata.Rdata", projectdir=temp_dir,
-        metaData_file="qcrms_meta_data.xlsx", xcms_output="xset_oeer",
-        classLabel="sample_group", excludeQC="remove", msms_label="MSMS",
-        plot_eic=FALSE, assay="xset"), regexp="Please check that XCMS object"
-    )
-
-    save(file=file.path(temp_dir, "LCMS_xdata.Rdata"), list="xset")
-    
-    expect_warning(QCreport <- createQCreportObject(
-        data_file="LCMS_xdata.Rdata", projectdir=temp_dir,
-        metaData_file="qcrms_meta_data.xlsx", xcms_output="xset",
-        classLabel="sample_group", excludeQC="remove", msms_label="MSMS",
-        plot_eic=FALSE, assay="xset")
-    )
-    
-    expect_equal(QCreport$xcms_output, "xset")
-    expect_equivalent(QCreport$projectHeader[3, ], c("Assay:", "xset"))
-    
-    expect_equal(QCreport$filtering$table, 
-        structure(
-            list(Filter = c("Before filtering",
-                "Blank, fold_change=20, fraction=0",
-                "MV Sample, max_perc_mv=0.5",
-                "Features, method=QC, fraction=0.9",
-                "Featrues, method=across, fraction=0.5"),
-            `Number of features` = c(266L, 266L, 266L, 129L, 129L),
-            `Number of samples` = c(11L, 11L, 11L, 11L, 11L), 
-            Applied = c(TRUE, FALSE, TRUE, TRUE, TRUE)),
-        row.names = c(NA, -5L), class = "data.frame")
     )
     
     unlink(file.path(temp_dir, "LCMS_xdata.Rdata"))

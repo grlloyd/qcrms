@@ -83,8 +83,10 @@ test_that("createQCreportObject works with XCMS xcmsSet LCMS data outputs", {
     expect_equal(QCreport$data_file, "LCMS_xdata.Rdata")
     expect_equal(QCreport$projectdir, temp_dir)
 
-    expect_equal(QCreport$filtering$glog_lambda_filtered, 30668121138.5039)
-    expect_equal(QCreport$filtering$glog_lambda_filtered_SB, 1537023804191.65)
+    expect_equal(QCreport$filtering$glog_lambda_filtered, 30668121138.5039,
+        tolerance=5000)
+    expect_equal(QCreport$filtering$glog_lambda_filtered_SB, 1537023804191.65,
+        tolerance=5000)
     expect_equivalent(QCreport$filtering$table[c(1, 4), ],
         data.frame(
             Filter=c("Before filtering", "Features, method=QC, fraction=0.9"),

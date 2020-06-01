@@ -1,7 +1,7 @@
 #' @import xcms
 #' @importFrom MSnbase readMSData
 #' @importFrom gridExtra marrangeGrob
-#' @importFrom MSnbase pDta
+#' @importFrom MSnbase pData
 #'
 NULL
 

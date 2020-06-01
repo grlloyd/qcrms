@@ -156,7 +156,7 @@ createQCreportObject <- function(data_file,
 
   QCreportObject <- createProjectHeader(QCreportObject=QCreportObject)
 
-  QCreportObject <- qcrms:::sampleSummary(QCreportObject=QCreportObject)
+  QCreportObject <- sampleSummary(QCreportObject=QCreportObject)
 
   QCreportObject <- sampleSummaryPlots(QCreportObject=QCreportObject)
 

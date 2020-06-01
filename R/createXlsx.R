@@ -10,17 +10,18 @@ NULL
 #@Modified from W4M code by G. Le Corguille
 # value: intensity values to be used into, maxo or intb
 getPeaklistW4M <- function(xset, intval="into") {
-    variableMetadata_dataMatrix <- xcms::peakTable(xset, method="medret",
-      value=intval)
-    variableMetadata_dataMatrix <- cbind(name=groupnames(xset),
-      variableMetadata_dataMatrix)
-
-  variableMetadata <-
-    variableMetadata_dataMatrix[, !(
-      colnames(variableMetadata_dataMatrix) %in%
-      c(make.names(sampnames(xset))))]
-
-  variableMetadata
+    if (is(xset, "xcmsSet")){
+        variableMetadata <- as.data.frame(groups(xset))
+    } else if (is(xset, "XCMSnExp")){
+        variableMetadata <- xcms::featureDefinitions(xset)
+        variableMetadata <-
+            as.data.frame(variableMetadata[,
+                !colnames(variableMetadata) %in% c("peakidx")])
+        rownames(variableMetadata) <- NULL
+    }
+    colnames(variableMetadata)[c(1, 4)] <- c("mz", "rt")
+    variableMetadata <- cbind(name=groupnames(xset), variableMetadata)
+    variableMetadata
 }
 
 #' Create xlsx output file from XCMS output

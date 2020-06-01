@@ -1,6 +1,7 @@
 #' @import xcms
 #' @importFrom MSnbase readMSData
 #' @importFrom gridExtra marrangeGrob
+#' @importFrom MSnbase pDta
 #'
 NULL
 
@@ -9,25 +10,33 @@ NULL
 #' @param QCreportObject Qcreport object
 
 EICs <- function(QCreportObject) {
-  QCreportObject$xset@filepaths <- QCreportObject$raw_paths
-
   # Exclude QC and Blank samples from max intensity calculation, as these
   # can be very noisy signals
   maxints <- apply(QCreportObject$peakMatrix[,
     -c(QCreportObject$QC_hits, QCreportObject$Blank_hits)], 1L, max, na.rm=TRUE)
 
+  if (is(QCreportObject$xset, "xcmsSet")){
+      xcms_groups <- groupval(QCreportObject$xset)
+      phenoData <- QCreportObject$xset@phenoData
+  } else if (is(QCreportObject$xset, "XCMSnExp")){
+      xcms_groups <- xcms::featureDefinitions(QCreportObject$xset)
+      xcms_groups <- xcms_groups[, !colnames(xcms_groups) %in%
+          c("peakidx", "ms_level")]
+      phenoData <- MSnbase::pData(QCreportObject$xset)
+  }
+  
   # How many samples in total present per class
-  gColn <- ncol(QCreportObject$xset@groups)
+  gColn <- ncol(xcms_groups)
   totalCount <-
-    apply(cbind(QCreportObject$xset@groups[, 8L:gColn], NULL), 1L, sum)
+    apply(cbind(xcms_groups[, 8L:gColn], NULL), 1L, sum)
 
   # Check only these peakSets which are detected in at least 90% of samples
-  ghits <- which(totalCount/nrow(QCreportObject$xset@phenoData)>=0.9)
+  ghits <- which(totalCount/nrow(phenoData)>=0.9)
 
   maxints[-c(ghits)] <- NA
 
   # Remove peaks eluating before 90s
-  RThits <- which(QCreportObject$xset@groups[, 5L] < 90.0)
+  RThits <- which(xcms_groups[, 5L] < 90.0)
 
   if (length(RThits) > 0L) maxints[RThits] <- NA
 
@@ -52,13 +61,13 @@ EICs <- function(QCreportObject) {
 
   # Using MSnBase package chromatograms function, will work only with
   # MSnBase 2.4.0 or later. Bioconductor 3.6
-  rawf <- vector("list", length(QCreportObject$xset@filepaths))
+  rawf <- vector("list", length(QCreportObject$raw_paths))
 
   system.time({
     for (num in seq_len(length(rawf))) {
         cat("Reading data file: ", num, "\n")
-        if (file.exists(QCreportObject$xset@filepaths[num])) {
-          rawf[[num]] <- MSnbase::readMSData(QCreportObject$xset@filepaths[num],
+        if (file.exists(QCreportObject$raw_paths[num])) {
+          rawf[[num]] <- MSnbase::readMSData(QCreportObject$raw_paths[num],
             mode="onDisk")
         }
       }

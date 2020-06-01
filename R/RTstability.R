@@ -1,20 +1,34 @@
+#' @importFrom xcms groupval
+#' @importFrom xcms featureValues
+NULL
 
 #' Several diagnostic tables and plot for retention time and m/z shift
 #' assesment
 #'
 #' @param QCreportObject QC report object.
 
-RTstabilityAssement <- function(QCreportObject) {
-
-  rtmin <- xcms::groupval(object=QCreportObject$xset, method="medret",
-    value="rtmin", intensity="into")
-  rtmax <- xcms::groupval(object=QCreportObject$xset, method="medret",
-    value="rtmax", intensity="into")
-
+RTstabilityAssement <- function(QCreportObject){
+  if (is(QCreportObject$xset, "xcmsSet")){
+      rtmin <- xcms::groupval(object=QCreportObject$xset, method="medret",
+          value="rtmin", intensity="into")
+      rtmax <- xcms::groupval(object=QCreportObject$xset, method="medret",
+          value="rtmax", intensity="into")
+      rt <- xcms::groupval(object=QCreportObject$xset, method="medret",
+          value ="rt", intensity="into")
+      mz <- xcms::groupval(object=QCreportObject$xset, method="medret",
+          value="mz", intensity="into")
+  }
+  else if (is(QCreportObject$xset, "XCMSnExp")){
+      rtmin <- xcms::featureValues(object=QCreportObject$xset, method="medret",
+          value="rtmin", intensity="into")
+      rtmax <- xcms::featureValues(object=QCreportObject$xset, method="medret",
+          value="rtmax", intensity="into")
+      rt <- xcms::featureValues(object=QCreportObject$xset, method="medret",
+          value ="rt", intensity="into")
+      mz <- xcms::featureValues(object=QCreportObject$xset, method="medret",
+          value="mz", intensity="into")
+  }
   peak_width <- rtmax - rtmin
-
-  rt <- xcms::groupval(object=QCreportObject$xset, method="medret",
-    value ="rt", intensity="into")
 
   # sample class labels are reordered according measurement order, so these
   # tables need to be reordered as well
@@ -57,8 +71,6 @@ RTstabilityAssement <- function(QCreportObject) {
     "Median of peak width per feature, s"
 
   # mz precision
-  mz <- xcms::groupval(object=QCreportObject$xset, method="medret", value="mz",
-    intensity="into")
 
   # Sample class labels are reordered according measurement order, so these
   # tables need to be reordered as well

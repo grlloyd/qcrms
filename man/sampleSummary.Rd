@@ -7,7 +7,10 @@
 sampleSummary(QCreportObject)
 }
 \arguments{
-\item{QCreportObject}{Qcreport object}
+\item{QCreportObject}{Qcreport object
+xcms::rtime(QCreportObject$xset, adjusted=FALSE, 
+   bySample=TRUE)[msms_sample_hits] <- NULL
+QCreportObject$xset@rt$corrected[msms_sample_hits] <- NULL}
 }
 \description{
 Exctract and return ggplot2 object of EICs for specified xmcm features

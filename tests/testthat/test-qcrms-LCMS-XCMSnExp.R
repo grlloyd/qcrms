@@ -93,28 +93,29 @@ test_that("createQCreportObject works with XCMS LCMS data outputs", {
         check.names=FALSE, stringsAsFactors=FALSE)
     )
 
-    expect_equivalent(QCreport$xset@phenoData[c(1, 4, 9), ],
-        data.frame(
-            Sample=c("ko15", "ko19", "wt19"),
-            sample_group=c("QC", "QC", "WT"),
-            remove=c(TRUE, NA, NA),
-            class=c(1, 1, 1),
-            check.names=FALSE,
-            stringsAsFactors=FALSE)
+    expect_equivalent(pData(QCreport$xset@phenoData)[c(1, 4, 9), ],
+        structure(list(
+            Sample = c("ko15", "ko19", "wt19"),
+            sample_group = c("QC", "QC", "WT"),
+            remove = c(TRUE, NA, NA)),
+            row.names = c("ko15", "ko19", "wt19"),
+            class = "data.frame")
     )
 
-    expect_equivalent(QCreport$xset@peaks[1, ],
+    expect_equivalent(xcms::chromPeaks(QCreport$xset)[1, ],
        c(453.2000122, 453.2000122, 453.2000122, 2509.2795410, 2501.3779297,
             2528.2773438, 1007408.9731765, 1007380.8042353, 38152.0000000,
             38151.0000000, 1)
     )
 
-    expect_equal(QCreport$xset@groupidx[[47]], 
+    expect_equal(xcms::featureDefinitions(QCreport$xset)$peakidx[[47]], 
         c(1405, 2436, 2854, 3896, 4299, 4982, 4990))
 
-    expect_equivalent(QCreport$xset@rt$raw[[5]][10:15],
+    expect_equivalent(xcms::rtime(QCreport$xset, adjusted=FALSE,
+        bySample=TRUE)[[5]][10:15],
         c(2515.462, 2517.027, 2518.592, 2520.157, 2521.722, 2523.287))
-    expect_equivalent(QCreport$xset@rt$corrected[[5]][10:15],
+    expect_equivalent(xcms::rtime(QCreport$xset, adjusted=TRUE,
+        bySample=TRUE)[[5]][10:15],
         c(2514.697510, 2516.180908, 2517.664795, 2519.149170, 2520.634277,
             2522.120361))
 
@@ -125,19 +126,21 @@ test_that("createQCreportObject works with XCMS LCMS data outputs", {
     expect_equal(QCreport$xset@.processHistory[[1]]@param@mzdiff, -0.001)
 
     expect_equal(QCreport$peakMatrix[1, 1:3],
-        c(ko15=1924712.01585714, ko16=1757150.9648, ko18=1714581.77647058))
+        c(ko15.CDF=1924712.01585714, ko16.CDF=1757150.9648,
+            ko18.CDF=1714581.77647058))
 
     expect_equal(QCreport$metaData$table,
-        structure(list(
-            Sample=c("ko15", "ko16", "ko18", "ko19", "ko21", "ko22",
-                "wt16", "wt18", "wt19", "wt21", "wt22"),
-            sample_group=c("Removed", "QC", "QC", "QC", "QC", "QC", "WT", "WT",
-                "WT", "WT", "WT"),
-            remove=c(TRUE, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA),
-            injection_order=1:11, batch=c(1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 
-                1L, 1L)),
-            row.names=c(1L, 2L, 3L, 4L, 5L, 6L, 8L, 9L, 10L, 11L, 12L),
-            class="data.frame")
+        structure(list(Sample = c("ko15", "ko16", "ko18", "ko19", "ko21",
+            "ko22", "wt16", "wt18", "wt19", "wt21", "wt22"),
+        xcms_class = c("QC", "QC", "QC", "QC", "QC", "QC", "WT", "WT", "WT",
+            "WT", "WT"), 
+        sample_group = c("Removed", "QC", "QC", "QC", "QC", "QC", "WT", "WT",
+            "WT", "WT", "WT"),
+        remove = c(TRUE, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA),
+        injection_order = 1:11, batch = c(1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L,
+            1L, 1L)),
+        row.names = c(1L, 2L, 3L, 4L, 5L, 6L, 8L, 9L, 10L, 11L, 12L),
+        class = "data.frame")
     )
 
     expect_equal(QCreport$pca_scores_labels, "all")
@@ -163,11 +166,11 @@ test_that("createQCreportObject works with XCMS LCMS data outputs", {
 
     expect_equal(QCreport$plots$EICs[[1]]$data$rt[34], 3554.39404296875)
     expect_equal(QCreport$plots$EICs[[1]]$data$mz[45], 508.200012207031)
-    expect_equal(QCreport$plots$EICs[[1]]$data$i[45], 78184)
+    expect_equal(QCreport$plots$EICs[[1]]$data$i[45], 362624)
     expect_equal(QCreport$plots$EICs[[1]]$data$Class[45],
-        structure(1L, .Label=c("QC", "Removed", "WT"), class = c("ordered", 
+        structure(2L, .Label=c("QC", "Removed", "WT"), class = c("ordered", 
         "factor")))
-    expect_equal(QCreport$plots$EICs[[1]]$data$sample[45], 2L)
+    expect_equal(QCreport$plots$EICs[[1]]$data$sample[45], 1L)
 
     expect_equal(QCreport$plots$MVplot1$data$x[7], 17.910447761194)
     expect_equal(QCreport$plots$MVplot2$data$x[10], 50)
@@ -257,13 +260,11 @@ test_that("createQCreportObject works with XCMS LCMS data outputs", {
     expect_equal(QCreport$data$PCAinF$Data[4, 5], 149097.550000002)
     expect_equal(QCreport$data$PCAinF$classes[6], "WT")
     expect_equal(QCreport$data$PCAinF$RSD$variability_method, "RSD")
-    expect_equal(names(QCreport$data$PCAinF$RSD$WT[34]), "305.1/2930")
+    expect_equal(names(QCreport$data$PCAinF$RSD$WT[34]), "FT034")
     expect_equal(QCreport$data$PCAinF$RSD$WT[45], 
-        c(`315/2513`=61.1306994096235))
-    expect_equal(QCreport$data$PCAinF$RSD$WT[45], 
-        c(`315/2513`=61.1306994096235))
+        c(`FT045`=61.1306994096235))
     expect_equal(QCreport$data$PCAinF$RSD$QC[45],
-        c(`315/2513` = 54.3657276849361))
+        c(`FT045` = 54.3657276849361))
 
     expect_equal(QCreport$excludeQC, "remove")
 
@@ -317,17 +318,18 @@ test_that("createQCreportObject works with XCMS LCMS data outputs", {
     expect_equal(QCreport$metaData$file, "qcrms_meta_data.xlsx")
 
     expect_equal(QCreport$metaData$table,
-        structure(list(
-            Sample=c("ko15", "ko16", "ko18", "ko19", "ko21", "ko22",
-                "wt16", "wt18", "wt19", "wt21", "wt22"),
-            sample_group=c("Removed", "QC", "QC", "QC", "QC", "QC", "WT", "WT",
-                "WT", "WT", "WT"),
-            remove=c(TRUE, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA),
-            injection_order=1:11, batch=c(1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 
-                1L, 1L)),
-            row.names=c(1L, 2L, 3L, 4L, 5L, 6L, 8L, 9L, 10L, 11L, 12L),
-            class="data.frame")
-    )    
+        structure(list(Sample = c("ko15", "ko16", "ko18", "ko19", "ko21",
+            "ko22", "wt16", "wt18", "wt19", "wt21", "wt22"),
+        xcms_class = c("QC", "QC", "QC", "QC", "QC", "QC", "WT", "WT", "WT",
+            "WT", "WT"),
+        sample_group = c("Removed", "QC", "QC", "QC", "QC", "QC", "WT", "WT",
+            "WT", "WT", "WT"),
+        remove = c(TRUE, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA),
+        injection_order = 1:11, batch = c(1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L,
+            1L, 1L)),
+        row.names = c(1L, 2L, 3L, 4L, 5L, 6L, 8L, 9L, 10L, 11L, 12L),
+        class = "data.frame")
+    )
     
     context("Use classQC column to fill in missing sample labels. And reading
         from metaData sheet in xlsx file. Locating raw data files in
@@ -361,7 +363,7 @@ test_that("createQCreportObject works with XCMS LCMS data outputs", {
     
     expect_equal(QCreport$metaData$file, "qcrms_meta_data.xlsx")
 
-    expect_equal(QCreport$metaData$table[, -4],
+    expect_equal(QCreport$metaData$table[, -c(2,5)],
         structure(list(
             Sample=c("ko15", "ko16", "ko18", "ko19", "ko21", "ko22",
                 "wt16", "wt18", "wt19", "wt21", "wt22"),
@@ -396,7 +398,7 @@ test_that("createQCreportObject works with XCMS LCMS data outputs", {
         QC_label=NULL)
     )
     
-    expect_equal(QCreport$metaData$table, 
+    expect_equal(QCreport$metaData$table[, -2], 
         structure(list(
             Sample = c("ko15", "ko16", "ko18", "ko19", "ko21", "ko22", "wt15",
                 "wt16", "wt18", "wt19", "wt21", "wt22"),

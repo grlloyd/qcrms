@@ -31,6 +31,7 @@ build_script:
 
 before_test:
 - cinst pandoc
+- ps: $env:Path += ";C:\Program Files (x86)\Pandoc\"
 - pandoc -v
 
 test_script:

@@ -7,3 +7,4 @@ README.rst
 ^\.travis\.yml$
 ^codecov\.yml$
 .lintr
+^appveyor\.yml$

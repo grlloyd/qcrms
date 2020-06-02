@@ -29,6 +29,10 @@ environment:
 build_script:
   - travis-tool.sh install_deps
 
+before_test:
+- cinst pandoc
+- pandoc -v
+
 test_script:
   - travis-tool.sh run_tests
 

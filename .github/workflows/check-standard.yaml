@@ -33,6 +33,9 @@ jobs:
         run: |
           install.packages('remotes')
           saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
+          install.packages("BiocManager")
+          BiocManager::install()
+          BiocManager::install(c("mzR", "MSnbase", "xcms", "faahKO", "msPurityData"))
         shell: Rscript {0}
 
       - name: Cache R packages

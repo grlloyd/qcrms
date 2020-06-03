@@ -8,3 +8,4 @@ README.rst
 ^codecov\.yml$
 .lintr
 ^appveyor\.yml$
+^\.github$

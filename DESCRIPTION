@@ -1,7 +1,7 @@
 Package: qcrms
 Type: Package
 Title: Creates quality control output from XCMS output
-Version: 0.99.1
+Version: 0.99.2
 Author: Andris Jankevics
 Maintainer: Andris Jankevics <a.jankevics@bham.ac.uk>
 Description: Creates report in pdf fortma to asses RT and m/z drifts, variation

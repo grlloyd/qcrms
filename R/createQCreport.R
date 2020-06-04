@@ -1,4 +1,5 @@
 #' @importFrom rmarkdown render
+#' @importFrom captioner captioner
 #'
 NULL
 

@@ -1,6 +1,3 @@
-#' @import xcms
-#' @import ggplot2
-#' @import pmp
 #'
 NULL
 

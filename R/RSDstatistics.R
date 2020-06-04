@@ -1,4 +1,5 @@
-#' @import ggplot2
+#' @importFrom ggplot2 geom_line
+#' @importFrom ggplot2 scale_colour_manual
 #'
 NULL
 

@@ -1,4 +1,14 @@
-#' @import ggplot2
+#' @importFrom ggplot2 ggtitle
+#' @importFrom ggplot2 geom_hline
+#' @importFrom ggplot2 geom_boxplot
+#' @importFrom ggplot2 aes_
+#' @importFrom ggplot2 xlab
+#' @importFrom ggplot2 ylab
+#' @importFrom ggplot2 theme
+#' @importFrom ggplot2 element_text
+#' @importFrom ggplot2 facet_wrap
+#' @importFrom ggplot2 scale_x_discrete
+#' @importFrom ggplot2 scale_fill_manual
 #' @importFrom reshape2 melt
 #'
 NULL

@@ -1,5 +1,11 @@
-#' @import pmp
-#' @import openxlsx
+#' @importFrom pmp QCRSC
+#' @importFrom pmp filter_samples_by_mv
+#' @importFrom pmp filter_peaks_by_fraction
+#' @importFrom pmp filter_peaks_by_blank
+#' @importFrom openxlsx loadWorkbook
+#' @importFrom openxlsx addWorksheet
+#' @importFrom openxlsx writeData
+#' @importFrom openxlsx saveWorkbook
 #'
 NULL
 
@@ -27,7 +33,7 @@ SignalBatchCorrection <- function(QCreportObject) {
   # Blank filter
   if (QCreportObject$Blank_label %in% class) {
     blank_filtered <-
-      filter_peaks_by_blank(QCreportObject$peakMatrix, 20L, class,
+      pmp::filter_peaks_by_blank(QCreportObject$peakMatrix, 20L, class,
         blank_label=QCreportObject$Blank_label, qc_label=NULL,
         remove_samples=FALSE, remove_peaks=TRUE)
     QCreportObject$filtering$table$`Number of features`[2L:5L] <-
@@ -38,7 +44,7 @@ SignalBatchCorrection <- function(QCreportObject) {
   }
 
   # MV filter for all samples
-  sample_filtered <- filter_samples_by_mv(df=blank_filtered, max_perc_mv=0.5,
+  sample_filtered <- pmp::filter_samples_by_mv(df=blank_filtered, max_perc_mv=0.5,
     classes=class)
   flags <- attributes(sample_filtered)$flags
   if (any(flags[, "filter_samples_by_mv_flags"] == 0L)) {
@@ -54,13 +60,13 @@ SignalBatchCorrection <- function(QCreportObject) {
 
   # QC MV fraction filter
   # MV in QC samples
-  MV_filtered <- filter_peaks_by_fraction(sample_filtered, min_frac=0.9,
+  MV_filtered <- pmp::filter_peaks_by_fraction(sample_filtered, min_frac=0.9,
     classes=class, method="QC", qc_label=QCreportObject$QC_label)
   QCreportObject$filtering$table$`Number of features`[4L:5L] <-
     nrow(MV_filtered)
 
   # MV filter across all samples or within class
-  MV_filtered <- filter_peaks_by_fraction(MV_filtered,
+  MV_filtered <- pmp::filter_peaks_by_fraction(MV_filtered,
     min_frac=QCreportObject$filtering$mv_filter_frac,
     classes=class, method=QCreportObject$filtering$mv_filter_method,
     qc_label=NULL)
@@ -180,16 +186,16 @@ SignalBatchCorrection <- function(QCreportObject) {
     QC_label=QCreportObject$QC_label,
     Blank_label=QCreportObject$Blank_label)
 
-  addWorksheet(wb, "metaData_filtered")
-  writeData(wb, "metaData_filtered", metaData, rowNames=TRUE)
+  openxlsx::addWorksheet(wb, "metaData_filtered")
+  openxlsx::writeData(wb, "metaData_filtered", metaData, rowNames=TRUE)
 
-  addWorksheet(wb, "dataMatrix_filtered")
-  writeData(wb, "dataMatrix_filtered", MV_filtered, rowNames=TRUE)
+  openxlsx::addWorksheet(wb, "dataMatrix_filtered")
+  openxlsx::writeData(wb, "dataMatrix_filtered", MV_filtered, rowNames=TRUE)
 
-  addWorksheet(wb, "dataMatrix_corrected")
-  writeData(wb, "dataMatrix_corrected", SBcorrected, rowNames=TRUE)
+  openxlsx::addWorksheet(wb, "dataMatrix_corrected")
+  openxlsx::writeData(wb, "dataMatrix_corrected", SBcorrected, rowNames=TRUE)
 
-  saveWorkbook(wb, QCreportObject$xlsxout, overwrite=TRUE)
+  openxlsx::saveWorkbook(wb, QCreportObject$xlsxout, overwrite=TRUE)
 
   QCreportObject
 }

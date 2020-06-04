@@ -1,7 +1,4 @@
 #' @importFrom rmarkdown render
-#' @import captioner
-#' @import pmp
-#' @import gridExtra
 #'
 NULL
 

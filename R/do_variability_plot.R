@@ -1,3 +1,9 @@
+#' @importFrom ggplot2 geom_violin
+#' @importFrom ggplot2 scale_y_continuous
+#' @importFrom ggplot2 aes
+#'
+NULL
+
 #' Plot violin plots from the dolist_object fucntion output
 #'
 #' @param list_object OUtput of do_variability_list function

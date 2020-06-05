@@ -1,5 +1,10 @@
-#' @import ggplot2
-#'
+#' @importFrom ggplot2 geom_violin
+#' @importFrom ggplot2 scale_y_continuous
+#' @importFrom ggplot2 geom_histogram
+#' @importFrom ggplot2 xlim
+#' @importFrom ggplot2 ylim
+#' @importFrom ggplot2 coord_flip
+#' 
 NULL
 
 #' Create QCreport data object to asses missing values

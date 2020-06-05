@@ -1,7 +1,11 @@
-#' @import ggplot2
-#' @import scales
-#' @import ggthemes
+#' @importFrom ggthemes theme_foundation
 #' @importFrom grDevices rainbow
+#' @importFrom ggplot2 rel
+#' @importFrom ggplot2 element_rect
+#' @importFrom ggplot2 element_line
+#' @importFrom ggplot2 element_blank
+#' @importFrom ggplot2 unit
+#' 
 NULL
 
 #' Ggplot publication theme
@@ -12,7 +16,7 @@ NULL
 #' @param base_size Ggplot font size
 
 theme_Publication <- function(base_size=14L) {
-  (theme_foundation(base_size=base_size) +
+  (ggthemes::theme_foundation(base_size=base_size) +
     theme(plot.title=element_text(face="bold",
     size=rel(1.2), hjust=0.5),
     text=element_text(),

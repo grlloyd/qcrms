@@ -1,5 +1,4 @@
-#' @import  ggplot2
-#' @import pmp
+#' @importFrom ggplot2 geom_point
 #' @importFrom stats cor.test
 #'
 NULL
@@ -27,7 +26,7 @@ sampleSummaryPlots <- function(QCreportObject) {
   QCreportObject$plots$ticplot_1 <- ggplot2::ggplot(data=A,
     aes_(x=~label, y=~TICr, color=~class, label=~sample)) +
     geom_line(mapping=aes_(x=~label, y=~TICr), colour="#C0C0C0") +
-    geom_point()+
+    geom_point() +
     scale_colour_manual(values=QCreportObject$plotClass$manual_colors) +
     theme_Publication(base_size=12L) +
     xlab("Injection order") + ylab("Total ion intensity of raw data")

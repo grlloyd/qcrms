@@ -1,5 +1,8 @@
 #' @importFrom SummarizedExperiment assay
 #' @importFrom S4Vectors metadata
+#' @importFrom pmp pqn_normalisation
+#' @importFrom pmp mv_imputation
+#' @importFrom pmp glog_transformation
 NULL
 
 #' Wrapper function to transform data for statistical analysis
@@ -84,12 +87,12 @@ prepareData <- function(Data, classes, blank="BLANK", PQN=FALSE,
     #glog scaling
     if (glogScaling == TRUE & !is.null(qc_label)) {
       if (store_lambda) {
-        Data <- glog_transformation(df=Data, classes=classes, qc_label=qc_label)
+        Data <- pmp::glog_transformation(df=Data, classes=classes, qc_label=qc_label)
         lambda <-
           S4Vectors::metadata(Data)$
             processing_history$glog_transformation$lambda_opt
       } else {
-        Data <- glog_transformation(df=Data, classes=classes, qc_label=qc_label)
+        Data <- pmp::glog_transformation(df=Data, classes=classes, qc_label=qc_label)
         lambda <-NULL
       }
     } else {

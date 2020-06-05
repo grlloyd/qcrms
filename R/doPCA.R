@@ -1,6 +1,11 @@
 #' @importFrom stats prcomp
 #' @importFrom stats median
-#' @import ggplot2
+#' @importFrom ggplot2 ggplot
+#' @importFrom ggplot2 aes_
+#' @importFrom ggplot2 scale_shape_identity
+#' @importFrom ggplot2 geom_text
+#' @importFrom ggplot2 stat_ellipse
+#' @importFrom ggplot2 geom_point
 NULL
 
 #' Perform PCA analysis ot single data set or list of data sets

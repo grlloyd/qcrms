@@ -1,7 +1,8 @@
 #' @importFrom xcms groupval
 #' @importFrom xcms featureValues
 #' @importFrom xcms adjustedRtime
-#' @import ggplot2
+#' @importFrom xcms hasAdjustedRtime
+#' @importFrom ggplot2 element_blank
 #' @importFrom magrittr %>%
 #'
 NULL
@@ -15,7 +16,7 @@ NULL
 check_rt_correction <- function(xset){
     rt_corrected <- FALSE
     if (is(xset, "XCMSnExp")){
-        rt_corrected <- hasAdjustedRtime(xset)
+        rt_corrected <- xcms::hasAdjustedRtime(xset)
     }
     if (is (xset, "xcmsSet")){
         if (!all(unlist(xset@rt$raw) == unlist(xset@rt$corrected))){

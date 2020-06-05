@@ -1,4 +1,3 @@
-#' @import xcms
 #' @importFrom MSnbase readMSData
 #' @importFrom gridExtra marrangeGrob
 #' @importFrom MSnbase pData

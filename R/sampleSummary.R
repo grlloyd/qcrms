@@ -1,5 +1,5 @@
-#' @import xcms
-#' @import openxlsx
+#' @importFrom openxlsx read.xlsx
+#' @importFrom openxlsx getSheetNames
 #' @importFrom dplyr left_join
 #' @importFrom mzR openMSfile
 #' @importFrom mzR tic
@@ -109,13 +109,14 @@ sampleSummary <- function(QCreportObject) {
     if (grepl(".xls", tolower(QCreportObject$metaData$file)) ||
         tolower(tools::file_ext(QCreportObject$metaData$file)) %in%
         c("xls", "xlsx")) {
-      if ("metaData" %in% getSheetNames(QCreportObject$metaData$file)) {
+      if ("metaData" %in%
+          openxlsx:: getSheetNames(QCreportObject$metaData$file)) {
         sheet <- "metaData"
       } else {
         sheet <- 1L
       }
-      metaDataTable <- read.xlsx(xlsxFile=QCreportObject$metaData$file,
-        sheet=sheet)
+      metaDataTable <- openxlsx::read.xlsx(
+          xlsxFile=QCreportObject$metaData$file, sheet=sheet)
     } else {
       metaDataTable <- read.csv(QCreportObject$metaData$file, header=TRUE,
         check.names=FALSE, stringsAsFactors=FALSE)

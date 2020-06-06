@@ -2,55 +2,61 @@ context ("Test EIC plot.")
 
 library(xcms)
 library(BiocManager)
-if(!requireNamespace("msPurityData", quietly=TRUE)){
-    BiocManager::install("msPurityData")
+if(!requireNamespace("faahKO", quietly=TRUE)){
+    BiocManager::install("faahKO")
 }
 
 xcms_groups_rt_mz_summary_output <- 
-    list(min_rt = structure(c(73.060488, 72.332784), .Dim = 1:2,
-        .Dimnames = list("FT0100", c("LCMS_1.mzML", "LCMS_2.mzML"))),
-        max_rt = structure(c(97.176492, 95.748174), .Dim = 1:2,
-        .Dimnames = list("FT0100", c("LCMS_1.mzML", "LCMS_2.mzML"))),
-        min_mz = structure(c(152.988571166992, 152.98844909668),
-        .Dim = 1:2, .Dimnames = list("FT0100", c("LCMS_1.mzML", "LCMS_2.mzML"))),
-        max_mz = structure(c(152.990859985352, 152.991241455078),
-        .Dim = 1:2, .Dimnames = list("FT0100",
-        c("LCMS_1.mzML", "LCMS_2.mzML")))
-    )
+  list(min_rt = structure(c(3628.145, 3640.664), .Dim = 1:2,
+    .Dimnames = list("FT100", c("ko15.CDF", "ko16.CDF"))),
+  max_rt = structure(c(3650.054, 3684.483),.Dim = 1:2,
+    .Dimnames = list("FT100", c("ko15.CDF", "ko16.CDF"))),
+  min_mz = structure(c(321.100006103516, 321.100006103516), .Dim = 1:2,
+  .Dimnames = list("FT100", c("ko15.CDF", "ko16.CDF"))),
+  max_mz = structure(c(321.100006103516, 321.100006103516), .Dim = 1:2,
+    .Dimnames = list("FT100", c("ko15.CDF", "ko16.CDF")))
+)
 
 plot_data_no_rt <- structure(list(
-    rt = c(73.381104, 73.70211, 74.34549, 74.66874, 74.992116,
-        75.642732),
-    mz = c(152.990295410156, 152.989715576172, 152.99055480957,
-        152.988983154297, 152.990280151367, 152.988830566406),
-    i = c(21548.203125, 59140.6796875, 61134.80078125, 37297.19140625,
-        54743.37109375, 22704.90234375),
-    Class = structure(c(1L, 1L, 1L, 1L, 1L, 1L), .Label = "1",
-        class = c("ordered", "factor")), 
-    sample = c(1L, 1L, 1L, 1L, 1L, 1L)),
-    row.names = c(NA, 6L), class = "data.frame")
+  rt = c(3628.145, 3629.71, 3631.274, 3639.099, 3640.664, 3642.229),
+  mz = c(321.100006103516, 321.100006103516, 321.100006103516,
+    321.100006103516, 321.100006103516, 321.100006103516),
+  i = c(710, 762, 769, 3054, 4254, 5381),
+  Class = structure(c(1L, 1L, 1L, 1L, 1L, 1L), .Label = "1",
+    class = c("ordered", "factor")),
+  sample = c(1L, 1L, 1L, 1L, 1L, 1L)),
+  row.names = c(NA, 6L), class = "data.frame"
+)
   
 plot_data_rt <- structure(list(
-    rt = c(93.9810333251953, 94.3161697387695, 94.6508255004883, 
-        94.9869689941406, 95.3240203857422),
-    mz = c(152.990341186523, 152.988815307617, 152.990951538086,
-        152.988845825195, 152.990097045898),
-    i = c(32439.16796875, 32364.900390625, 38738.38671875,
-        33542.52734375, 40061.76171875),
-    Class = structure(c(1L, 1L, 1L, 1L, 1L), .Label = "1",
-        class = c("ordered", "factor")), 
-        sample = c(2L, 2L, 2L, 2L, 2L)),
-    row.names = 70:74, class = "data.frame")
+  rt = c(3628.145, 3629.71, 3631.274, 3639.099, 3640.664),
+  mz = c(321.100006103516, 321.100006103516, 321.100006103516, 
+    321.100006103516, 321.100006103516),
+  i = c(710, 762, 769, 3054, 4254),
+  Class = structure(c(1L, 1L, 1L, 1L, 1L), .Label = "1",
+    class = c("ordered", "factor")),
+  sample = c(1L, 1L, 1L, 1L, 1L)),
+  row.names = c(NA, 5L), class = "data.frame"
+)
+
 
 test_that("EIC plot is created and has correct data, using XCMSnExp class.", {
-    mzml_files <- dir(system.file("extdata/lcms/mzML", package="msPurityData"),
+    mzml_files <- dir(system.file("cdf/KO", package="faahKO"),
         full.names=TRUE, recursive=TRUE)
     rawf <- MSnbase::readMSData(mzml_files[1:2], mode="onDisk", msLevel.=1)
     cwp <- xcms::CentWaveParam(snthresh=10, noise=5000)
     xset <- xcms::findChromPeaks(rawf, param=cwp)
     xset <- xcms::groupChromPeaks(xset,
         xcms::PeakDensityParam(sampleGroups=c("mzML", "mzML")))
- 
+    
+    expect_equal(pData(xset),
+        structure(list(sampleNames = c("ko15.CDF", "ko16.CDF")),
+        row.names = c("ko15.CDF", "ko16.CDF"), class = "data.frame"))
+    
+    expect_equal(pData(rawf),
+        structure(list(sampleNames = c("ko15.CDF", "ko16.CDF")),
+        row.names = c("ko15.CDF", "ko16.CDF"), class = "data.frame"))
+    
     rawfiles <- list()
     rawfiles[[1]] <- MSnbase::readMSData(mzml_files[1], mode="inMemory", 
         msLevel.=1)
@@ -59,18 +65,14 @@ test_that("EIC plot is created and has correct data, using XCMSnExp class.", {
 
     expect_false(qcrms:::check_rt_correction(xset))
     
-    ## 03-06-2020 Unit test disables because of different outputs running 
-    ## command locally or in CI.
-    # expect_equal(qcrms:::xcms_groups_rt_mz_summary(xset = xset, indexes = 100),
-    #     xcms_groups_rt_mz_summary_output
-    # )
+    expect_equal(qcrms:::xcms_groups_rt_mz_summary(xset=xset, indexes=100),
+        xcms_groups_rt_mz_summary_output
+    )
     
     plot_XCMSnEXP <- expect_warning(qcrms:::XCMS_EIC_plot(indexes=100,
         rawfiles=rawfiles, xset=xset, class=c("1", "1")))
     
-    ## 03-06-2020 Unit test disables because of different outputs running 
-    ## command locally or in CI.
-    # expect_equal(head(plot_XCMSnEXP[[1]]$data), plot_data_no_rt)
+    expect_equal(head(plot_XCMSnEXP[[1]]$data), plot_data_no_rt)
     
     context ("EIC on RT corrected data, XCMSnExp")
     
@@ -81,14 +83,14 @@ test_that("EIC plot is created and has correct data, using XCMSnExp class.", {
     plot_XCMSnEXP_RT <- expect_warning(qcrms:::XCMS_EIC_plot(indexes = 100,
         rawfiles = rawfiles, xset = xset, class = c("1", "1")))
     
-    ## 03-06-2020 Unit test disables because of different outputs running 
-    ## command locally or in CI.
-    # expect_equal(plot_XCMSnEXP_RT[[1]]$data[70:74, ], plot_data_rt)
+    expect_equal(plot_XCMSnEXP_RT[[1]]$data[1:5, ], plot_data_rt)
+    
+    rm (xset)
 
 })
 
 test_that("EIC plot is created and has correct data, using xcmsSet class.", {
-    mzml_files <- dir(system.file("extdata/lcms/mzML", package="msPurityData"),
+    mzml_files <- dir(system.file("cdf/KO", package="faahKO"),
         full.names=TRUE, recursive=TRUE)[1:2]
     xset <- xcms::xcmsSet(mzml_files, method = 'centWave', ppm = 25,
         peakwidth = c(20, 50), snthresh = 10, prefilter = c(3,100),
@@ -105,25 +107,21 @@ test_that("EIC plot is created and has correct data, using xcmsSet class.", {
 
     expect_false(qcrms:::check_rt_correction(xset))
     
-    ## 03-06-2020 Unit test disables because of different outputs running 
-    ## command locally or in CI.
-    # expect_equal(qcrms:::xcms_groups_rt_mz_summary(xset = xset, indexes = 100),
-    #    list(min_rt = structure(c(73.060488, 72.332784), .Dim = 1:2,
-    #        .Dimnames = list("153/79", c("LCMS_1", "LCMS_2"))),
-    #        max_rt = structure(c(97.176492, 95.748174), .Dim = 1:2,
-    #        .Dimnames = list("153/79", c("LCMS_1", "LCMS_2"))),
-    #        min_mz = structure(c(152.988571166992, 152.98844909668),
-    #        .Dim = 1:2, .Dimnames = list("153/79", c("LCMS_1", "LCMS_2"))),
-    #        max_mz = structure(c(152.990859985352, 152.991241455078),
-    #        .Dim = 1:2, .Dimnames = list("153/79", c("LCMS_1", "LCMS_2"))))
-    #)
+    expect_equal(qcrms:::xcms_groups_rt_mz_summary(xset = xset, indexes = 100),
+        list(min_rt = structure(c(3628.145, 3640.664), .Dim = 1:2,
+          .Dimnames = list("321.1/3656", c("ko15", "ko16"))), 
+        max_rt = structure(c(3650.054, 3684.483), .Dim = 1:2,
+          .Dimnames = list("321.1/3656", c("ko15", "ko16"))),
+        min_mz = structure(c(321.100006103516, 321.100006103516), .Dim = 1:2,
+          .Dimnames = list("321.1/3656", c("ko15", "ko16"))),
+        max_mz = structure(c(321.100006103516, 321.100006103516), .Dim = 1:2,
+          .Dimnames = list("321.1/3656", c("ko15", "ko16"))))
+    )
     
     plot_xcmsSet <- expect_warning(qcrms:::XCMS_EIC_plot(indexes=100, rawfiles=rawfiles,
         xset=xset, class=c("1", "1")))
     
-    ## 03-06-2020 Unit test disables because of different outputs running 
-    ## command locally or in CI.
-    # expect_equal(head(plot_xcmsSet[[1]]$data), plot_data_no_rt)
+    expect_equal(head(plot_xcmsSet[[1]]$data), plot_data_no_rt)
     
     context ("EIC on RT corrected data")
     
@@ -134,7 +132,15 @@ test_that("EIC plot is created and has correct data, using xcmsSet class.", {
     plot_xcmsSet_RT <- expect_warning(qcrms:::XCMS_EIC_plot(indexes = 100,
         rawfiles = rawfiles, xset = xset, class = c("1", "1")))
     
-    ## 03-06-2020 Unit test disables because of different outputs running 
-    ## command locally or in CI.
-    # expect_equal(plot_xcmsSet_RT[[1]]$data[70:74, ], plot_data_rt)
+    expect_equal(plot_xcmsSet_RT[[1]]$data[1:5, ],
+      structure(list(
+        rt = c(3647.27270507812, 3648.89086914062, 3656.9775390625, 
+          3658.59228515625, 3660.20629882812),
+        mz = c(321.100006103516, 321.100006103516, 321.100006103516,
+          321.100006103516, 321.100006103516),
+        i = c(762, 769, 3054, 4254, 5381),
+        Class = structure(c(1L, 1L, 1L, 1L, 1L), .Label = "1",
+          class = c("ordered", "factor")), 
+        sample = c(1L, 1L, 1L, 1L, 1L)), row.names = c(NA, 5L),
+      class = "data.frame"))
 })

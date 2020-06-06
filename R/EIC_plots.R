@@ -47,7 +47,6 @@ check_rt_correction <- function(xset){
             bySample=TRUE)[[chrn]] >= RTmi)[1L]
         RTind[2L] <- which(xcms::adjustedRtime(xset,
             bySample=TRUE)[[chrn]] >= RTma)[1L]
-        xset <- xcms::dropAdjustedRtime(xset)
         RTmi <- xcms::rtime(xset, bySample=TRUE,
             adjusted=FALSE)[[chrn]][RTind[1L]]
         RTmax <- xcms::rtime(xset, bySample=TRUE,

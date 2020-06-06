@@ -29,7 +29,8 @@ plot_data_no_rt <- structure(list(
 )
   
 plot_data_rt <- structure(list(
-  rt = c(3628.145, 3629.71, 3631.274, 3639.099, 3640.664),
+  rt = c(3645.65283203125, 3647.27270507812, 3648.89086914062, 
+    3656.9775390625, 3658.5922851562),
   mz = c(321.100006103516, 321.100006103516, 321.100006103516, 
     321.100006103516, 321.100006103516),
   i = c(710, 762, 769, 3054, 4254),
@@ -38,7 +39,6 @@ plot_data_rt <- structure(list(
   sample = c(1L, 1L, 1L, 1L, 1L)),
   row.names = c(NA, 5L), class = "data.frame"
 )
-
 
 test_that("EIC plot is created and has correct data, using XCMSnExp class.", {
     mzml_files <- dir(system.file("cdf/KO", package="faahKO"),
@@ -76,7 +76,7 @@ test_that("EIC plot is created and has correct data, using XCMSnExp class.", {
     
     context ("EIC on RT corrected data, XCMSnExp")
     
-    xset <- xcms::adjustRtime(xset, param=ObiwarpParam(binSize=1))
+    xset <- xcms::adjustRtime(xset, param=ObiwarpParam(binSize=1, center=2))
     expect_true(qcrms:::check_rt_correction(xset))
     xset <- xcms::groupChromPeaks(xset,
         xcms::PeakDensityParam(sampleGroups=c("mzML", "mzML")))
@@ -125,7 +125,7 @@ test_that("EIC plot is created and has correct data, using xcmsSet class.", {
     
     context ("EIC on RT corrected data")
     
-    xset <- xcms::retcor(object = xset, method = "obiwarp")
+    xset <- xcms::retcor(object = xset, method = "obiwarp", center=2)
     expect_true(qcrms:::check_rt_correction(xset))
     xset <- xcms::group(xset, method = "density", bw = 30, minfrac = 0.5,
         minsamp = 1, mzwid=0.25, max=50)

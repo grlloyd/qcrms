@@ -22,7 +22,7 @@ environment:
   R_VERSION: release
   BIOC_USE_DEVEL: false
   USE_RTOOLS: true
-  PKGTYPE: both
+  PKGTYPE: binary
 
 # Adapt as necessary starting from here
 

@@ -23,11 +23,13 @@ environment:
   BIOC_USE_DEVEL: FALSE
   USE_RTOOLS: TRUE
   
-  PKGTYPE: both
+  PKGTYPE: source
 
 # Adapt as necessary starting from here
 
 build_script:
+  - c:\rtools40\msys2.exe pacman -S mingw-w64-{i686,x86_64}-libxml2 --noconfirm
+  - c:\rtools40\msys2.exe pacman -S mingw-w64-{i686,x86_64}-netcdf --noconfirm
   - travis-tool.sh install_bioc BiocVersion BiocStyle
   - travis-tool.sh install_bioc_deps
   - travis-tool.sh install_deps

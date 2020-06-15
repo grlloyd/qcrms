@@ -24,7 +24,7 @@ test_that("Warninn message is created if files are not mzML", {
 test_that ("If run block doesn't contain timeStamp, function stops", {
     mzml_files <- dir(system.file("extdata/MTBLS404/mzML",
         package = "qcrmsData"), full.names = TRUE, recursive = TRUE)
-    con <- file(mzml_files[1], "r")
+    con <- file(mzml_files[grep("Blanc04.mzML", mzml_files)], "r")
     mzml_content <- readLines(con)
     mzml_content[90] <- sub (" startTimeStamp=\"2009-05-07T21:43:00Z\"", "",
         mzml_content[90])

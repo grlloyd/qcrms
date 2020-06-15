@@ -10,7 +10,9 @@ if(!requireNamespace("faahKO", quietly=TRUE)){
 test_that("Timestamp gets extracted", {
     mzml_files <- dir(system.file("extdata/MTBLS404/mzML",
         package = "qcrmsData"), full.names = TRUE, recursive = TRUE)
-    time_stamp <- qcrms:::mzML.startTimeStamp(mzml_files[1])
+    time_stamp <-
+        qcrms:::mzML.startTimeStamp(
+            mzml_files[grep("Blanc04.mzML", mzml_files)])
     expect_equal(time_stamp, "2009-05-07 21:43:00Z")
 })
 

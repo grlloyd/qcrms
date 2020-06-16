@@ -2,19 +2,18 @@ context ("Test start time stamp extraction from mzML files.")
 
 library(xcms)
 library(BiocManager)
-if(!requireNamespace("msPurityData", quietly=TRUE)){
-    BiocManager::install("msPurityData")
-}
 
 if(!requireNamespace("faahKO", quietly=TRUE)){
     BiocManager::install("faahKO")
 }
 
 test_that("Timestamp gets extracted", {
-    mzml_files <- dir(system.file("extdata/dims/mzML",
-        package = "msPurityData"), full.names = TRUE, recursive = TRUE)
-    time_stamp <- qcrms:::mzML.startTimeStamp(mzml_files[1])
-    expect_equal(time_stamp, "2015-07-10 15:25:01Z")
+    mzml_files <- dir(system.file("extdata/MTBLS404/mzML",
+        package = "qcrmsData"), full.names = TRUE, recursive = TRUE)
+    time_stamp <-
+        qcrms:::mzML.startTimeStamp(
+            mzml_files[grep("Blanc04.mzML", mzml_files)])
+    expect_equal(time_stamp, "2009-05-07 21:43:00Z")
 })
 
 test_that("Warninn message is created if files are not mzML", {
@@ -25,11 +24,11 @@ test_that("Warninn message is created if files are not mzML", {
 })
 
 test_that ("If run block doesn't contain timeStamp, function stops", {
-    mzml_files <- dir(system.file("extdata/dims/mzML",
-        package = "msPurityData"), full.names = TRUE, recursive = TRUE)
-    con <- file(mzml_files[1], "r")
+    mzml_files <- dir(system.file("extdata/MTBLS404/mzML",
+        package = "qcrmsData"), full.names = TRUE, recursive = TRUE)
+    con <- file(mzml_files[grep("Blanc04.mzML", mzml_files)], "r")
     mzml_content <- readLines(con)
-    mzml_content[90] <- sub (" startTimeStamp=\"2015-07-10T15:25:01Z\"", "",
+    mzml_content[90] <- sub (" startTimeStamp=\"2009-05-07T21:43:00Z\"", "",
         mzml_content[90])
     close (con)
     output_file <- file.path(tempdir(), "out.mzML")

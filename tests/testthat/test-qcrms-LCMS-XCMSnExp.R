@@ -2,9 +2,6 @@ context("LCMS data, XCMSnExp")
 
 library(xcms)
 library(BiocManager)
-if(!requireNamespace("msPurityData", quietly=TRUE)){
-    BiocManager::install("msPurityData")
-}
 
 if(!requireNamespace("faahKO", quietly=TRUE)){
     BiocManager::install("faahKO")

@@ -95,12 +95,12 @@ createQCreportObject <- function(data_file,
       stop("Please check that XCMS object set in xcms_ouput can't be located.")
     }
 
-    if (class(get(QCreportObject$xcms_output)) == "xcmsSet") {
+    if (is(get(QCreportObject$xcms_output), "xcmsSet")) {
       QCreportObject$xset <- get(QCreportObject$xcms_output)
       QCreportObject$xcms_class <- "xcmsSet"
       QCreportObject$peakMatrix <- xcms::groupval(object=QCreportObject$xset,
       method="medret", value="into", intensity="into")
-    } else if (class(get(QCreportObject$xcms_output)) == "XCMSnExp") {
+    } else if (is(get(QCreportObject$xcms_output), "XCMSnExp")) {
       QCreportObject$xset <- get(QCreportObject$xcms_output)
       QCreportObject$xcms_class <- "XCMSnExp"
       QCreportObject$peakMatrix <- xcms::featureValues(object=QCreportObject$xset,

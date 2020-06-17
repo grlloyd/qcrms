@@ -32,16 +32,16 @@ test_that("createQCreportObject works with XCMS xcmsSet LCMS data outputs", {
 
     temp_dir <- tempdir()
     write.csv(file=file.path(temp_dir, "qcrms_test_meta_data_file.csv"),
-        meta_data, row.names=F)
+        meta_data, row.names=FALSE)
     save(file=file.path(temp_dir, "LCMS_xdata.Rdata"), list="xset")
 
     # Create meta data xlsx file format
     require (openxlsx)
     wb <- createWorkbook()
     addWorksheet (wb,"meta")
-    writeData (wb,"meta", meta_data, rowNames = F)
+    writeData (wb,"meta", meta_data, rowNames = FALSE)
     saveWorkbook (wb, file.path(temp_dir, "qcrms_meta_data.xlsx"),
-        overwrite = T)
+        overwrite = TRUE)
     
     expect_warning(QCreport <- createQCreportObject(
         data_file="LCMS_xdata.Rdata", projectdir=temp_dir,
@@ -266,9 +266,9 @@ test_that("createQCreportObject works with XCMS xcmsSet LCMS data outputs", {
     meta_data$ClassQC <- meta_data$sample_group
     meta_data$sample_group[1:6] <- NA
     addWorksheet (wb,"metaData")
-    writeData (wb,"metaData", meta_data, rowNames = F)
+    writeData (wb,"metaData", meta_data, rowNames = FALSE)
     saveWorkbook (wb, file.path(temp_dir, "qcrms_meta_data.xlsx"),
-        overwrite = T)
+        overwrite = TRUE)
     
     expect_warning(QCreport <- createQCreportObject(
         data_file="LCMS_xdata.Rdata", projectdir=temp_dir,

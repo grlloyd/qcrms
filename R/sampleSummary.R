@@ -102,7 +102,7 @@ sampleSummary <- function(QCreportObject) {
     }
   } else {
     QCreportObject$metaData$table <- data.frame(Sample=
-      colnames(QCreportObject$peakMatrix), stringsAsFactors=F)
+      colnames(QCreportObject$peakMatrix), stringsAsFactors=FALSE)
   }
 
   if (!is.null(QCreportObject$metaData$file)) {

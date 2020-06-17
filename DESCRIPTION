@@ -1,13 +1,15 @@
 Package: qcrms
 Type: Package
 Title: Creates quality control output from XCMS output
-Version: 0.99.2
+Version: 0.99.3
 Authors@R: person("Andris", "Jankevics", email = "a.jankevics@bham.ac.uk",
     role = c("aut", "cre"))
-Description: Creates report in pdf fortma to asses RT and m/z drifts, variation
-    of QC and samples and perform signal/batch correction.
+Description: An R package to assess the data quality of
+    Liquid Chromatography - Mass Spectrometry (LC-MS) and
+    Direct Infusion Mass Spectrometry (DIMS)-based metabolomics experiments.
+    QCRMS generates a report that containing a comprehensive set of quality
+    control metrics and charts.
 License: GPL-3
-biocViews:
 Depends: R(>= 4.0)
 Imports: grDevices, stats, utils, captioner, ggplot2, gridExtra, mzR,
     openxlsx (>= 4.1.0), pmp (>= 0.9.2), rmarkdown, xcms(>= 3.6.2), MSnbase,

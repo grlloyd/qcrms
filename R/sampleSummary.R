@@ -33,9 +33,13 @@ locate_raw_files <- function(QCreportObject){
             get_file_extension(MSnbase::fileNames(QCreportObject$xset))
     }
     
-    raw_paths <- paste(QCreportObject$raw_path, "/",
+    if (length(grep(file_extension, QCreportObject$metaData$table$Sample)) == 0){
+        raw_paths <- paste(QCreportObject$raw_path, "/",
         QCreportObject$metaData$table$Sample, file_extension, sep="")
-
+    } else {
+        raw_paths <- paste(QCreportObject$raw_path, "/",
+        QCreportObject$metaData$table$Sample, sep="")
+    }
     ## If files are located across multiple folders, locate them one-by-one
     if (!all(file.exists(raw_paths))) {
         files_to_locate <- paste0(row.names(QCreportObject$xset@phenoData),

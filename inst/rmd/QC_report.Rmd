@@ -64,7 +64,7 @@ print(QCreportObject$plots$ticplot_4)
 `r figs("S4")`
 
 \newpage
-```{r size vs peak count, echo=FALSE, message=TRUE, warning=FALSE, comment="", cache=FALSE, fig.width=7}
+```{r size_vs_peak_count, echo=FALSE, message=TRUE, warning=FALSE, comment="", cache=FALSE, fig.width=7}
 print(QCreportObject$plots$ticplot_5)
 ```
 

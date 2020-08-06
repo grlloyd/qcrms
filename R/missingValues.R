@@ -9,7 +9,7 @@ NULL
 missingValues <- function(QCreportObject) {
 
   countna <- function(x)
-    return((sum(is.na(x)) / length(x)) * 100L)
+    return(sum(is.na(x))
 
   # Remove QC lead samples from peakMatrix
   rem_hits <- which(QCreportObject$metaData$samp_lab=="Removed")
@@ -23,8 +23,8 @@ missingValues <- function(QCreportObject) {
     samp_lab <- QCreportObject$metaData$samp_lab
   }
 
-  across_samples <- data.frame(x=apply(peak_matrix, 2L, countna))
-  across_features <- data.frame(x=apply(peak_matrix, 1L, countna))
+  across_samples <- data.frame(x=apply(peak_matrix, 2L, countna))/nrow(peak_matrix)*100
+  across_features <- data.frame(x=apply(peak_matrix, 1L, countna))/ncol(peak_matrix)*100
 
   QCreportObject$plots$MVplot1 <- ggplot(data=across_samples, aes_(~x)) +
     geom_histogram() +
